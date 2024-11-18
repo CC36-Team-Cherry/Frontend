@@ -1,22 +1,42 @@
 <template>
   <div>
-    <h1>Registration Organization</h1>
-    <div v-if="currentStep === 1">
-      <Step1 @next="handleNextStep" />
-    </div>
-    <div v-if="currentStep === 2">
-      <Step2 :form-data="formData" @submit="handleSubmit" />
-    </div>
+    <h1>Register Organization and Admin</h1>
+    <form @submit.prevent="handleSubmit">
+      <label>
+        Admin Name:
+        <input v-model="formData.adminName" type="text" required />
+      </label>
+      <br />
+      <label>
+        Admin Email:
+        <input v-model="formData.adminEmail" type="email" required />
+      </label>
+      <br />
+      <label>
+        Admin Password:
+        <input v-model="formData.adminPassword" type="password" required />
+      </label>
+      <br />
+      <label>
+        Organization Name:
+        <input v-model="formData.organizationName" type="text" required />
+      </label>
+      <br />
+      <label>
+        Organization Details:
+        <textarea v-model="formData.organizationDetails"></textarea>
+      </label>
+      <br />
+      <button type="submit">Submit</button>
+    </form>
   </div>
 </template>
 
+
 <script setup lang="ts">
 import { ref } from 'vue';
-import Step1 from './Step1.vue';
-import Step2 from './Step2.vue';
 import { useAuthStore } from '@/stores/authStore';
 
-const currentStep = ref(1);
 const formData = ref({
   adminName: '',
   adminEmail: '',
@@ -27,16 +47,11 @@ const formData = ref({
 
 const authStore = useAuthStore();
 
-const handleNextStep = (data: Partial<typeof formData.value>) => {
-  Object.assign(formData.value, data);
-  currentStep.value++;
-};
-
 const handleSubmit = () => {
   authStore.setOrganization({
     name: formData.value.organizationName,
     details: formData.value.organizationDetails,
   });
-  console.log('Registrazione completata:', formData.value);
 };
 </script>
+
