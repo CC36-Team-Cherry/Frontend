@@ -1,8 +1,8 @@
 <template>
   <div>
-    <header>
-      <button @click="switchLanguage('en-US')">English</button>
-      <button @click="switchLanguage('ja-JP')">日本語</button>
+    <header class="flex justify-end items-center p-4 bg-gray-100 shadow">
+      <button @click="switchLanguage('en-US')" class="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600 transition duration-200 mx-2">English</button>
+      <button @click="switchLanguage('ja-JP')" class="bg-green-500 text-white py-2 px-4 rounded hover:bg-green-600 transition duration-200 mx-2">日本語</button>
     </header>
     <router-view />
   </div>

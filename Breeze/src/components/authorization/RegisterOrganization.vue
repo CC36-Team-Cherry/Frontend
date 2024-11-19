@@ -1,34 +1,69 @@
 <template>
-  <div>
-    <h1>{{ $t('register.title') }}</h1>
-    <form @submit.prevent="handleSubmit">
-      <label>
-        {{ $t('register.adminName') }}:
-        <input v-model="formData.adminName" type="text" required />
-      </label>
-      <br />
-      <label>
-        {{ $t('login.email') }}:
-        <input v-model="formData.adminEmail" type="email" required />
-      </label>
-      <br />
-      <label>
-        {{ $t('login.password') }}:
-        <input v-model="formData.adminPassword" type="password" required />
-      </label>
-      <br />
-      <label>
-        {{ $t('register.organizationName') }}:
-        <input v-model="formData.organizationName" type="text" required />
-      </label>
-      <br />
-      <label>
-        {{ $t('register.organizationDetails') }}:
-        <textarea v-model="formData.organizationDetails"></textarea>
-      </label>
-      <br />
-      <button type="submit">{{ $t('register.submit') }}</button>
-    </form>
+  <div class="flex justify-center items-center h-screen bg-gray-100">
+    <div class="bg-white p-8 rounded shadow-md w-full max-w-lg">
+      <h1 class="text-2xl font-bold mb-6 text-gray-800">{{ $t('register.title') }}</h1>
+      <form @submit.prevent="handleSubmit" class="flex flex-col space-y-4">
+        <div>
+          <label class="block text-gray-700 font-medium mb-2">
+            {{ $t('register.adminName') }}:
+          </label>
+          <input
+            v-model="formData.adminName"
+            type="text"
+            class="w-full p-3 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-400"
+            required
+          />
+        </div>
+        <div>
+          <label class="block text-gray-700 font-medium mb-2">
+            {{ $t('login.email') }}:
+          </label>
+          <input
+            v-model="formData.adminEmail"
+            type="email"
+            class="w-full p-3 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-400"
+            required
+          />
+        </div>
+        <div>
+          <label class="block text-gray-700 font-medium mb-2">
+            {{ $t('login.password') }}:
+          </label>
+          <input
+            v-model="formData.adminPassword"
+            type="password"
+            class="w-full p-3 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-400"
+            required
+          />
+        </div>
+        <div>
+          <label class="block text-gray-700 font-medium mb-2">
+            {{ $t('register.organizationName') }}:
+          </label>
+          <input
+            v-model="formData.organizationName"
+            type="text"
+            class="w-full p-3 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-400"
+            required
+          />
+        </div>
+        <div>
+          <label class="block text-gray-700 font-medium mb-2">
+            {{ $t('register.organizationDetails') }}:
+          </label>
+          <textarea
+            v-model="formData.organizationDetails"
+            class="w-full p-3 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-400"
+          ></textarea>
+        </div>
+        <button
+          type="submit"
+          class="bg-blue-500 text-white py-3 px-4 rounded hover:bg-blue-600 transition duration-200 font-semibold"
+        >
+          {{ $t('register.submit') }}
+        </button>
+      </form>
+    </div>
   </div>
 </template>
 

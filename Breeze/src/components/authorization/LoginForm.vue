@@ -1,20 +1,49 @@
 <template>
-  <div>
-    <h1>Login</h1>
-    <form @submit.prevent="handleLogin">
-      <label>
-        Email:
-        <input v-model="email" type="email" />
-      </label>
-      <label>
-        Password:
-        <input v-model="password" type="password" />
-      </label>
-      <button type="submit">Login</button>
-    </form>
-    <button @click="$emit('register')">Create Organization</button>
+  <div class="flex justify-center items-center h-screen bg-gray-100">
+    <div class="bg-white p-8 rounded shadow-md w-full max-w-md">
+      <h2 class="text-2xl font-bold mb-4">{{ $t('login.title') }}</h2>
+      <form @submit.prevent="handleLogin" class="flex flex-col space-y-4">
+        <div>
+          <label for="username" class="block text-gray-700">
+            {{ $t('login.email') }}:
+          </label>
+          <input
+            type="text"
+            id="username"
+            v-model="email"
+            class="w-full p-2 border border-gray-300 rounded"
+            required
+          />
+        </div>
+        <div>
+          <label for="password" class="block text-gray-700">
+            {{ $t('login.password') }}:
+          </label>
+          <input
+            type="password"
+            id="password"
+            v-model="password"
+            class="w-full p-2 border border-gray-300 rounded"
+            required
+          />
+        </div>
+        <button
+          type="submit"
+          class="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600"
+        >
+          {{ $t('login.submit') }}
+        </button>
+        <button
+          @click="$emit('register')"
+          class="bg-green-500 text-white py-2 px-4 rounded hover:bg-green-600"
+        >
+          {{ $t('login.register') }}
+        </button>
+      </form>
+    </div>
   </div>
 </template>
+
 
 <script setup lang="ts">
 import { ref } from 'vue';
