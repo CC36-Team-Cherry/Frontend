@@ -1,26 +1,53 @@
 {
-    "Logout": "Logout",
-    "welcome": "Welcome",
-    "language": {
-        "en": "EN",
-        "jp": "JP"
-      },
-    "login": {
-      "title": "Login",
+  "Logout": "Logout",
+  "welcome": "Welcome",
+  "language": {
+    "en": "EN",
+    "jp": "JP"
+  },
+  "login": {
+    "title": "Login",
+    "email": "Email",
+    "password": "Password",
+    "submit": "Login",
+    "register": "Register Organization"
+  },
+  "register": {
+    "title": "Register Organization",
+    "adminName": "Admin Name",
+    "organizationName": "Organization Name",
+    "organizationDetails": "Organization Details",
+    "submit": "Submit",
+    "success": "Registration successful",
+    "errorFillAllFields": "Please fill all required fields"
+  },
+  "employeeList": {
+    "title": "Employee List",
+    "searchPlaceholder": "Search Employees",
+    "addUser": "Add User",
+    "tableHeaders": {
+      "name": "Name",
+      "team": "Team",
+      "role": "Role",
+      "joinDate": "Join Date",
+      "lastDate": "Last Date",
+      "type": "Type",
+      "status": "Status",
       "email": "Email",
-      "password": "Password",
-      "submit": "Login",
-      "register": "Register Organization"
+      "att": "Att."
     },
-    "register": {
-      "title": "Register Organization",
-      "adminName": "Admin Name",
-      "organizationName": "Organization Name",
-      "organizationDetails": "Organization Details",
-      "submit": "Submit",
-      "success": "Registration successful",
-      "errorFillAllFields": "Please fill all required fields"
+    "view": "View",
+    "employeeHeader": {
+      "currentMonthInfo": "Current Month Attendance Info",
+      "expectedHours": "Minimum Expected Work Hours",
+      "totalHours": "Total Hours Worked",
+      "currentOT": "Current OT",
+      "ptoInfo": "PTO Info",
+      "remainingPTO": "Remaining PTO",
+      "ptoUsed": "PTO used this month"
     }
   }
+}
+
   
   

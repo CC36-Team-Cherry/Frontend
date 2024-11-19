@@ -1,27 +1,54 @@
 {
-    "Logout":"ログアウト",
-    "welcome": "ようこそ",
-    "language": {
-        "en": "EN",
-        "jp": "JP"
-      },
-    "login": {
-      "title": "ログイン",
+  "Logout": "ログアウト",
+  "welcome": "ようこそ",
+  "language": {
+    "en": "EN",
+    "jp": "JP"
+  },
+  "login": {
+    "title": "ログイン",
+    "email": "メールアドレス",
+    "password": "パスワード",
+    "submit": "ログイン",
+    "register": "組織を登録"
+  },
+  "register": {
+    "title": "組織を登録する",
+    "adminName": "管理者名",
+    "organizationName": "組織名",
+    "organizationDetails": "組織の詳細",
+    "submit": "送信",
+    "success": "登録が成功しました",
+    "errorFillAllFields": "すべての必須フィールドに入力してください"
+  },
+  "employeeList": {
+    "title": "従業員リスト",
+    "searchPlaceholder": "従業員を検索",
+    "addUser": "ユーザーを追加",
+    "tableHeaders": {
+      "name": "名前",
+      "team": "チーム",
+      "role": "役割",
+      "joinDate": "入社日",
+      "lastDate": "退社日",
+      "type": "タイプ",
+      "status": "ステータス",
       "email": "メールアドレス",
-      "password": "パスワード",
-      "submit": "ログイン",
-      "register": "組織を登録"
+      "att": "出席"
     },
-    "register": {
-      "title": "組織を登録する",
-      "adminName": "管理者名",
-      "organizationName": "組織名",
-      "organizationDetails": "組織の詳細",
-      "submit": "送信",
-      "success": "登録が成功しました",
-      "errorFillAllFields": "すべての必須フィールドに入力してください"
+    "view": "表示",
+    "employeeHeader": {
+      "currentMonthInfo": "今月の出勤情報",
+      "expectedHours": "最低勤務時間",
+      "totalHours": "総勤務時間",
+      "currentOT": "現在の残業時間",
+      "ptoInfo": "有給情報",
+      "remainingPTO": "残りの有給日数",
+      "ptoUsed": "今月使用した有給"
     }
   }
+}
+
   
   
 
