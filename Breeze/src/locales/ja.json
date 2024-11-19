@@ -2,8 +2,8 @@
     "Logout":"ログアウト",
     "welcome": "ようこそ",
     "language": {
-        "en": "英語",
-        "jp": "日本語"
+        "en": "EN",
+        "jp": "JP"
       },
     "login": {
       "title": "ログイン",
