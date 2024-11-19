@@ -7,7 +7,10 @@
         v-model="searchTerm"
         class="border rounded p-2 w-1/2"
       />
-      <button class="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600">
+      <button
+        @click="openModal"
+        class="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600"
+      >
         {{ $t('employeeList.addUser') }}
       </button>
     </div>
@@ -43,13 +46,71 @@
         </tr>
       </tbody>
     </table>
+    <Modal :isVisible="isModalVisible" @close="closeModal">
+      <h2 class="text-xl font-bold mb-4">{{ $t('employeeList.modal.modalTitle') }}</h2>
+      <form @submit.prevent="submitForm">
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            <label class="block mb-1">{{ $t('employeeList.modal.fields.firstName') }}</label>
+            <input type="text" v-model="formData.firstName" class="border rounded p-2 w-full" />
+          </div>
+          <div>
+            <label class="block mb-1">{{ $t('employeeList.modal.fields.lastName') }}</label>
+            <input type="text" v-model="formData.lastName" class="border rounded p-2 w-full" />
+          </div>
+          <div>
+            <label class="block mb-1">{{ $t('employeeList.modal.fields.email') }}</label>
+            <input type="email" v-model="formData.email" class="border rounded p-2 w-full" />
+          </div>
+          <div>
+            <label class="block mb-1">{{ $t('employeeList.modal.fields.dateOfBirth') }}</label>
+            <input type="date" v-model="formData.dateOfBirth" class="border rounded p-2 w-full" />
+          </div>
+          <div>
+            <label class="block mb-1">{{ $t('employeeList.modal.fields.team') }}</label>
+            <input type="text" v-model="formData.team" class="border rounded p-2 w-full" />
+          </div>
+          <div>
+            <label class="block mb-1">{{ $t('employeeList.modal.fields.supervisor') }}</label>
+            <input type="text" v-model="formData.supervisor" class="border rounded p-2 w-full" />
+          </div>
+          <div>
+            <label class="block mb-1">{{ $t('employeeList.modal.fields.role') }}</label>
+            <input type="text" v-model="formData.role" class="border rounded p-2 w-full" />
+          </div>
+          <div>
+            <label class="block mb-1">{{ $t('employeeList.modal.fields.joinDate') }}</label>
+            <input type="date" v-model="formData.joinDate" class="border rounded p-2 w-full" />
+          </div>
+          <div>
+            <label class="block mb-1">{{ $t('employeeList.modal.fields.type') }}</label>
+            <select v-model="formData.type" class="border rounded p-2 w-full">
+              <option value="User">{{ $t('employeeList.modal.userType.user') }}</option>
+              <option value="Admin">{{ $t('employeeList.modal.userType.admin') }}</option>
+            </select>
+          </div>
+          <div>
+            <label class="block mb-1">{{ $t('employeeList.modal.fields.pto') }}</label>
+            <input type="number" v-model="formData.pto" class="border rounded p-2 w-full" />
+          </div>
+        </div>
+        <div class="mt-4">
+          <button type="submit" class="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600">
+            {{ $t('employeeList.modal.sendInvitation') }}
+          </button>
+        </div>
+      </form>
+    </Modal>
   </div>
 </template>
 
 <script setup>
 import { ref, computed } from 'vue';
+import Modal from '@/modal/ModalView.vue';
 
 const searchTerm = ref('');
+const isModalVisible = ref(false);
+
 const employees = ref([
   {
     id: 1,
@@ -63,11 +124,57 @@ const employees = ref([
     email: 'timpeters@example.com',
   },
 ]);
-//add comment for pushing all the stuff
+
+const formData = ref({
+  firstName: '',
+  lastName: '',
+  email: '',
+  dateOfBirth: '',
+  team: '',
+  supervisor: '',
+  role: '',
+  joinDate: '',
+  type: '',
+  pto: '',
+});
+
+const openModal = () => {
+  console.log('Opening modal...');
+  isModalVisible.value = true;
+};
+
+const closeModal = () => {
+  isModalVisible.value = false;
+};
+
+const submitForm = () => {
+  console.log('New User Data:', formData.value);
+  formData.value = {
+    firstName: '',
+    lastName: '',
+    email: '',
+    dateOfBirth: '',
+    team: '',
+    supervisor: '',
+    role: '',
+    joinDate: '',
+    type: '',
+    pto: '',
+  };
+  closeModal();
+};
+
 const filteredEmployees = computed(() =>
   employees.value.filter((employee) =>
     employee.name.toLowerCase().includes(searchTerm.value.toLowerCase())
   )
 );
 </script>
+
+
+
+
+
+
+
 

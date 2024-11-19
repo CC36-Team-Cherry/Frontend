@@ -1,25 +1,30 @@
 <template>
     <header class="flex justify-between items-center p-4 bg-gray-100 shadow">
-      
-      <div class="flex gap-4">
-        <div class="p-4 shadow bg-white rounded border w-64">
-          <h3 class="font-bold mb-2">{{ $t('employeeList.employeeHeader.currentMonthInfo') }}</h3>
-          <ul class="text-sm">
-            <li>- {{ $t('employeeList.employeeHeader.expectedHours') }}</li>
-            <li>- {{ $t('employeeList.employeeHeader.totalHours') }}</li>
-            <li>- {{ $t('employeeList.employeeHeader.currentOT') }}</li>
-          </ul>
+      <div class="flex gap-4 items-center">
+        <div class="flex items-center px-4 py-2 bg-white shadow rounded border">
+          <span class="font-bold">{{ $t('month') }}</span>
         </div>
-        <div class="p-4 shadow bg-white rounded border w-64">
-          <h3 class="font-bold mb-2">{{ $t('employeeList.employeeHeader.ptoInfo') }}</h3>
-          <ul class="text-sm">
-            <li>- {{ $t('employeeList.employeeHeader.remainingPTO') }}</li>
-            <li>- {{ $t('employeeList.employeeHeader.ptoUsed') }}</li>
-          </ul>
+        <div class="flex items-center px-4 py-2 bg-white shadow rounded border">
+          <span class="text-sm font-medium">{{ $t('workingDays') }}: #</span>
+          <span class="ml-2 font-bold"># Days / #</span>
+        </div>
+        <div class="flex items-center px-4 py-2 bg-white shadow rounded border">
+          <span class="text-sm font-medium">{{ $t('workedHours') }}:</span>
+          <span class="ml-2 font-bold">#</span>
+        </div>
+        <div class="flex items-center px-4 py-2 bg-white shadow rounded border">
+          <span class="text-sm font-medium">{{ $t('ot') }}:</span>
+          <span class="ml-2 font-bold">#</span>
+        </div>
+        <div class="flex items-center px-4 py-2 bg-white shadow rounded border">
+          <span class="text-sm font-medium">{{ $t('ptoUsed') }}:</span>
+          <span class="ml-2 font-bold">#</span>
+        </div>
+        <div class="flex items-center px-4 py-2 bg-white shadow rounded border">
+          <span class="text-sm font-medium">{{ $t('remainingPto') }}:</span>
+          <span class="ml-2 font-bold">#</span>
         </div>
       </div>
-  
-      
       <div class="flex items-center space-x-2">
         <button
           @click="switchLanguage('en-US')"
@@ -43,9 +48,10 @@
   import { useI18n } from 'vue-i18n';
   
   const { locale } = useI18n();
-  //add a comment for push
+  
   const switchLanguage = (lang) => {
     locale.value = lang;
   };
   </script>
+  
   

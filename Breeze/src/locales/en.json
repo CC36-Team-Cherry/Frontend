@@ -1,6 +1,29 @@
 {
   "Logout": "Logout",
-  "welcome": "Welcome",
+  "Settings": "Settings",
+  "Sidebar": {
+    "Calendar": "Calendar",
+    "Profile": "Profile",
+    "Approvals": "Approvals",
+    "EmployeeList": "Employee List",
+    "AdminPage": "Admin Page"
+  },
+  "settings": {
+    "title": "Settings",
+    "fields": {
+      "firstName": "First Name",
+      "lastName": "Last Name",
+      "email": "Email",
+      "dateOfBirth": "Date of Birth",
+      "team": "Team",
+      "defaultSupervisor": "Default Supervisor",
+      "role": "Role",
+      "joinDate": "Join Date",
+      "type": "Type",
+      "languagePreference": "Language Preference"
+    },
+    "save": "Save"
+  },
   "language": {
     "en": "EN",
     "jp": "JP"
@@ -45,9 +68,30 @@
       "ptoInfo": "PTO Info",
       "remainingPTO": "Remaining PTO",
       "ptoUsed": "PTO used this month"
+    },
+    "modal": {
+      "modalTitle": "Add New User",
+      "fields": {
+        "firstName": "First Name",
+        "lastName": "Last Name",
+        "email": "Email",
+        "dateOfBirth": "Date of Birth",
+        "team": "Team",
+        "supervisor": "Default Supervisor",
+        "role": "Role",
+        "joinDate": "Join Date",
+        "type": "Type",
+        "pto": "PTO"
+      },
+      "userType": {
+        "user": "User",
+        "admin": "Admin"
+      },
+      "sendInvitation": "Send Invitation"
     }
   }
 }
+
 
   
   

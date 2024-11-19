@@ -1,6 +1,29 @@
 {
   "Logout": "ログアウト",
-  "welcome": "ようこそ",
+  "Settings": "設定",
+  "Sidebar": {
+    "Calendar": "カレンダー",
+    "Profile": "プロフィール",
+    "Approvals": "承認",
+    "EmployeeList": "従業員リスト",
+    "AdminPage": "管理ページ"
+  },
+  "settings": {
+    "title": "設定",
+    "fields": {
+      "firstName": "名",
+      "lastName": "姓",
+      "email": "メールアドレス",
+      "dateOfBirth": "生年月日",
+      "team": "チーム",
+      "defaultSupervisor": "デフォルトの上司",
+      "role": "役割",
+      "joinDate": "入社日",
+      "type": "タイプ",
+      "languagePreference": "言語の選択"
+    },
+    "save": "保存"
+  },
   "language": {
     "en": "EN",
     "jp": "JP"
@@ -45,9 +68,31 @@
       "ptoInfo": "有給情報",
       "remainingPTO": "残りの有給日数",
       "ptoUsed": "今月使用した有給"
+    },
+    "modal": {
+      "modalTitle": "新しいユーザーを追加",
+      "fields": {
+        "firstName": "名",
+        "lastName": "姓",
+        "email": "メールアドレス",
+        "dateOfBirth": "生年月日",
+        "team": "チーム",
+        "supervisor": "デフォルトの上司",
+        "role": "役割",
+        "joinDate": "入社日",
+        "type": "タイプ",
+        "pto": "有給"
+      },
+      "userType": {
+        "user": "ユーザー",
+        "admin": "管理者"
+      },
+      "sendInvitation": "招待を送信"
     }
   }
 }
+
+
 
   
   
