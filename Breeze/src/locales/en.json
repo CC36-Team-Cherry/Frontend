@@ -1,0 +1,24 @@
+{
+    "welcome": "Welcome",
+    "language": "Language",
+    "switchToJapanese": "Switch to Japanese",
+    "switchToEnglish": "Switch to English",
+    "login": {
+      "title": "Login",
+      "email": "Email",
+      "password": "Password",
+      "submit": "Login",
+      "register": "Register Organization"
+    },
+    "register": {
+      "title": "Register Organization",
+      "adminName": "Admin Name",
+      "organizationName": "Organization Name",
+      "organizationDetails": "Organization Details",
+      "submit": "Submit",
+      "success": "Registration successful",
+      "errorFillAllFields": "Please fill all required fields"
+    }
+  }
+  
+  
