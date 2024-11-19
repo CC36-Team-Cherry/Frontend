@@ -1,8 +1,10 @@
 {
+    "Logout":"ログアウト",
     "welcome": "ようこそ",
-    "language": "言語",
-    "switchToJapanese": "日本語に切り替える",
-    "switchToEnglish": "英語に切り替える",
+    "language": {
+        "en": "英語",
+        "jp": "日本語"
+      },
     "login": {
       "title": "ログイン",
       "email": "メールアドレス",

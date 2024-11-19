@@ -1,8 +1,10 @@
 {
+    "Logout": "Logout",
     "welcome": "Welcome",
-    "language": "Language",
-    "switchToJapanese": "Switch to Japanese",
-    "switchToEnglish": "Switch to English",
+    "language": {
+        "en": "EN",
+        "jp": "JP"
+      },
     "login": {
       "title": "Login",
       "email": "Email",
