@@ -63,7 +63,7 @@ const employees = ref([
     email: 'timpeters@example.com',
   },
 ]);
-//add comment for pushing
+//add comment for pushing all the stuff
 const filteredEmployees = computed(() =>
   employees.value.filter((employee) =>
     employee.name.toLowerCase().includes(searchTerm.value.toLowerCase())
