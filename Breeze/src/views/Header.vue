@@ -18,7 +18,7 @@
       </div>
       <button
         @click="handleLogout"
-        class="ml-4 bg-red-500 text-white py-2 px-4 rounded hover:bg-red-600 transition duration-200"
+        class="ml-4 bg-red-500 text-white min-w-28 py-2 px-4 rounded hover:bg-red-600 transition duration-200"
       >
         {{ $t('Logout') }}
       </button>
