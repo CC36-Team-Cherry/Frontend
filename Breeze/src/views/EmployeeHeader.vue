@@ -43,7 +43,7 @@
   import { useI18n } from 'vue-i18n';
   
   const { locale } = useI18n();
-  
+  //add a comment for push
   const switchLanguage = (lang) => {
     locale.value = lang;
   };
