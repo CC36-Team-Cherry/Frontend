@@ -1,0 +1,26 @@
+{
+    "welcome": "ようこそ",
+    "language": "言語",
+    "switchToJapanese": "日本語に切り替える",
+    "switchToEnglish": "英語に切り替える",
+    "login": {
+      "title": "ログイン",
+      "email": "メールアドレス",
+      "password": "パスワード",
+      "submit": "ログイン",
+      "register": "組織を登録"
+    },
+    "register": {
+      "title": "組織を登録する",
+      "adminName": "管理者名",
+      "organizationName": "組織名",
+      "organizationDetails": "組織の詳細",
+      "submit": "送信",
+      "success": "登録が成功しました",
+      "errorFillAllFields": "すべての必須フィールドに入力してください"
+    }
+  }
+  
+  
+
+  
