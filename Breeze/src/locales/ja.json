@@ -20,7 +20,7 @@
       "role": "役割",
       "joinDate": "入社日",
       "type": "タイプ",
-      "languagePreference": "言語の選択"
+      "languagePreference": "言語選択"
     },
     "save": "保存"
   },
@@ -36,13 +36,13 @@
     "register": "組織を登録"
   },
   "register": {
-    "title": "組織を登録する",
+    "title": "組織を登録",
     "adminName": "管理者名",
     "organizationName": "組織名",
     "organizationDetails": "組織の詳細",
     "submit": "送信",
     "success": "登録が成功しました",
-    "errorFillAllFields": "すべての必須フィールドに入力してください"
+    "errorFillAllFields": "すべての必須項目に入力してください"
   },
   "employeeList": {
     "title": "従業員リスト",
@@ -61,7 +61,7 @@
     },
     "view": "表示",
     "employeeHeader": {
-      "currentMonthInfo": "今月の出勤情報",
+      "currentMonthInfo": "今月の出席情報",
       "expectedHours": "最低勤務時間",
       "totalHours": "総勤務時間",
       "currentOT": "現在の残業時間",
@@ -89,8 +89,36 @@
       },
       "sendInvitation": "招待を送信"
     }
+  },
+  "employeeDetails": {
+    "title": "従業員の詳細",
+    "accountInfo": "アカウント情報",
+    "attendanceSettings": "出席設定",
+    "fields": {
+      "firstName": "名",
+      "lastName": "姓",
+      "email": "メールアドレス",
+      "dateOfBirth": "生年月日",
+      "team": "チーム",
+      "supervisor": "上司",
+      "pto": "有給",
+      "specialHolidays": "特別休暇",
+      "holidayType": "休暇の種類"
+    },
+    "placeholders": {
+      "selectTeam": "チームを選択してください",
+      "specialHolidays": "特別休暇をここに入力...",
+      "holidayType": "休暇の種類を入力"
+    },
+    "buttons": {
+      "addHoliday": "休暇を追加",
+      "save": "保存",
+      "delete": "削除"
+    }
   }
 }
+
+
 
 
 

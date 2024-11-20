@@ -17,9 +17,9 @@ import EmployeeHeader from '@/views/EmployeeHeader.vue';
 
 const authStore = useAuthStore();
 
-const currentHeader = computed(() => {
+/*const currentHeader = computed(() => {
   return authStore.currentPage === 'EMPLOYEE_LIST' ? EmployeeHeader : null;
-});
+});*/
 
 const showSidebar = computed(() => authStore.showSidebar);
 </script>

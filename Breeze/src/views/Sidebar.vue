@@ -5,9 +5,6 @@
         <router-link to="/calendar" class="block p-2 hover:bg-gray-200 rounded">
           {{ $t('Sidebar.Calendar') }}
         </router-link>
-        <router-link to="/profile" class="block p-2 hover:bg-gray-200 rounded">
-          {{ $t('Sidebar.Profile') }}
-        </router-link>
         <router-link to="/approvals" class="block p-2 hover:bg-gray-200 rounded">
           {{ $t('Sidebar.Approvals') }}
         </router-link>
@@ -19,11 +16,11 @@
         </router-link>
       </nav>
       <div class="flex justify-around p-4 border-t">
-        <button
-          class="bg-gray-300 p-2 rounded w-full max-w-[120px] text-center"
-        >
-          {{ $t('Settings') }}
+        <router-link to="/settings" class="w-full max-w-[120px] text-center">
+        <button class="bg-gray-300 p-2 rounded w-full">
+         {{ $t('Settings') }}
         </button>
+        </router-link>
         <button
           class="bg-red-500 text-white p-2 rounded w-full max-w-[120px] text-center"
         >

@@ -89,8 +89,36 @@
       },
       "sendInvitation": "Send Invitation"
     }
+  },
+  "employeeDetails": {
+    "title": "Employee Details",
+    "accountInfo": "Account Info",
+    "attendanceSettings": "Attendance Settings",
+    "fields": {
+      "firstName": "First Name",
+      "lastName": "Last Name",
+      "email": "Email",
+      "dateOfBirth": "Date of Birth",
+      "team": "Team",
+      "supervisor": "Supervisor",
+      "pto": "PTO",
+      "specialHolidays": "Special Holidays",
+      "holidayType": "Holiday Type"
+    },
+    "placeholders": {
+      "selectTeam": "Select a Team",
+      "specialHolidays": "Enter special holidays here...",
+      "holidayType": "Enter holiday type"
+    },
+    "buttons": {
+      "addHoliday": "Add Holiday",
+      "save": "Save",
+      "delete": "Delete"
+    }
   }
+
 }
+
 
 
   
