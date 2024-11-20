@@ -1,5 +1,5 @@
 <template>
-    <div>You made it! Try logging out and see if you can log back in with your new credentials.</div>
+    <div>THIS IS A TEST PAGE. This page is used to test creating a new account, logging in, and logging out.</div>
 </template>
   
   
