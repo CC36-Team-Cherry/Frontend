@@ -57,6 +57,7 @@
           ></textarea>
         </div>
         <button
+          @click="createUserFirebase()"
           type="submit"
           class="bg-blue-500 text-white py-3 px-4 rounded hover:bg-blue-600 transition duration-200 font-semibold"
         >
@@ -71,6 +72,8 @@
 import { ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useAuthStore } from '@/stores/authStore';
+import { createUserWithEmailAndPassword } from 'firebase/auth';
+import { auth } from '../../firebase/init.ts';
 
 const { t } = useI18n(); 
 
@@ -89,24 +92,43 @@ const authStore = useAuthStore();
 
 const handleSubmit = () => {
   
-  if (
-    !formData.value.adminName ||
-    !formData.value.adminEmail ||
-    !formData.value.adminPassword ||
-    !formData.value.organizationName
-  ) {
-    alert(t('register.errorFillAllFields')); 
-    return;
-  }
+  // if (
+  //   !formData.value.adminName ||
+  //   !formData.value.adminEmail ||
+  //   !formData.value.adminPassword ||
+  //   !formData.value.organizationName
+  // ) {
+  //   alert(t('register.errorFillAllFields')); 
+  //   return;
+  // }
 
   
-  authStore.setOrganization({
-    name: formData.value.organizationName,
-    details: formData.value.organizationDetails,
-  });
+  // authStore.setOrganization({
+  //   name: formData.value.organizationName,
+  //   details: formData.value.organizationDetails,
+  // });
 
-  console.log('Registration completed:', formData.value);
-  alert(t('register.success'));
+  // console.log('Registration completed:', formData.value);
+  // alert(t('register.success'));
 };
+
+const createUserFirebase = () => {
+  const email = formData.value.adminEmail;
+  const password = formData.value.adminPassword;
+
+  createUserWithEmailAndPassword(auth, email, password)
+  .then((userCredential) => {
+    // Signed up 
+    //const user = userCredential.user;
+    // User will be logged in automatically if account is successfully created
+    window.location.href = '/logintest';
+  })
+  .catch((error) => {
+    const errorCode = error.code;
+    const errorMessage = error.message;
+    console.log(errorCode, errorMessage);
+  });
+};
+
 </script>
 
