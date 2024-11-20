@@ -22,12 +22,12 @@ const router = createRouter({
       component: RegisterOrganization,
     },
     {
-      calendar-testing
       path:'/calendar',
       name:'calendar',
+      component: Calendar,
+      meta: { layout: 'default' },
     },
     {
-      component: Calendar
       path: '/employee',
       name: 'employee',
       component: EmployeeList,
