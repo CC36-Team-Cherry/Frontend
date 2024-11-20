@@ -1,6 +1,7 @@
 import { createRouter, createWebHistory } from "vue-router";
 import LoginForm from "@/components/authorization/LoginForm.vue";
 import RegisterOrganization from "@/components/authorization/RegisterOrganization.vue";
+import Calendar from "@/components/authorization/Calendar.vue";
 
 
 const router = createRouter({
@@ -19,6 +20,11 @@ const router = createRouter({
       path: "/adminorg",
       name: "adminorg",
       component: RegisterOrganization,
+    },
+    {
+      path:'/calendar',
+      name:'calendar',
+      component: Calendar
     },
   ],
 });
