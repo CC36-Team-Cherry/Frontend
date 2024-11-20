@@ -1,10 +1,9 @@
-import { createRouter, createWebHistory } from 'vue-router';
+import { createRouter, createWebHistory } from "vue-router";
 import { useAuthStore } from '@/stores/authStore';
 import { AppPageType } from '@/types/AppState';
-
-
-import LoginForm from '@/components/authorization/LoginForm.vue';
-import RegisterOrganization from '@/components/authorization/RegisterOrganization.vue';
+import LoginForm from "@/components/authorization/LoginForm.vue";
+import RegisterOrganization from "@/components/authorization/RegisterOrganization.vue";
+import Calendar from "@/components/authorization/Calendar.vue";
 import EmployeeList from '@/components/adminView/EmployeeList.vue';
 import Settings from '@/views/Settings.vue'; 
 
@@ -23,6 +22,12 @@ const router = createRouter({
       component: RegisterOrganization,
     },
     {
+      calendar-testing
+      path:'/calendar',
+      name:'calendar',
+    },
+    {
+      component: Calendar
       path: '/employee',
       name: 'employee',
       component: EmployeeList,
