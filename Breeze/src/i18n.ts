@@ -2,7 +2,6 @@ import { createI18n } from 'vue-i18n';
 import en from './locales/en.json';
 import ja from './locales/ja.json';
 
-// Tipo per la struttura dei messaggi
 type MessageSchema = {
   welcome: string;
   language: string;
@@ -26,7 +25,6 @@ type MessageSchema = {
   };
 };
 
-// Tipo per le chiavi delle lingue
 type AvailableLocales = 'en-US' | 'ja-JP';
 
 const i18n = createI18n<{

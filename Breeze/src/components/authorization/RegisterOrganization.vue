@@ -100,10 +100,10 @@ const handleSubmit = () => {
   }
 
   
-  authStore.setOrganization({
+  /*authStore.setOrganization({
     name: formData.value.organizationName,
     details: formData.value.organizationDetails,
-  });
+  });*/
 
   console.log('Registration completed:', formData.value);
   alert(t('register.success'));

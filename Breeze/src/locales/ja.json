@@ -1,27 +1,99 @@
 {
-    "Logout":"ログアウト",
-    "welcome": "ようこそ",
-    "language": {
-        "en": "英語",
-        "jp": "日本語"
-      },
-    "login": {
-      "title": "ログイン",
+  "Logout": "ログアウト",
+  "Settings": "設定",
+  "Sidebar": {
+    "Calendar": "カレンダー",
+    "Profile": "プロフィール",
+    "Approvals": "承認",
+    "EmployeeList": "従業員リスト",
+    "AdminPage": "管理ページ"
+  },
+  "settings": {
+    "title": "設定",
+    "fields": {
+      "firstName": "名",
+      "lastName": "姓",
       "email": "メールアドレス",
-      "password": "パスワード",
-      "submit": "ログイン",
-      "register": "組織を登録"
+      "dateOfBirth": "生年月日",
+      "team": "チーム",
+      "defaultSupervisor": "デフォルトの上司",
+      "role": "役割",
+      "joinDate": "入社日",
+      "type": "タイプ",
+      "languagePreference": "言語の選択"
     },
-    "register": {
-      "title": "組織を登録する",
-      "adminName": "管理者名",
-      "organizationName": "組織名",
-      "organizationDetails": "組織の詳細",
-      "submit": "送信",
-      "success": "登録が成功しました",
-      "errorFillAllFields": "すべての必須フィールドに入力してください"
+    "save": "保存"
+  },
+  "language": {
+    "en": "EN",
+    "jp": "JP"
+  },
+  "login": {
+    "title": "ログイン",
+    "email": "メールアドレス",
+    "password": "パスワード",
+    "submit": "ログイン",
+    "register": "組織を登録"
+  },
+  "register": {
+    "title": "組織を登録する",
+    "adminName": "管理者名",
+    "organizationName": "組織名",
+    "organizationDetails": "組織の詳細",
+    "submit": "送信",
+    "success": "登録が成功しました",
+    "errorFillAllFields": "すべての必須フィールドに入力してください"
+  },
+  "employeeList": {
+    "title": "従業員リスト",
+    "searchPlaceholder": "従業員を検索",
+    "addUser": "ユーザーを追加",
+    "tableHeaders": {
+      "name": "名前",
+      "team": "チーム",
+      "role": "役割",
+      "joinDate": "入社日",
+      "lastDate": "退社日",
+      "type": "タイプ",
+      "status": "ステータス",
+      "email": "メールアドレス",
+      "att": "出席"
+    },
+    "view": "表示",
+    "employeeHeader": {
+      "currentMonthInfo": "今月の出勤情報",
+      "expectedHours": "最低勤務時間",
+      "totalHours": "総勤務時間",
+      "currentOT": "現在の残業時間",
+      "ptoInfo": "有給情報",
+      "remainingPTO": "残りの有給日数",
+      "ptoUsed": "今月使用した有給"
+    },
+    "modal": {
+      "modalTitle": "新しいユーザーを追加",
+      "fields": {
+        "firstName": "名",
+        "lastName": "姓",
+        "email": "メールアドレス",
+        "dateOfBirth": "生年月日",
+        "team": "チーム",
+        "supervisor": "デフォルトの上司",
+        "role": "役割",
+        "joinDate": "入社日",
+        "type": "タイプ",
+        "pto": "有給"
+      },
+      "userType": {
+        "user": "ユーザー",
+        "admin": "管理者"
+      },
+      "sendInvitation": "招待を送信"
     }
   }
+}
+
+
+
   
   
 
