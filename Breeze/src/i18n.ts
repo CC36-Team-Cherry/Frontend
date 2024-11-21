@@ -2,46 +2,19 @@ import { createI18n } from 'vue-i18n';
 import en from './locales/en.json';
 import ja from './locales/ja.json';
 
-// Tipo per la struttura dei messaggi
-type MessageSchema = {
-  welcome: string;
-  language: string;
-  switchToJapanese: string;
-  switchToEnglish: string;
-  login: {
-    title: string;
-    email: string;
-    password: string;
-    submit: string;
-    register: string;
-  };
-  register: {
-    title: string;
-    adminName: string;
-    organizationName: string;
-    organizationDetails: string;
-    submit: string;
-    success: string;
-    errorFillAllFields: string;
-  };
-};
 
-// Tipo per le chiavi delle lingue
 type AvailableLocales = 'en-US' | 'ja-JP';
+type MessageSchema = typeof en;
 
-const i18n = createI18n<{
-  locale: AvailableLocales;
-  fallbackLocale: AvailableLocales;
-  messages: Record<AvailableLocales, MessageSchema>;
-}>({
+
+const i18n = createI18n({
+  legacy: false, 
   locale: 'en-US',
   fallbackLocale: 'en-US',
   messages: {
     'en-US': en,
     'ja-JP': ja,
-  },
+  } as Record<AvailableLocales, MessageSchema>, 
 });
 
 export default i18n;
-
-
