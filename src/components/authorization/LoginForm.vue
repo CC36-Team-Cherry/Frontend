@@ -70,7 +70,7 @@ const loginFirebase = () => {
   signInWithEmailAndPassword(auth, email.value, password.value)
   .then((userCredential) => {
     // Signed in 
-    router.push({ path: `/playground` });
+    router.push({ path: `/calendar` });
   })
   .catch((error) => {
     const errorCode = error.code;

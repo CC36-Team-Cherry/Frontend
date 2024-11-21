@@ -132,7 +132,7 @@ const createUserFirebase = () => {
     // Signed up 
     //const user = userCredential.user;
     // User will be logged in automatically if account is successfully created
-    window.location.href = '/logintest';
+    router.push({ path: `/employee` });
   })
   .catch((error) => {
     const errorCode = error.code;
