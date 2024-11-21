@@ -42,7 +42,8 @@
     "organizationDetails": "Organization Details",
     "submit": "Submit",
     "success": "Registration successful",
-    "errorFillAllFields": "Please fill all required fields"
+    "errorFillAllFields": "Please fill all required fields",
+    "goBack": "Go back"
   },
   "employeeList": {
     "title": "Employee List",

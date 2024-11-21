@@ -28,13 +28,14 @@
           />
         </div>
         <button
+          @click="loginFirebase()"
           type="submit"
           class="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600"
         >
           {{ $t('login.submit') }}
         </button>
         <button
-          @click="$emit('register')"
+          @click="goToRegister()"
           class="bg-green-500 text-white py-2 px-4 rounded hover:bg-green-600"
         >
           {{ $t('login.register') }}
@@ -47,13 +48,35 @@
 
 <script setup lang="ts">
 import { ref } from 'vue';
+import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/authStore';
+import { signInWithEmailAndPassword } from "firebase/auth";
+import { auth } from '../../firebase/firebaseConfig.ts'
 
-const email = ref('');
+const email = ref('')
 const password = ref('');
 const authStore = useAuthStore();
+const router = useRouter();
 
 const handleLogin = () => {
-  authStore.login({ name: 'name', email: email.value });
+  //authStore.login({ name: 'name', email: email.value });
 };
+
+const goToRegister = () => {
+  router.push({ path: `/adminorg` });
+}
+
+const loginFirebase = () => {
+  signInWithEmailAndPassword(auth, email.value, password.value)
+  .then((userCredential) => {
+    // Signed in 
+    router.push({ path: `/calendar` });
+  })
+  .catch((error) => {
+    const errorCode = error.code;
+    const errorMessage = error.message;
+    console.log(errorCode, errorMessage);
+  });
+}
+
 </script>

@@ -57,10 +57,17 @@
           ></textarea>
         </div>
         <button
+          @click="createUserFirebase()"
           type="submit"
           class="bg-blue-500 text-white py-3 px-4 rounded hover:bg-blue-600 transition duration-200 font-semibold"
         >
           {{ $t('register.submit') }}
+        </button>
+        <button
+          @click="goToLogin()"
+          class="bg-red-500 text-white py-3 px-4 rounded hover:bg-red-600 transition duration-200 font-semibold"
+        >
+        {{ $t('register.goBack') }}
         </button>
       </form>
     </div>
@@ -69,11 +76,14 @@
 
 <script setup lang="ts">
 import { ref } from 'vue';
+import { useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n';
 import { useAuthStore } from '@/stores/authStore';
+import { createUserWithEmailAndPassword } from 'firebase/auth';
+import { auth } from '../../firebase/firebaseConfig.ts'
 
 const { t } = useI18n(); 
-
+const router = useRouter();
 
 const formData = ref({
   adminName: '',
@@ -83,21 +93,25 @@ const formData = ref({
   organizationDetails: '',
 });
 
+const goToLogin = () => {
+  router.push({ path: `/login` });
+}
+
 
 const authStore = useAuthStore();
 
 
 const handleSubmit = () => {
   
-  if (
-    !formData.value.adminName ||
-    !formData.value.adminEmail ||
-    !formData.value.adminPassword ||
-    !formData.value.organizationName
-  ) {
-    alert(t('register.errorFillAllFields')); 
-    return;
-  }
+  // if (
+  //   !formData.value.adminName ||
+  //   !formData.value.adminEmail ||
+  //   !formData.value.adminPassword ||
+  //   !formData.value.organizationName
+  // ) {
+  //   alert(t('register.errorFillAllFields')); 
+  //   return;
+  // }
 
   
   /*authStore.setOrganization({
@@ -105,8 +119,27 @@ const handleSubmit = () => {
     details: formData.value.organizationDetails,
   });*/
 
-  console.log('Registration completed:', formData.value);
-  alert(t('register.success'));
+  // console.log('Registration completed:', formData.value);
+  // alert(t('register.success'));
 };
+
+const createUserFirebase = () => {
+  const email = formData.value.adminEmail;
+  const password = formData.value.adminPassword;
+
+  createUserWithEmailAndPassword(auth, email, password)
+  .then((userCredential) => {
+    // Signed up 
+    //const user = userCredential.user;
+    // User will be logged in automatically if account is successfully created
+    router.push({ path: `/employee` });
+  })
+  .catch((error) => {
+    const errorCode = error.code;
+    const errorMessage = error.message;
+    console.log(errorCode, errorMessage);
+  });
+};
+
 </script>
 
