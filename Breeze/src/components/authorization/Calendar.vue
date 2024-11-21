@@ -77,6 +77,8 @@
 import { Calendar } from '@fullcalendar/core';
 import interactionPlugin from '@fullcalendar/interaction';
 import dayGridPlugin from '@fullcalendar/daygrid';
+import enLocale from '@fullcalendar/core/locales/en-gb';
+import jaLocale from '@fullcalendar/core/locales/ja';
 
 export default {
   name: 'FullCalendarComponent',
@@ -90,6 +92,11 @@ export default {
       supervisors: ['Default Supervisor', 'User A', 'User B'],
       calendar: null,
       events: [],
+      currentLocale: 'en',
+      locales: {
+        en: enLocale,
+        ja: jaLocale,
+      },
     };
   },
   mounted() {
@@ -98,12 +105,13 @@ export default {
     this.calendar = new Calendar(calendarEl, {
       plugins: [interactionPlugin, dayGridPlugin],
       initialView: 'dayGridMonth',
+      locale: this.locales[this.currentLocale],
       selectable: true,
       select: (selectionInfo) => {
         const correctedEndDate = new Date(selectionInfo.endStr);
-        correctedEndDate.setDate(correctedEndDate.getDate() - 1); // i'm a genius
+        correctedEndDate.setDate(correctedEndDate.getDate() - 1); 
         const endStr = correctedEndDate.toISOString().split('T')[0];
-        this.selectionRange = `${selectionInfo.startStr} - ${endStr}`; 
+        this.selectionRange = `${selectionInfo.startStr} - ${endStr}`;
       },
       events: this.events,
       eventContent: (arg) => {
@@ -185,9 +193,16 @@ export default {
       this.startTime = '';
       this.endTime = '';
     },
+    switchLocale(locale) {
+      this.currentLocale = locale;
+      this.calendar.setOption('locale', this.locales[this.currentLocale]);
+    },
   },
 };
 </script>
+
+
+
 
 
   

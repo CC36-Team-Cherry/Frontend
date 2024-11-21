@@ -83,6 +83,15 @@
         "type": "Type",
         "pto": "PTO"
       },
+      "placeholders": {
+        "firstName": "Enter first name",
+        "lastName": "Enter last name",
+        "email": "Enter email address",
+        "selectTeam": "Select a team",
+        "supervisor": "Enter supervisor name",
+        "role": "Enter role",
+        "pto": "Enter PTO days"
+      },
       "userType": {
         "user": "User",
         "admin": "Admin"
@@ -115,8 +124,31 @@
       "save": "Save",
       "delete": "Delete"
     }
+  },
+  "calendar": {
+    "selection": "YYYY-MM-DD",
+    "type": "Select Type",
+    "startTime": "Start Time",
+    "endTime": "End Time",
+    "attendance": "Log Attendance",
+    "submission": "Submission",
+    "logAttendance": "Log Attendance",
+    "submit": "Submit",
+    "supervisorPlaceholder": "Select a Supervisor",
+    "types": {
+      "general": "General",
+      "pto": "Paid Time Off",
+      "specialPto": "Special PTO"
+    },
+    "months": [
+      "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"
+    ],
+    "daysOfWeek": [
+      "Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"
+    ]
   }
 }
+
 
 
 
