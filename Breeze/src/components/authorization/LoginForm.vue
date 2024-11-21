@@ -1,5 +1,4 @@
 <template>
-  <template v-if="user===null">
   <div class="flex justify-center items-center h-screen bg-gray-100">
     <div class="bg-white p-8 rounded shadow-md w-full max-w-md">
       <h2 class="text-2xl font-bold mb-4">{{ $t('login.title') }}</h2>
@@ -44,50 +43,34 @@
       </form>
     </div>
   </div>
-  </template>
-  <template v-else>
-    <div class="flex justify-center items-center h-screen bg-gray-100">
-    You are already logged in.
-    <button
-      @click="goToLoggedIn()"
-      class="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600"
-    >
-      Continue to site
-    </button>
-  </div>
-  </template>
 </template>
 
 
 <script setup lang="ts">
 import { ref } from 'vue';
+import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/authStore';
 import { signInWithEmailAndPassword } from "firebase/auth";
-import { auth } from '../../firebase/init.ts';
+import { auth } from '../../firebase/firebaseConfig.ts'
 
 const email = ref('')
 const password = ref('');
 const authStore = useAuthStore();
-
-const user = auth.currentUser;
+const router = useRouter();
 
 const handleLogin = () => {
   //authStore.login({ name: 'name', email: email.value });
 };
 
 const goToRegister = () => {
-  window.location.href = '/adminorg';
-}
-
-const goToLoggedIn = () => {
-  window.location.href = '/logintest';
+  router.push({ path: `/adminorg` });
 }
 
 const loginFirebase = () => {
   signInWithEmailAndPassword(auth, email.value, password.value)
   .then((userCredential) => {
     // Signed in 
-    window.location.href = '/logintest';
+    router.push({ path: `/playground` });
   })
   .catch((error) => {
     const errorCode = error.code;

@@ -73,7 +73,7 @@ import { ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useAuthStore } from '@/stores/authStore';
 import { createUserWithEmailAndPassword } from 'firebase/auth';
-import { auth } from '../../firebase/init.ts';
+import { auth } from '../../firebase/firebaseConfig.ts'
 
 const { t } = useI18n(); 
 

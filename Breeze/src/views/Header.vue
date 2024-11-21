@@ -34,8 +34,8 @@
   <script setup lang="ts">
   import { useI18n } from 'vue-i18n';
   import { useAuthStore } from '@/stores/authStore';
-  import { signOut } from "firebase/auth";
-  import { auth } from '../firebase/init.ts';
+  import { getAuth, signOut } from "firebase/auth";
+  //import { auth } from '../firebase/init.ts';
   
   const { locale } = useI18n();
   const authStore = useAuthStore();
@@ -55,7 +55,7 @@
   };
 
   const logoutFirebase = () => {
-    signOut(auth).then(() => {
+    signOut(getAuth()).then(() => {
       // Sign-out successful.
       window.location.href = '/login';
     }).catch((error) => {
@@ -64,7 +64,7 @@
   };
 
   const checkLogin = () => {
-    console.log(auth.currentUser);
+    console.log(getAuth().currentUser);
   }
 
   </script>
