@@ -79,6 +79,7 @@ import interactionPlugin from '@fullcalendar/interaction';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import enLocale from '@fullcalendar/core/locales/en-gb';
 import jaLocale from '@fullcalendar/core/locales/ja';
+import { useI18n } from 'vue-i18n'; 
 
 export default {
   name: 'FullCalendarComponent',
@@ -92,24 +93,25 @@ export default {
       supervisors: ['Default Supervisor', 'User A', 'User B'],
       calendar: null,
       events: [],
-      currentLocale: 'en',
       locales: {
-        en: enLocale,
-        ja: jaLocale,
+        'en-US': enLocale, 
+        'ja-JP': jaLocale, 
       },
     };
   },
   mounted() {
     const calendarEl = this.$refs.calendar;
+    const { locale } = useI18n(); 
 
+    
     this.calendar = new Calendar(calendarEl, {
       plugins: [interactionPlugin, dayGridPlugin],
       initialView: 'dayGridMonth',
-      locale: this.locales[this.currentLocale],
+      locale: this.locales[locale.value], 
       selectable: true,
       select: (selectionInfo) => {
         const correctedEndDate = new Date(selectionInfo.endStr);
-        correctedEndDate.setDate(correctedEndDate.getDate() - 1); 
+        correctedEndDate.setDate(correctedEndDate.getDate() - 1); //i'm a genius
         const endStr = correctedEndDate.toISOString().split('T')[0];
         this.selectionRange = `${selectionInfo.startStr} - ${endStr}`;
       },
@@ -128,6 +130,14 @@ export default {
     });
 
     this.calendar.render();
+
+    //update whe it changes on i18n
+    this.$watch(
+      () => locale.value, //whatch the current local
+      (newLocale) => {
+        this.calendar.setOption('locale', this.locales[newLocale]);
+      }
+    );
   },
   methods: {
     logAttendance() {
@@ -193,13 +203,10 @@ export default {
       this.startTime = '';
       this.endTime = '';
     },
-    switchLocale(locale) {
-      this.currentLocale = locale;
-      this.calendar.setOption('locale', this.locales[this.currentLocale]);
-    },
   },
 };
 </script>
+
 
 
 
