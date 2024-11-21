@@ -63,6 +63,12 @@
         >
           {{ $t('register.submit') }}
         </button>
+        <button
+          @click="goToLogin()"
+          class="bg-red-500 text-white py-3 px-4 rounded hover:bg-red-600 transition duration-200 font-semibold"
+        >
+        {{ $t('register.goBack') }}
+        </button>
       </form>
     </div>
   </div>
@@ -70,13 +76,14 @@
 
 <script setup lang="ts">
 import { ref } from 'vue';
+import { useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n';
 import { useAuthStore } from '@/stores/authStore';
 import { createUserWithEmailAndPassword } from 'firebase/auth';
 import { auth } from '../../firebase/firebaseConfig.ts'
 
 const { t } = useI18n(); 
-
+const router = useRouter();
 
 const formData = ref({
   adminName: '',
@@ -85,6 +92,10 @@ const formData = ref({
   organizationName: '',
   organizationDetails: '',
 });
+
+const goToLogin = () => {
+  router.push({ path: `/login` });
+}
 
 
 const authStore = useAuthStore();
@@ -103,10 +114,10 @@ const handleSubmit = () => {
   // }
 
   
-  // authStore.setOrganization({
-  //   name: formData.value.organizationName,
-  //   details: formData.value.organizationDetails,
-  // });
+  /*authStore.setOrganization({
+    name: formData.value.organizationName,
+    details: formData.value.organizationDetails,
+  });*/
 
   // console.log('Registration completed:', formData.value);
   // alert(t('register.success'));

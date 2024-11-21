@@ -1,26 +1,125 @@
 {
-    "Logout": "Logout",
-    "welcome": "Welcome",
-    "language": {
-        "en": "EN",
-        "jp": "JP"
-      },
-    "login": {
-      "title": "Login",
+  "Logout": "Logout",
+  "Settings": "Settings",
+  "Sidebar": {
+    "Calendar": "Calendar",
+    "Profile": "Profile",
+    "Approvals": "Approvals",
+    "EmployeeList": "Employee List",
+    "AdminPage": "Admin Page"
+  },
+  "settings": {
+    "title": "Settings",
+    "fields": {
+      "firstName": "First Name",
+      "lastName": "Last Name",
       "email": "Email",
-      "password": "Password",
-      "submit": "Login",
-      "register": "Register Organization"
+      "dateOfBirth": "Date of Birth",
+      "team": "Team",
+      "defaultSupervisor": "Default Supervisor",
+      "role": "Role",
+      "joinDate": "Join Date",
+      "type": "Type",
+      "languagePreference": "Language Preference"
     },
-    "register": {
-      "title": "Register Organization",
-      "adminName": "Admin Name",
-      "organizationName": "Organization Name",
-      "organizationDetails": "Organization Details",
-      "submit": "Submit",
-      "success": "Registration successful",
-      "errorFillAllFields": "Please fill all required fields"
+    "save": "Save"
+  },
+  "language": {
+    "en": "EN",
+    "jp": "JP"
+  },
+  "login": {
+    "title": "Login",
+    "email": "Email",
+    "password": "Password",
+    "submit": "Login",
+    "register": "Register Organization"
+  },
+  "register": {
+    "title": "Register Organization",
+    "adminName": "Admin Name",
+    "organizationName": "Organization Name",
+    "organizationDetails": "Organization Details",
+    "submit": "Submit",
+    "success": "Registration successful",
+    "errorFillAllFields": "Please fill all required fields",
+    "goBack": "Go back"
+  },
+  "employeeList": {
+    "title": "Employee List",
+    "searchPlaceholder": "Search Employees",
+    "addUser": "Add User",
+    "tableHeaders": {
+      "name": "Name",
+      "team": "Team",
+      "role": "Role",
+      "joinDate": "Join Date",
+      "lastDate": "Last Date",
+      "type": "Type",
+      "status": "Status",
+      "email": "Email",
+      "att": "Att."
+    },
+    "view": "View",
+    "employeeHeader": {
+      "currentMonthInfo": "Current Month Attendance Info",
+      "expectedHours": "Minimum Expected Work Hours",
+      "totalHours": "Total Hours Worked",
+      "currentOT": "Current OT",
+      "ptoInfo": "PTO Info",
+      "remainingPTO": "Remaining PTO",
+      "ptoUsed": "PTO used this month"
+    },
+    "modal": {
+      "modalTitle": "Add New User",
+      "fields": {
+        "firstName": "First Name",
+        "lastName": "Last Name",
+        "email": "Email",
+        "dateOfBirth": "Date of Birth",
+        "team": "Team",
+        "supervisor": "Default Supervisor",
+        "role": "Role",
+        "joinDate": "Join Date",
+        "type": "Type",
+        "pto": "PTO"
+      },
+      "userType": {
+        "user": "User",
+        "admin": "Admin"
+      },
+      "sendInvitation": "Send Invitation"
+    }
+  },
+  "employeeDetails": {
+    "title": "Employee Details",
+    "accountInfo": "Account Info",
+    "attendanceSettings": "Attendance Settings",
+    "fields": {
+      "firstName": "First Name",
+      "lastName": "Last Name",
+      "email": "Email",
+      "dateOfBirth": "Date of Birth",
+      "team": "Team",
+      "supervisor": "Supervisor",
+      "pto": "PTO",
+      "specialHolidays": "Special Holidays",
+      "holidayType": "Holiday Type"
+    },
+    "placeholders": {
+      "selectTeam": "Select a Team",
+      "specialHolidays": "Enter special holidays here...",
+      "holidayType": "Enter holiday type"
+    },
+    "buttons": {
+      "addHoliday": "Add Holiday",
+      "save": "Save",
+      "delete": "Delete"
     }
   }
+}
+
+
+
   
   
