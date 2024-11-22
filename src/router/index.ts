@@ -40,7 +40,7 @@ const router = createRouter({
   ],
 });
 
-
+// this is also for show and not show the sidebar
 router.beforeEach((to, from, next) => {
   const authStore = useAuthStore();
 
@@ -51,6 +51,10 @@ router.beforeEach((to, from, next) => {
     authStore.navigateToPage(AppPageType.REGISTRATION);
   } else if (to.name === 'employee') {
     authStore.navigateToPage(AppPageType.EMPLOYEE_LIST);
+  } else if (to.name === 'calendar') {
+    authStore.navigateToPage(AppPageType.CALENDAR);
+  } else if (to.name === 'settings') {
+    authStore.navigateToPage(AppPageType.SETTINGS);
   }
 
   next();

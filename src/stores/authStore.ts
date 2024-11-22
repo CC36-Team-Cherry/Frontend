@@ -32,7 +32,9 @@ export const useAuthStore = defineStore('auth', {
   },
   getters: {
     isAuthenticated: (state) => !!state.user,
-    showSidebar: (state) => state.currentPage === AppPageType.EMPLOYEE_LIST, 
+    showSidebar: (state) => state.currentPage === AppPageType.EMPLOYEE_LIST || 
+                            state.currentPage === AppPageType.CALENDAR ||
+                            state.currentPage === AppPageType.SETTINGS
   },
 });
 
