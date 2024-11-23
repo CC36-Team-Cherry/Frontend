@@ -37,7 +37,8 @@
   },
   "register": {
     "title": "Register Organization",
-    "adminName": "Admin Name",
+    "firstName": "First Name",
+    "lastName": "Last Name",
     "organizationName": "Organization Name",
     "organizationDetails": "Organization Details",
     "submit": "Submit",
