@@ -130,7 +130,11 @@ const createUserFirebase = () => {
   createUserWithEmailAndPassword(auth, email, password)
   .then((userCredential) => {
     // Signed up 
-    //const user = userCredential.user;
+    const user = userCredential.user;
+    
+    //"user.uid" is the Firebase UID. This will go to the backend?
+    console.log(user.uid);
+
     // User will be logged in automatically if account is successfully created
     router.push({ path: `/employee` });
   })

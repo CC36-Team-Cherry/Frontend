@@ -7,6 +7,7 @@ import LoginForm from "@/components/authorization/LoginForm.vue";
 import RegisterOrganization from "@/components/authorization/RegisterOrganization.vue";
 import Calendar from "@/components/authorization/Calendar.vue";
 import EmployeeList from '@/components/adminView/EmployeeList.vue';
+import PasswordReset from '@/components/authorization/PasswordReset.vue';
 import Settings from '@/views/Settings.vue'; 
 
 //THIS IS FOR TESTING FIREBASE, DELETE THIS LATER
@@ -51,6 +52,14 @@ const router = createRouter({
         requiresAuth: true
       }
     },
+    {
+      path: '/passwordreset',
+      name: 'passwordreset',
+      component: PasswordReset,
+      meta: {
+        requiresAuth: true
+      }
+    },
 
     //THIS IS FOR TESTING FIREBASE, DELETE THIS LATER
     {
@@ -60,7 +69,7 @@ const router = createRouter({
       meta: {
         requiresAuth: true
       }
-    }
+    },
   ],
 });
 
