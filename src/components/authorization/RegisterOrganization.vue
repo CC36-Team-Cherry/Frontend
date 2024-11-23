@@ -169,7 +169,7 @@ const handleSubmit = async () => {
       withCredentials: true,
     })
 
-    console.log('Registration completed:', formData.value);
+    console.log('Frontend - Registration completed:', formData.value);
     alert(t('register.success'));
 
   } catch(err) {
