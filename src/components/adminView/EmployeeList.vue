@@ -163,6 +163,8 @@
 
 <script setup>
 import { ref, computed } from 'vue';
+import { auth } from '../../firebase/firebaseConfig.ts';
+import { sendPasswordResetEmail } from 'firebase/auth';
 import Modal from '@/modal/ModalView.vue';
 import EmployeeDetailsModal from '@/modal/EmployeeDetailsModal.vue';
 
@@ -216,10 +218,21 @@ const closeAddUserModal = () => {
 };
 
 const submitNewUserForm = () => {
-  console.log('New user data:', formData.value);
+  console.log('New user data:', formData.value.email);
+  sendFirebaseEmail();
   closeAddUserModal();
 };
 
+const sendFirebaseEmail = () => {
+  sendPasswordResetEmail(auth, formData.value.email)
+  .then(() => {
+    // Password reset email sent!
+    // ..
+  })
+  .catch((error) => {
+    console.log(error.code, error.message);
+  });
+}
 
 const openEmployeeDetailsModal = (employee) => {
   selectedEmployee.value = employee;
