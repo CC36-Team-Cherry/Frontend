@@ -20,6 +20,7 @@
     "@fullcalendar/timegrid": "^6.1.15",
     "@fullcalendar/vue3": "^6.1.15",
     "axios": "^1.7.7",
+    "cors": "^2.8.5",
     "date-holidays": "^3.23.12",
     "firebase": "^11.0.2",
     "pinia": "^2.2.6",

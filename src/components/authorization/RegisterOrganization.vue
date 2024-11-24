@@ -110,7 +110,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, toRaw } from 'vue';
+import { ref, toRaw, reactive } from 'vue';
 import { useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n';
 import { useAuthStore } from '@/stores/authStore';
@@ -120,6 +120,13 @@ import axios from 'axios';
 
 const { t } = useI18n(); 
 const router = useRouter();
+
+// TODO: add active account state to track log in after registration, or set from login and update when register
+// export const activeAccount = reactive({
+//   id: , 
+//   organizationId: ,
+// });
+
 const apiUrl = import.meta.env.VITE_API_URL;
 
 const formData = ref({

@@ -9,6 +9,7 @@ import Calendar from "@/components/authorization/Calendar.vue";
 import EmployeeList from '@/components/adminView/EmployeeList.vue';
 import Settings from '@/views/Settings.vue'; 
 import AdminConsole from '@/components/adminView/AdminConsole.vue';
+import Approvals from '@/views/Approvals.vue'
 
 //THIS IS FOR TESTING FIREBASE, DELETE THIS LATER
 import Playground from "@/components/authorization/Playground.vue";
@@ -56,6 +57,14 @@ const router = createRouter({
       path: '/admin', 
       name: 'admin',
       component: AdminConsole,
+      meta: {
+        requiresAuth: true
+      }
+    },
+    {
+      path: '/approvals', 
+      name: 'approvals',
+      component: Approvals,
       meta: {
         requiresAuth: true
       }
