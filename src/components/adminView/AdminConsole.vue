@@ -14,9 +14,24 @@
                             @blur="stopEditing"
                             @keyup.enter="stopEditing"
                         />
-                        <span v-else>{{ team.name }}</span>
-                        <button @click="startEditing(index)" v-if="editingIndex !== index">Edit</button>
-                        <button @click="deleteTeam(index)">Delete</button>
+                        <span 
+                            v-else
+                            class="border-2"
+                        >
+                        {{ team.name }}</span>
+                        <button 
+                            @click="startEditing(index)" 
+                            v-if="editingIndex !== index"
+                            class="border-2"
+                        >
+                            Edit
+                        </button>
+                        <button 
+                            @click="deleteTeam(index)"
+                            class="border-2"
+                        >
+                            Delete
+                        </button>
                     </li>
                 </ul>
             <div class="border-2 text-xl text-center my-5">{{$t('adminConsole.fields.adminSettings')}}</div>
@@ -53,7 +68,7 @@
 </template>
 
 <script setup>
-import { ref, toRaw } from 'vue';
+import { ref, toRaw, onMounted } from 'vue';
 import axios from 'axios';
 
 const apiUrl = import.meta.env.VITE_API_URL;
@@ -75,6 +90,7 @@ const getTeams = async () => {
     try {
         const response = await axios.get(`${apiUrl}/organizations/${organizationId}`);
             // Store the fetched teams in state
+            console.log(response.data);
             teams.value = response.data;
     } catch(err) {
         console.error('Error fetching teams:', err);
@@ -86,12 +102,13 @@ const editingIndex = ref(null);
 const startEditing = (index) => {
       editingIndex.value = index;
     };
+
 // Stop editing and save changes
 const stopEditing = () => {
       editingIndex.value = null;
     };
 
-// Save settings for admin settings outside of team list
+// Save settings on click for admin settings outside of team list
 const saveSettings = async () => {
     try {
 
@@ -106,12 +123,17 @@ const saveSettings = async () => {
         withCredentials: true,
     })
 
-    console.log('Settings saved:', formData.value);
+    console.log('Settings saved:', toRaw(formData.value));
     alert('Settings saved successfully!');
 
     } catch(err) {
         console.error(err);
     }
 };
+
+// Fetch teams when the component is mounted
+onMounted(() => {
+    getTeams();
+});
 
 </script>
