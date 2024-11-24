@@ -25,13 +25,13 @@
         <template v-if="filteredEmployees.length > 0">
           <tr v-for="employee in filteredEmployees" :key="employee.id" @click="openEmployeeDetailsModal(employee)"
             class="cursor-pointer hover:bg-gray-100">
-            <td class="border p-2">{{ employee.first_name + employee.last_name }}</td>
-            <td class="border p-2">{{ employee.team }}</td>
+            <td class="border p-2">{{ employee.first_name + ' ' + employee.last_name }}</td>
+            <td class="border p-2">{{ employee.team || 'no team' }}</td>
             <td class="border p-2">{{ employee.role }}</td>
-            <td class="border p-2">{{ employee.join_date }}</td>
-            <td class="border p-2">{{ employee.leave_date }}</td>
-            <td class="border p-2">{{ employee.type }}</td>
-            <!-- <td class="border p-2">{{ employee.status }}</td> -->
+            <td class="border p-2">{{ employee.join_date.split('T')[0] }}</td>
+            <td class="border p-2">{{ employee.leave_date || 'NA' }}</td>
+            <td class="border p-2">{{ employee.Privileges?.is_admin ? 'Admin' : employee.Privileges ? 'Supervisor' : 'none' }}</td>
+            <td class="border p-2">{{ employee.leave_date? 'Inactive' : 'Active' }}</td>
             <td class="border p-2">{{ employee.email }}</td>
             <td class="border p-2">
               <button class="bg-green-500 text-white px-2 py-1 rounded" @click.stop="viewEmployeeDetails(employee)">
@@ -108,6 +108,7 @@
 
 <script setup>
 import { ref, computed } from 'vue';
+import { useAuthStore } from '@/stores/authStore';
 import Modal from '@/modal/ModalView.vue';
 import EmployeeDetailsModal from '@/modal/EmployeeDetailsModal.vue';
 
@@ -117,6 +118,7 @@ const searchTerm = ref('');
 const isAddUserModalVisible = ref(false);
 const isEmployeeDetailsModalVisible = ref(false);
 
+//get employee list
 let employeeList = ref([]);
 async function handleFetchEmployees(companyId) {
   try {
@@ -129,29 +131,13 @@ async function handleFetchEmployees(companyId) {
     if (response.ok) {
       const parsedRes = await response.json();
       employeeList.value = parsedRes;
+      console.log(parsedRes);
     }
   } catch (err) {
     console.error("Error: ", err);
   }
 }
 handleFetchEmployees(1);
-
-const employees = ref([
-  {
-    id: 1,
-    name: 'Tim Peters',
-    team: 'Team A',
-    role: 'Developer',
-    joinDate: '2022-01-01',
-    lastDate: '',
-    type: 'User',
-    status: 'Active',
-    email: 'timpeters@example.com',
-    pto: 5,
-    supervisor: 'Anna Smith',
-  },
-]);
-
 
 const formData = ref({
   firstName: '',
@@ -169,9 +155,9 @@ const selectedEmployee = ref(null);
 // );
 
 const filteredEmployees = computed(() => {
-  if (!employeeList.value) return []; // Handle case where employeeList is null initially
+  if (!employeeList.value) return []; // handles case where employeeList is null initially
   return employeeList.value.filter((employee) =>
-    employee.last_name.toLowerCase().includes(searchTerm.value.toLowerCase())
+    (employee.first_name + employee.last_name).toLowerCase().includes(searchTerm.value.toLowerCase())
   );
 });
 
