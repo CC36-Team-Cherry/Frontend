@@ -132,7 +132,29 @@ const getApprovals = async () => {
     try {
         const response = await axios.get(`${apiUrl}/accounts/${accountId}/approvals`);
         
+        // const requestsSent = {
+        //     id: null, 
+        //     toName: '',
+        //     type: '',
+        //     details: '',
+        //     message: '',
+        //     status: '',
+        //     dateSent: '',
+        // };
+
+        // const requestsReceived = {
+        //     id: null, 
+        //     fromName: '',
+        //     type: '',
+        //     details: '',
+        //     message: '',
+        //     status: '',
+        //     dateSent: '',
+        // };
+
         requests.value.sent = response.data.approvalsSentMonthly;
+
+
         requests.value.received = response.data.approvalsRequestedMonthly;
         console.log(requests.value);
         

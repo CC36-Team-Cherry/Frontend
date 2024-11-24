@@ -34,6 +34,20 @@
                         </button>
                     </li>
                 </ul>
+                <div class="flex justify-around">
+                    <input
+                        v-model="newTeam"
+                        type="text"
+                        placeholder="Enter Team Name"
+                        class="border-2"
+                    />
+                    <button
+                        @click="addTeam(newTeam)"
+                        class="border-2"
+                    >
+                        Add
+                    </button>
+                </div>
             <div class="border-2 text-xl text-center my-5">{{$t('adminConsole.fields.adminSettings')}}</div>
                 <div class="grid grid-cols-2 border-2">
                     <label class="font-medium text-center">{{$t('adminConsole.fields.minimumWorkHours')}}</label>
@@ -77,12 +91,17 @@ const formData = ref({
     organizationName: '',
 });
 
+// TODO: Add organization id state
+
 // Reactive state
 const teams = ref([
   { "id": 1, "name": "Team A" },
   { "id": 2, "name": "Team B" },
   { "id": 3, "name": "Team C" }
 ]);
+
+// New team variable 
+const newTeam = ref('');
 
 // Get teams
 // TODO finish get teams endpoint
@@ -102,6 +121,18 @@ const editingIndex = ref(null);
 const startEditing = (index) => {
       editingIndex.value = index;
     };
+
+// Add new team
+const addTeam = async (newTeam) => {
+    try {
+        const response = await axios.get(`${apiUrl}/organizations/${organizationId}`);
+        console.log(newTeam);
+        // console.log('New team saved:', toRaw(formData.value));
+        // alert('New team saved successfully!');
+    } catch (err) {
+        console.error(err);
+    }
+};
 
 // Stop editing and save changes
 const stopEditing = () => {
