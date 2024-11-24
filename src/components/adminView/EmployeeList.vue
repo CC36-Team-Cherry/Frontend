@@ -26,7 +26,7 @@
           <tr v-for="employee in filteredEmployees" :key="employee.id" @click="openEmployeeDetailsModal(employee)"
             class="cursor-pointer hover:bg-gray-100">
             <td class="border p-2">{{ employee.first_name + ' ' + employee.last_name }}</td>
-            <td class="border p-2">{{ employee.team || 'no team' }}</td>
+            <td class="border p-2">{{ employee.team_id || 'no team' }}</td>
             <td class="border p-2">{{ employee.role }}</td>
             <td class="border p-2">{{ employee.join_date.split('T')[0] }}</td>
             <td class="border p-2">{{ employee.leave_date || 'NA' }}</td>
@@ -119,7 +119,7 @@ const isAddUserModalVisible = ref(false);
 const isEmployeeDetailsModalVisible = ref(false);
 
 //get employee list
-let employeeList = ref([]);
+let fetchedEmployees = ref([]);
 async function handleFetchEmployees(companyId) {
   try {
     const response = await fetch(`${import.meta.env.VITE_API_URL}accounts/${companyId}`, {
@@ -130,7 +130,7 @@ async function handleFetchEmployees(companyId) {
     });
     if (response.ok) {
       const parsedRes = await response.json();
-      employeeList.value = parsedRes;
+      fetchedEmployees.value = parsedRes;
       console.log(parsedRes);
     }
   } catch (err) {
@@ -155,8 +155,8 @@ const selectedEmployee = ref(null);
 // );
 
 const filteredEmployees = computed(() => {
-  if (!employeeList.value) return []; // handles case where employeeList is null initially
-  return employeeList.value.filter((employee) =>
+  if (!fetchedEmployees.value) return []; // handles case where employeeList is null initially
+  return fetchedEmployees.value.filter((employee) =>
     (employee.first_name + employee.last_name).toLowerCase().includes(searchTerm.value.toLowerCase())
   );
 });
