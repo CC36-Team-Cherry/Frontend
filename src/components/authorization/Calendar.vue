@@ -108,7 +108,7 @@ export default {
     const { locale } = useI18n();
     const route = useRoute();
 
-    this.accountId = route.params.accountId || 1;
+    this.accountId = route.params.accountId;
 
     this.calendar = new Calendar(calendarEl, {
       plugins: [interactionPlugin, dayGridPlugin],

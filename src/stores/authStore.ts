@@ -13,9 +13,9 @@ interface User {
   team_name: string;
   role: string;
   join_date: Date;
-  leave_date: Date;
+  leave_date?: Date;
   pto: number;
-  last_login: Date;
+  last_login?: Date;
 }
 
 interface Organization {
@@ -46,5 +46,6 @@ export const useAuthStore = defineStore('auth', {
     isAuthenticated: (state) => !!state.user,
     showSidebar: (state) => state.currentPage === AppPageType.EMPLOYEE_LIST, 
   },
+  persist: true,
 });
 
