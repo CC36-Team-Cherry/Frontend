@@ -22,10 +22,11 @@ const router = createRouter({
       component: RegisterOrganization,
     },
     {
-      path:'/calendar',
-      name:'calendar',
+      path: '/calendar/:accountId', 
+      name: 'calendar',
       component: Calendar,
       meta: { layout: 'default' },
+      props: true, 
     },
     {
       path: '/employee',
@@ -44,7 +45,6 @@ const router = createRouter({
 router.beforeEach((to, from, next) => {
   const authStore = useAuthStore();
 
-  
   if (to.name === 'login') {
     authStore.navigateToPage(AppPageType.LOGIN);
   } else if (to.name === 'adminorg') {
