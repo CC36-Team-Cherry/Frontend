@@ -33,7 +33,6 @@
 
 <script setup lang="ts">
 
-import { toRaw } from 'vue';
 import { getAuth, signOut } from 'firebase/auth';
 import { useAuthStore } from '@/stores/authStore';
 
@@ -41,8 +40,8 @@ const authStore = useAuthStore();
 
 const checkPiniaUser = () => {
     if (authStore.user) {
-        console.log("Here is the name stored in Pinia: ", toRaw(authStore.user.name))
-        console.log("Here is the email stored in Pinia: ", toRaw(authStore.user.email))
+        console.log("Here is the name stored in Pinia: ", authStore.user.first_name)
+        console.log("Here is the email stored in Pinia: ", authStore.user.email)
     }
 }
 

@@ -77,6 +77,11 @@
 import { Calendar } from '@fullcalendar/core';
 import interactionPlugin from '@fullcalendar/interaction';
 import dayGridPlugin from '@fullcalendar/daygrid';
+import enLocale from '@fullcalendar/core/locales/en-gb';
+import jaLocale from '@fullcalendar/core/locales/ja';
+import axios from 'axios';
+import { useI18n } from 'vue-i18n';
+import { useRoute } from 'vue-router';
 
 export default {
   name: 'FullCalendarComponent',
@@ -90,27 +95,44 @@ export default {
       supervisors: ['Default Supervisor', 'User A', 'User B'],
       calendar: null,
       events: [],
+      selectedEventId: null,
+      accountId: null,
+      locales: {
+        'en-US': enLocale,
+        'ja-JP': jaLocale,
+      },
     };
   },
   mounted() {
     const calendarEl = this.$refs.calendar;
+    const { locale } = useI18n();
+    const route = useRoute();
+
+    this.accountId = route.params.accountId || 1;
 
     this.calendar = new Calendar(calendarEl, {
       plugins: [interactionPlugin, dayGridPlugin],
       initialView: 'dayGridMonth',
+      locale: this.locales[locale.value],
       selectable: true,
       select: (selectionInfo) => {
         const correctedEndDate = new Date(selectionInfo.endStr);
-        correctedEndDate.setDate(correctedEndDate.getDate() - 1); // i'm a genius
+        correctedEndDate.setDate(correctedEndDate.getDate() - 1);
         const endStr = correctedEndDate.toISOString().split('T')[0];
-        this.selectionRange = `${selectionInfo.startStr} - ${endStr}`; 
+        this.selectionRange = `${selectionInfo.startStr} - ${endStr}`;
       },
       events: this.events,
+      editable: true,
+      eventClick: (info) => {
+        this.handleEventClick(info.event);
+      },
       eventContent: (arg) => {
         if (arg.event.extendedProps.startTime && arg.event.extendedProps.endTime) {
           return {
             html: `
-              <div style="text-align: center; font-size: 0.9em; color: white;">
+              <div style="text-align: center; font-size: 0.9em; color: white; background-color: ${
+                arg.event.backgroundColor
+              }; padding: 5px; border-radius: 4px;">
                 <b>${arg.event.extendedProps.startTime} - ${arg.event.extendedProps.endTime}</b>
               </div>
             `,
@@ -120,63 +142,111 @@ export default {
     });
 
     this.calendar.render();
+
+    this.$watch(
+      () => locale.value,
+      (newLocale) => {
+        this.calendar.setOption('locale', this.locales[newLocale]);
+      }
+    );
+
+    this.fetchAttendanceData();
   },
   methods: {
-    logAttendance() {
-      if (!this.selectionRange || !this.attendanceType || !this.startTime || !this.endTime) {
-        alert('Please fill out all required fields');
-        return;
-      }
-
-      const [start, end] = this.selectionRange.split(' - ');
-      const startDate = new Date(start);
-      const endDate = new Date(end);
-
-      const events = [];
-      while (startDate <= endDate) {
-        const day = startDate.toISOString().split('T')[0];
-        const dayOfWeek = startDate.getDay();
-
-        if (dayOfWeek !== 0 && dayOfWeek !== 6) {
-          events.push({
-            title: `${this.attendanceType.toUpperCase()}`,
-            start: day,
-            backgroundColor: this.getEventColor(this.attendanceType),
+    fetchAttendanceData() {
+      axios
+        .get(`http://localhost:3000/accounts/${this.accountId}/attendance`)
+        .then((response) => {
+          this.events = response.data.map((record) => ({
+            id: record.id,
+            title: record.absence ? 'Absence' : 'Attendance',
+            start: record.day,
+            backgroundColor: this.getEventColor(record),
             extendedProps: {
-              startTime: this.startTime,
-              endTime: this.endTime,
+              startTime: record.punch_in
+                ? new Date(record.punch_in).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+                : 'N/A',
+              endTime: record.punch_out
+                ? new Date(record.punch_out).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+                : 'N/A',
             },
-            display: 'background',
-          });
-        }
+          }));
 
-        startDate.setDate(startDate.getDate() + 1);
-      }
+          this.calendar.getEvents().forEach((event) => event.remove());
+          this.events.forEach((event) => this.calendar.addEvent(event));
+        })
+        .catch((error) => {
+          console.error('Error fetching attendance records:', error);
+        });
+    },
+    handleEventClick(event) {
+      this.selectedEventId = event.id;
+      this.selectionRange = event.start.toISOString().split('T')[0];
+      this.startTime = event.extendedProps.startTime || '';
+      this.endTime = event.extendedProps.endTime || '';
+      this.attendanceType = this.getEventTypeFromColor(event.backgroundColor);
+    },
+    logAttendance() {
+  const day = this.selectionRange.split(' - ')[0];
 
-      events.forEach((event) => {
-        this.events.push(event);
-        this.calendar.addEvent(event);
+  // Converti l'orario di `startTime` e `endTime` al formato corretto con il fuso orario locale
+  const punchIn = new Date(`${day}T${this.startTime}:00`);
+  const punchOut = new Date(`${day}T${this.endTime}:00`);
+
+  const attendanceData = {
+    account_id: this.accountId,
+    day,
+    punch_in: punchIn.toISOString(), // Ora convertita a ISO per il backend
+    punch_out: punchOut.toISOString(), 
+    absence: this.attendanceType === 'absence',
+    full_pto: this.attendanceType === 'pto',
+    half_pto: this.attendanceType === 'halfPto',
+    special_pto: this.attendanceType === 'specialPto',
+  };
+
+  
+
+  if (this.selectedEventId) {
+    axios
+      .put(`http://localhost:3000/accounts/${this.accountId}/attendance/${this.selectedEventId}`, attendanceData)
+      .then(() => {
+        this.fetchAttendanceData();
+        this.clearForm();
+      })
+      .catch((error) => {
+        console.error('Error editing attendance:', error.response?.data || error.message);
       });
+  } else {
+    axios
+      .post(`http://localhost:3000/accounts/${this.accountId}/attendance`, attendanceData)
+      .then((response) => {
+        console.log('Risposta dal server:', response.data); 
+        this.fetchAttendanceData();
+        this.clearForm();
+      })
+      .catch((error) => {
+        console.error('Error logging attendance:', error.response?.data || error.message);
+      });
+  }
+},
 
-      this.clearForm();
+
+    getEventColor(data) {
+      if (data.absence) return 'red';
+      if (data.full_pto) return 'orange';
+      if (data.special_pto) return 'green';
+      return 'blue';
     },
-    submitAttendance() {
-      if (!this.submissionSupervisor) {
-        alert('Please select a supervisor');
-        return;
-      }
-      alert(`Attendance submitted to ${this.submissionSupervisor}`);
-    },
-    getEventColor(type) {
-      switch (type) {
-        case 'general':
-          return 'blue';
-        case 'pto':
-          return 'orange';
-        case 'specialPto':
-          return 'green';
+    getEventTypeFromColor(color) {
+      switch (color) {
+        case 'red':
+          return 'absence';
+        case 'orange':
+          return 'pto';
+        case 'green':
+          return 'specialPto';
         default:
-          return 'gray';
+          return 'general';
       }
     },
     clearForm() {
@@ -184,23 +254,11 @@ export default {
       this.attendanceType = '';
       this.startTime = '';
       this.endTime = '';
+      this.selectedEventId = null;
     },
   },
 };
 </script>
 
-
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
 
 

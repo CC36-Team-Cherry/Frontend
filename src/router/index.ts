@@ -30,7 +30,7 @@ const router = createRouter({
       component: RegisterOrganization,
     },
     {
-      path:'/calendar',
+      path:'/calendar/accountid',
       name:'calendar',
       component: Calendar,
       meta: {
