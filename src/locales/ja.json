@@ -37,13 +37,27 @@
   },
   "register": {
     "title": "組織を登録",
-    "adminName": "管理者名",
+    "firstName": "氏名",
     "organizationName": "組織名",
     "organizationDetails": "組織の詳細",
     "submit": "送信",
     "success": "登録が成功しました",
     "errorFillAllFields": "すべての必須項目に入力してください",
     "goBack": "戻る"
+  },
+  "adminConsole": {
+    "title": "管理コンソール",
+    "fields": {
+      "teamList": "チームリスト",
+      "adminSettings": "管理者設定",
+      "minimumWorkHours": "1日の最小労働時間を設定",
+      "organizationSettings": "組織設定",
+      "organizationName": "組織名"
+    },
+    "buttons": {
+      "save": "保存",
+      "deleteOrganization": "組織を削除"
+    }
   },
   "employeeList": {
     "title": "従業員リスト",
