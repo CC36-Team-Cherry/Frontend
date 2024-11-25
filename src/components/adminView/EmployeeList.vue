@@ -30,7 +30,7 @@
             <td class="border p-2">{{ employee.role }}</td>
             <td class="border p-2">{{ employee.join_date.split('T')[0] }}</td>
             <td class="border p-2">{{ employee.leave_date || 'NA' }}</td>
-            <td class="border p-2">{{ employee.Privileges?.is_admin ? 'Admin' : employee.Privileges ? 'Supervisor' : 'none' }}</td>
+            <td class="border p-2">{{ employee.Privileges.is_admin ? 'Admin' : employee.Privileges.is_supervisor ? 'Supervisor' : 'none' }}</td>
             <td class="border p-2">{{ employee.leave_date? 'Inactive' : 'Active' }}</td>
             <td class="border p-2">{{ employee.email }}</td>
             <td class="border p-2">
@@ -108,7 +108,7 @@
 
 <script setup>
 import { ref, computed } from 'vue';
-import { useAuthStore } from '@/stores/authStore';
+import axios from "axios";
 import Modal from '@/modal/ModalView.vue';
 import EmployeeDetailsModal from '@/modal/EmployeeDetailsModal.vue';
 
@@ -154,6 +154,7 @@ const selectedEmployee = ref(null);
 //   )
 // );
 
+//employee search
 const filteredEmployees = computed(() => {
   if (!fetchedEmployees.value) return []; // handles case where employeeList is null initially
   return fetchedEmployees.value.filter((employee) =>
@@ -170,7 +171,34 @@ const closeAddUserModal = () => {
   isAddUserModalVisible.value = false;
 };
 
-const submitNewUserForm = () => {
+const submitNewUserForm = async () => {
+  const payload = {
+    email: formData.value.email,
+    first_name: formData.value.firstName,
+    last_name: formData.value.lastName,
+    birthdate: new Date(formData.value.birthdate),
+    company_id: 1, //harcoded for now
+    join_date: new Date(formData.value.joinDate),
+    role: formData.value.role,
+    
+  }
+
+//   type userAccount = {
+//   email: string;
+//   first_name: string;
+//   last_name: string;
+//   birthdate: Date;
+//   supervisor_id?: number;
+//   company_id: number;
+//   join_date: Date;
+//   leave_date?: Date;
+//   role: string;
+//   team_id?: number;
+//   is_admin: string;
+//   is_supervisor: string;
+//   remaining_pto: number;
+// };
+  
   console.log('New user data:', formData.value);
   closeAddUserModal();
 };
