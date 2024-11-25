@@ -44,7 +44,7 @@
     </table>
     <Modal :isVisible="isAddUserModalVisible" @close="closeAddUserModal">
       <h2 class="text-xl font-bold mb-4">{{ $t('employeeList.modal.modalTitle') }}</h2>
-      <form @submit.prevent="submitNewUserForm">
+      <form @submit.prevent="handleSubmit">
         <div class="grid grid-cols-2 gap-4">
           <div>
             <label class="block mb-1">{{ $t('employeeList.modal.fields.firstName') }}</label>
@@ -109,6 +109,8 @@
 <script setup>
 import { ref, computed } from 'vue';
 import axios from "axios";
+import { auth } from '../../firebase/firebaseConfig.ts';
+import { sendPasswordResetEmail } from 'firebase/auth';
 import Modal from '@/modal/ModalView.vue';
 import EmployeeDetailsModal from '@/modal/EmployeeDetailsModal.vue';
 import { reactive } from 'vue';
@@ -148,13 +150,6 @@ const formData = reactive({
 
 const selectedEmployee = ref(null);
 
-
-// const filteredEmployees = computed(() =>
-//   employeeList.filter((employee) =>
-//     employee.last_name.toLowerCase().includes(searchTerm.value.toLowerCase())
-//   )
-// );
-
 //employee search
 const filteredEmployees = computed(() => {
   if (!fetchedEmployees.value) return []; // handles case where employeeList is null initially
@@ -172,7 +167,7 @@ const closeAddUserModal = () => {
   isAddUserModalVisible.value = false;
 };
 
-const submitNewUserForm = async () => {
+const handleSubmit = async () => {
   const payload = {
     email: formData.email,
     first_name: formData.firstName,
@@ -192,6 +187,7 @@ const submitNewUserForm = async () => {
         'Content-Type': 'application/json',
       },
     });
+    sendFirebaseEmail(response.data.email);
     console.log('New user created:', response.data);
 
     await handleFetchEmployees(1);
@@ -205,11 +201,21 @@ const submitNewUserForm = async () => {
   } catch (err) {
     console.error
   }
-  
-  console.log('New user data:', formData.value);
-  closeAddUserModal();
-};
 
+  closeAddUserModal();
+}
+
+const sendFirebaseEmail = (currentEmail) => {
+  sendPasswordResetEmail(auth, currentEmail)
+  .then(() => {
+    console.log("SENT");
+    // Password reset email sent!
+    // ..
+  })
+  .catch((error) => {
+    console.log(error.code, error.message);
+  });
+}
 
 const openEmployeeDetailsModal = (employee) => {
   selectedEmployee.value = employee;

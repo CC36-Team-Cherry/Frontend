@@ -7,6 +7,7 @@ import LoginForm from "@/components/authorization/LoginForm.vue";
 import RegisterOrganization from "@/components/authorization/RegisterOrganization.vue";
 import Calendar from "@/components/authorization/Calendar.vue";
 import EmployeeList from '@/components/adminView/EmployeeList.vue';
+import NewLogin from '@/components/authorization/NewLogin.vue';
 import Settings from '@/views/Settings.vue'; 
 import AdminConsole from '@/components/adminView/AdminConsole.vue';
 import Approvals from '@/views/Approvals.vue'
@@ -29,7 +30,7 @@ const router = createRouter({
       component: RegisterOrganization,
     },
     {
-      path:'/calendar',
+      path:'/calendar/accountid',
       name:'calendar',
       component: Calendar,
       meta: {
@@ -69,6 +70,15 @@ const router = createRouter({
         requiresAuth: true
       }
     },
+    {
+      path: '/newlogin',
+      name: 'newlogin',
+      component: NewLogin,
+      meta: {
+        requiresAuth: true
+      }
+    },
+
     //THIS IS FOR TESTING FIREBASE, DELETE THIS LATER
     {
       path: "/playground",
@@ -77,7 +87,7 @@ const router = createRouter({
       meta: {
         requiresAuth: true
       }
-    }
+    },
   ],
 });
 
