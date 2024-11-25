@@ -172,7 +172,7 @@ const handleSubmit = async () => {
     console.log('Frontend - Registration completed:', formData.value);
     alert(t('register.success'));
 
-  } catch(err) {
+} catch(err) {
     console.error(err);
   }
   
@@ -213,7 +213,7 @@ const createUserFirebase = () => {
         first_name: registeredAdmin.first_name, 
         last_name: registeredAdmin.last_name, 
         email: registeredAdmin.email, 
-        is_admin: registeredAdmin.is_admin, 
+        is_admin: true, 
         is_supervisor: false, 
         company_id: registeredAdmin.company_id, 
         team_id: 0, 
@@ -223,10 +223,9 @@ const createUserFirebase = () => {
         pto: 0});
       })
 
-      console.log("logged in user", authStore.user)
-
       // User will be logged in automatically if account is successfully created
       router.push({ path: `/employee` });
+      console.log("logged in user", authStore.user)
   })
   .catch((error) => {
     const errorCode = error.code;
