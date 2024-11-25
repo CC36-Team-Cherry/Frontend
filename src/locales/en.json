@@ -46,6 +46,20 @@
     "errorFillAllFields": "Please fill all required fields",
     "goBack": "Go back"
   },
+  "adminConsole": {
+    "title": "Admin Console",
+    "fields": {
+      "teamList": "Team List",
+      "adminSettings": "Admin Settings",
+      "minimumWorkHours": "Set Minimum Work Hours Per Day",
+      "organizationSettings": "Organization Settings",
+      "organizationName": "Organization Name"
+    },
+    "buttons": {
+      "save": "Save",
+      "deleteOrganization": "Delete Organization"
+    }
+  },
   "employeeList": {
     "title": "Employee List",
     "searchPlaceholder": "Search Employees",
