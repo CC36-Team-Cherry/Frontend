@@ -156,7 +156,7 @@ const handleSubmit = async () => {
     return;
   }
 
-    // create user with form data
+    // create Firebase user with form data
     createUserFirebase();
 
     // convert reactive object to raw object to pass to backend
@@ -190,6 +190,7 @@ const createUserFirebase = () => {
   createUserWithEmailAndPassword(auth, email, password)
   .then((userCredential) => {
     // Signed up 
+    //TODO: save whatever info we need in the pinia store as a state
     const user = userCredential.user;
     console.log(user.uid);
     // User will be logged in automatically if account is successfully created

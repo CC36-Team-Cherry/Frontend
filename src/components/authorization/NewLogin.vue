@@ -46,7 +46,6 @@
   import { useAuthStore } from '@/stores/authStore';
   import { verifyPasswordResetCode, confirmPasswordReset, signInWithEmailAndPassword } from "firebase/auth";
   import { auth } from '../../firebase/firebaseConfig.ts'
-import { aC } from 'node_modules/@fullcalendar/core/internal-common';
   
   const email = ref('')
   const newPassword = ref('');
@@ -74,7 +73,6 @@ import { aC } from 'node_modules/@fullcalendar/core/internal-common';
 
   const handleResetPassword = () => {
     const actionCode = getParameterByName('oobCode');
-    console.log(actionCode);
     verifyPasswordResetCode(auth, actionCode)
     .then((email) => {
       accountEmail = email;
@@ -91,11 +89,11 @@ import { aC } from 'node_modules/@fullcalendar/core/internal-common';
     });
   }
 
-  const validatePasswords = () => {
-    if (newPassword.value !== confirmNewPassword.value) {
-      return false
-    }
-  }
+  // const validatePasswords = () => {
+  //   if (newPassword.value !== confirmNewPassword.value) {
+  //     return false
+  //   }
+  // }
   
   const loginFirebase = () => {
     signInWithEmailAndPassword(auth, accountEmail, newPassword.value)
@@ -104,9 +102,7 @@ import { aC } from 'node_modules/@fullcalendar/core/internal-common';
       router.push({ path: `/calendar` });
     })
     .catch((error) => {
-      const errorCode = error.code;
-      const errorMessage = error.message;
-      console.log(errorCode, errorMessage);
+      console.log(error.code, error.message);
     });
   }
   

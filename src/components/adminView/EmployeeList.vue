@@ -54,7 +54,7 @@
     </table>
     <Modal :isVisible="isAddUserModalVisible" @close="closeAddUserModal">
   <h2 class="text-xl font-bold mb-4">{{ $t('employeeList.modal.modalTitle') }}</h2>
-  <form @submit.prevent="submitNewUserForm">
+  <form @submit.prevent="handleSubmit">
     <div class="grid grid-cols-2 gap-4">
       <div>
         <label class="block mb-1">{{ $t('employeeList.modal.fields.firstName') }}</label>
@@ -217,10 +217,14 @@ const closeAddUserModal = () => {
   isAddUserModalVisible.value = false;
 };
 
-const submitNewUserForm = () => {
-  console.log('New user data:', formData.value.email);
+const handleSubmit = () => {
+  addUserBackend();
   sendFirebaseEmail();
   closeAddUserModal();
+}
+
+const addUserBackend = () => {
+  console.log('New user data:', formData.value.email);
 };
 
 const sendFirebaseEmail = () => {

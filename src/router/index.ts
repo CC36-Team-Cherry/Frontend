@@ -56,6 +56,9 @@ const router = createRouter({
       path: '/newlogin',
       name: 'newlogin',
       component: NewLogin,
+      meta: {
+        requiresAuth: true
+      }
     },
 
     //THIS IS FOR TESTING FIREBASE, DELETE THIS LATER

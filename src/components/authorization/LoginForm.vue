@@ -28,7 +28,7 @@
           />
         </div>
         <button
-          @click="loginFirebase()"
+          @click="handleLogin()"
           type="submit"
           class="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600"
         >
@@ -59,7 +59,10 @@ const authStore = useAuthStore();
 const router = useRouter();
 
 const handleLogin = () => {
-  //authStore.login({ name: 'name', email: email.value });
+  //TODO: fetch user info from backend
+  //TODO: modify authStore.ts to be able to store all of the info that we want, also modify the below authStore.login command to include all of this info
+  authStore.login({ name: 'name', email: email.value });
+  loginFirebase();
 };
 
 const goToRegister = () => {
