@@ -82,11 +82,6 @@ import jaLocale from '@fullcalendar/core/locales/ja';
 import axios from 'axios';
 import { useI18n } from 'vue-i18n';
 import { useRoute } from 'vue-router';
-import enLocale from '@fullcalendar/core/locales/en-gb';
-import jaLocale from '@fullcalendar/core/locales/ja';
-import axios from 'axios';
-import { useI18n } from 'vue-i18n';
-import { useRoute } from 'vue-router';
 
 export default {
   name: 'FullCalendarComponent',

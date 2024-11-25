@@ -48,6 +48,7 @@ const checkPiniaUser = () => {
 const logoutFirebase = () => {
     signOut(getAuth()).then(() => {
       // Sign-out successful.
+      authStore.logout();
       window.location.href = '/login';
     }).catch((error) => {
     // An error happened.

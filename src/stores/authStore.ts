@@ -1,4 +1,5 @@
 import { defineStore } from 'pinia';
+import piniaPersistedState from 'pinia-plugin-persistedstate';
 import { AppPageType } from '@/types/AppState';
 
 interface User {

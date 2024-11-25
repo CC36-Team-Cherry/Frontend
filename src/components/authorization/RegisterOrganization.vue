@@ -203,9 +203,29 @@ const createUserFirebase = () => {
     {
       withCredentials: true,
     })    
+    .then((response) => {
+      const registeredAdmin = response.data;
 
-    // User will be logged in automatically if account is successfully created
-    router.push({ path: `/employee` });
+      console.log("frontend registration", registeredAdmin);
+
+      authStore.login({
+        first_name: registeredAdmin.first_name, 
+        last_name: registeredAdmin.last_name, 
+        email: registeredAdmin.email, 
+        is_admin: registeredAdmin.is_admin, 
+        is_supervisor: false, 
+        company_id: registeredAdmin.company_id, 
+        team_id: 0, 
+        team_name: "", 
+        role: registeredAdmin.role, 
+        join_date: registeredAdmin.join_date, 
+        pto: 0});
+      })
+
+      console.log("logged in user", authStore.user)
+
+      // User will be logged in automatically if account is successfully created
+      router.push({ path: `/employee` });
   })
   .catch((error) => {
     const errorCode = error.code;
