@@ -44,7 +44,7 @@
     </table>
     <Modal :isVisible="isAddUserModalVisible" @close="closeAddUserModal">
       <h2 class="text-xl font-bold mb-4">{{ $t('employeeList.modal.modalTitle') }}</h2>
-      <form @submit.prevent="submitNewUserForm">
+      <form @submit.prevent="handleSubmit">
         <div class="grid grid-cols-2 gap-4">
           <div>
             <label class="block mb-1">{{ $t('employeeList.modal.fields.firstName') }}</label>
@@ -109,6 +109,8 @@
 <script setup>
 import { ref, computed } from 'vue';
 import axios from "axios";
+import { auth } from '../../firebase/firebaseConfig.ts';
+import { sendPasswordResetEmail } from 'firebase/auth';
 import Modal from '@/modal/ModalView.vue';
 import EmployeeDetailsModal from '@/modal/EmployeeDetailsModal.vue';
 
@@ -171,7 +173,7 @@ const closeAddUserModal = () => {
   isAddUserModalVisible.value = false;
 };
 
-const submitNewUserForm = async () => {
+const handleSubmit = async () => {
   const payload = {
     email: formData.value.email,
     first_name: formData.value.firstName,
@@ -199,10 +201,25 @@ const submitNewUserForm = async () => {
 //   remaining_pto: number;
 // };
   
-  console.log('New user data:', formData.value);
+  addUserBackend();
+  sendFirebaseEmail();
   closeAddUserModal();
+}
+
+const addUserBackend = () => {
+  console.log('New user data:', formData.value.email);
 };
 
+const sendFirebaseEmail = () => {
+  sendPasswordResetEmail(auth, formData.value.email)
+  .then(() => {
+    // Password reset email sent!
+    // ..
+  })
+  .catch((error) => {
+    console.log(error.code, error.message);
+  });
+}
 
 const openEmployeeDetailsModal = (employee) => {
   selectedEmployee.value = employee;
