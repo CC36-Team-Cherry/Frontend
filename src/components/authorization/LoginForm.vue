@@ -61,7 +61,7 @@ const router = useRouter();
 const handleLogin = () => {
   //TODO: fetch user info from backend
   //TODO: modify authStore.ts to be able to store all of the info that we want, also modify the below authStore.login command to include all of this info
-  authStore.login({ name: 'name', email: email.value });
+  authStore.login({ first_name: 'name', last_name: 'last', email: email.value, is_admin: false, is_supervisor: false, company_id: 1, team_id: 1, team_name: "team", role: "leader", join_date: new Date(2020-12-2), pto: 8 });
   loginFirebase();
 };
 

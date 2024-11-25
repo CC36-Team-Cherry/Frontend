@@ -2,8 +2,20 @@ import { defineStore } from 'pinia';
 import { AppPageType } from '@/types/AppState';
 
 interface User {
-  name: string;
+  first_name: string;
+  last_name: string;
   email: string;
+  is_admin: boolean;
+  is_supervisor: boolean;
+  supervisor_id?: boolean;
+  company_id: number;
+  team_id: number;
+  team_name: string;
+  role: string;
+  join_date: Date;
+  leave_date?: Date;
+  pto: number;
+  last_login?: Date;
 }
 
 interface Organization {
@@ -34,5 +46,6 @@ export const useAuthStore = defineStore('auth', {
     isAuthenticated: (state) => !!state.user,
     showSidebar: (state) => state.currentPage === AppPageType.EMPLOYEE_LIST, 
   },
+  persist: true,
 });
 
