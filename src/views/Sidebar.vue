@@ -22,6 +22,7 @@
         </button>
         </router-link>
         <button
+          @click="logoutFirebase()"
           class="bg-red-500 text-white p-2 rounded w-full max-w-[120px] text-center"
         >
           {{ $t('Logout') }}
@@ -33,15 +34,20 @@
   
   
   <script setup>
+  import { getAuth, signOut } from 'firebase/auth';
   import { useAuthStore } from '@/stores/authStore';
   
   const authStore = useAuthStore();
 
-  const logout = () => {
-    authStore.logout();
-    console.log('Logged out');
-    window.location.href = '/login'; 
+  const logoutFirebase = () => {
+    signOut(getAuth()).then(() => {
+      authStore.logout();
+      window.location.href = '/login';
+    }).catch((error) => {
+    // An error happened.
+    });
   };
+
   </script>
   
   
