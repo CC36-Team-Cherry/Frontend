@@ -89,12 +89,12 @@ function authenticate () {
   })
 };
 
-router.beforeEach(async (to) => {
-  let requiresAuth = to.matched.some(record => record.meta.requiresAuth)
-  if (!await authenticate() && requiresAuth) {
-    return { name: 'login' }
-  }
-});
+// router.beforeEach(async (to) => {
+//   let requiresAuth = to.matched.some(record => record.meta.requiresAuth)
+//   if (!await authenticate() && requiresAuth) {
+//     return { name: 'login' }
+//   }
+// });
 
 // router.beforeEach((to, from, next) => {
 //   const authStore = useAuthStore();
