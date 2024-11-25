@@ -83,9 +83,11 @@
 
 <script setup>
 import { ref, toRaw, onMounted } from 'vue';
+import { useAuthStore } from '@/stores/authStore';
 import axios from 'axios';
 
 const apiUrl = import.meta.env.VITE_API_URL;
+const authStore = useAuthStore();
 
 const formData = ref({
     organizationName: '',
@@ -145,9 +147,9 @@ const saveSettings = async () => {
 
     const adminConsoleData = toRaw(formData.value);
     // TEST DATA: Need to replace with state of logged in account and org id
-    const organizationId = 19;
+    console.log(authStore.user)
 
-    await axios.patch(`${apiUrl}/organizations/${organizationId}`, {
+    await axios.patch(`${apiUrl}/organizations/${authStore.user.company_id}`, {
         adminConsoleData
     },
     {

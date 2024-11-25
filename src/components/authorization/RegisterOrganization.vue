@@ -209,6 +209,7 @@ const createUserFirebase = () => {
       console.log("frontend registration", registeredAdmin);
 
       authStore.login({
+        id: registeredAdmin.id,
         first_name: registeredAdmin.first_name, 
         last_name: registeredAdmin.last_name, 
         email: registeredAdmin.email, 
