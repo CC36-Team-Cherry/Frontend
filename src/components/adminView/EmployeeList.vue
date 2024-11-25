@@ -111,6 +111,7 @@ import { ref, computed } from 'vue';
 import axios from "axios";
 import Modal from '@/modal/ModalView.vue';
 import EmployeeDetailsModal from '@/modal/EmployeeDetailsModal.vue';
+import { reactive } from 'vue';
 
 const searchTerm = ref('');
 
@@ -122,7 +123,7 @@ const isEmployeeDetailsModalVisible = ref(false);
 let fetchedEmployees = ref([]);
 async function handleFetchEmployees(companyId) {
   try {
-    const response = await fetch(`${import.meta.env.VITE_API_URL}accounts/${companyId}`, {
+    const response = await fetch(`${import.meta.env.VITE_API_URL}/accounts/${companyId}`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json'
@@ -139,7 +140,7 @@ async function handleFetchEmployees(companyId) {
 }
 handleFetchEmployees(1);
 
-const formData = ref({
+const formData = reactive({
   firstName: '',
   lastName: '',
   email: '',
@@ -173,31 +174,37 @@ const closeAddUserModal = () => {
 
 const submitNewUserForm = async () => {
   const payload = {
-    email: formData.value.email,
-    first_name: formData.value.firstName,
-    last_name: formData.value.lastName,
-    birthdate: new Date(formData.value.birthdate),
-    company_id: 1, //harcoded for now
-    join_date: new Date(formData.value.joinDate),
-    role: formData.value.role,
-    
-  }
+    email: formData.email,
+    first_name: formData.firstName,
+    last_name: formData.lastName,
+    birthdate: new Date(formData.dateOfBirth),
+    company_id: 1, //hardcoded for now
+    join_date: new Date(formData.joinDate),
+    role: formData.role,
+    is_admin: (formData.type === 'Admin'),
+    is_supervisor: false,
+    remaining_pto: formData.pto,
+  };
+  console.log("formData before payload construction:", formData);
+  try {
+    const response = await axios.post(`${import.meta.env.VITE_API_URL}/accounts`, payload, {
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+    console.log('New user created:', response.data);
 
-//   type userAccount = {
-//   email: string;
-//   first_name: string;
-//   last_name: string;
-//   birthdate: Date;
-//   supervisor_id?: number;
-//   company_id: number;
-//   join_date: Date;
-//   leave_date?: Date;
-//   role: string;
-//   team_id?: number;
-//   is_admin: string;
-//   is_supervisor: string;
-//   remaining_pto: number;
-// };
+    await handleFetchEmployees(1);
+    closeAddUserModal();
+
+    formData.value = {
+      firstName: '',
+      lastName: '',
+      email: '',
+    };
+  } catch (err) {
+    console.error
+  }
   
   console.log('New user data:', formData.value);
   closeAddUserModal();
