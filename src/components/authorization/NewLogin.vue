@@ -46,20 +46,37 @@
   import { useAuthStore } from '@/stores/authStore';
   import { verifyPasswordResetCode, confirmPasswordReset, signInWithEmailAndPassword } from "firebase/auth";
   import { auth } from '../../firebase/firebaseConfig.ts'
-  
-  const email = ref('')
+  import axios from "axios";
+
+  const apiUrl = import.meta.env.VITE_API_URL;
+
   const newPassword = ref('');
   const confirmNewPassword = ref('');
   const authStore = useAuthStore();
   const router = useRouter();
 
   let accountEmail = '';
-  
-  const handleLogin = () => {
-    //authStore.login({ name: 'name', email: email.value });
-  };
 
-  function getParameterByName(name: string) {    
+  const handleResetPassword = () => {
+    const actionCode = getParameterByName('oobCode');
+    verifyPasswordResetCode(auth, actionCode)
+    .then((email) => {
+      accountEmail = email;
+      confirmPasswordReset(auth, actionCode, newPassword.value)
+      .then((res) => {
+        getUserFromBackend()
+        loginFirebase();
+      })
+      .catch((error) => {
+        console.log(error.code, error.message);
+      });
+    })
+    .catch((error) => {
+      console.log(error.code, error.message);
+    });
+  }
+
+  const getParameterByName = (name: string) => {    
     name = name.replace(/[\[]/,"\\\[").replace(/[\]]/,"\\\]");
     const regexS = "[\\?&]"+name+"=([^&#]*)";
     const regex = new RegExp(regexS);
@@ -71,23 +88,15 @@
     }
   }
 
-  const handleResetPassword = () => {
-    const actionCode = getParameterByName('oobCode');
-    verifyPasswordResetCode(auth, actionCode)
-    .then((email) => {
-      accountEmail = email;
-      confirmPasswordReset(auth, actionCode, newPassword.value)
-      .then((res) => {
-        loginFirebase();
-      })
-      .catch((error) => {
-        console.log(error.code, error.message);
-      });
-    })
-    .catch((error) => {
-      console.log(error.code, error.message);
-    });
+  const getUserFromBackend = async () => {
+  try {
+    const backendData = await axios.post(`${apiUrl}/login`, {email: accountEmail});
+    // store user data in Pinia
+    authStore.login(backendData.data)
+  } catch (err) {
+    console.log(err);
   }
+}
 
   // const validatePasswords = () => {
   //   if (newPassword.value !== confirmNewPassword.value) {

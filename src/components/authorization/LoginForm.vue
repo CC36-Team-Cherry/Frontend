@@ -62,7 +62,7 @@ const authStore = useAuthStore();
 const router = useRouter();
 
 const handleLogin = async () => {
-  getUserFromBackend();
+  await getUserFromBackend();
   loginFirebase();
 };
 
