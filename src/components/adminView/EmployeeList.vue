@@ -210,9 +210,9 @@ const addUserBackend = async () => {
 
 const sendFirebaseEmail = () => {
   sendPasswordResetEmail(auth, formData.email)
-  .then((res) => {
-    //console.log("SENT");
-  })
+  // .then((res) => {
+  //   console.log("SENT");
+  // })
   .catch((error) => {
     console.log(error.code, error.message);
   });
