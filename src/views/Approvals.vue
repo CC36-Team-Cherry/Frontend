@@ -94,8 +94,11 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue';
 import axios from 'axios';
+import { useAuthStore } from '@/stores/authStore';
 
 const apiUrl = import.meta.env.VITE_API_URL;
+const authStore = useAuthStore();
+const activeAccountId = authStore.user.company_id;
 
 // Sample data for the approval requests
 const requests = ref({
@@ -123,15 +126,12 @@ const switchTab = (tab) => {
     activeTab.value = tab;
 };
 
-//TEST DATA
-const accountId = 1;
-
 // handler to get all data for requests received by supervisor id (get all requests that match supervisor id is this account id)
 // TODO: Get all approvals, from monthly, pto, and special pto
 const getApprovals = async () => {
     try {
-        const response = await axios.get(`${apiUrl}/accounts/${accountId}/approvals`);
-        
+        const response = await axios.get(`${apiUrl}/accounts/${activeAccountId}/approvals`);
+        console.log(activeAccountId)
         // const requestsSent = {
         //     id: null, 
         //     toName: '',
@@ -151,10 +151,8 @@ const getApprovals = async () => {
         //     status: '',
         //     dateSent: '',
         // };
-
+        
         requests.value.sent = response.data.approvalsSentMonthly;
-
-
         requests.value.received = response.data.approvalsRequestedMonthly;
         console.log(requests.value);
         

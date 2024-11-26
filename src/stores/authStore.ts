@@ -3,6 +3,7 @@ import piniaPersistedState from 'pinia-plugin-persistedstate';
 import { AppPageType } from '@/types/AppState';
 
 interface User {
+  id: number;
   first_name: string;
   last_name: string;
   email: string;

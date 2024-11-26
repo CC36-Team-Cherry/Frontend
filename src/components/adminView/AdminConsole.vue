@@ -1,6 +1,7 @@
 <template>
     <div class="p-8 bg-gray-50 min-h-screen">
         <h1 class="border-2 text-2xl font-bold">{{$t('adminConsole.title')}}</h1>
+        <h2 class="border-2 text-xl font-bold"> {{ organizationName }}</h2>
             <div class="border-2 text-xl text-center my-5">{{$t('adminConsole.fields.teamList')}}</div>
                 <ul class="flex flex-col">
                     <li 
@@ -18,7 +19,7 @@
                             v-else
                             class="border-2"
                         >
-                        {{ team.name }}</span>
+                        {{ team.team_name }}</span>
                         <button 
                             @click="startEditing(index)" 
                             v-if="editingIndex !== index"
@@ -27,7 +28,7 @@
                             Edit
                         </button>
                         <button 
-                            @click="deleteTeam(index)"
+                            @click="deleteTeam(team.id)"
                             class="border-2"
                         >
                             Delete
@@ -83,31 +84,39 @@
 
 <script setup>
 import { ref, toRaw, onMounted } from 'vue';
+import { useAuthStore } from '@/stores/authStore';
 import axios from 'axios';
 
 const apiUrl = import.meta.env.VITE_API_URL;
+const authStore = useAuthStore();
+const activeCompanyId = authStore.user.company_id;
 
 const formData = ref({
     organizationName: '',
 });
 
-// TODO: Add organization id state
-
 // Reactive state
-const teams = ref([
-  { "id": 1, "name": "Team A" },
-  { "id": 2, "name": "Team B" },
-  { "id": 3, "name": "Team C" }
-]);
+const teams = ref([]);
 
 // New team variable 
 const newTeam = ref('');
+// Organization name variable
+const organizationName = ref('');
+
+const getOrganizationName = async () => {
+    try {
+        const response = await axios.get(`${apiUrl}/organizations/${activeCompanyId}`)
+        organizationName.value = response.data.name;
+    } catch(err) {
+        console.error('Error fetching organization name:', err);
+    }
+}
 
 // Get teams
-// TODO finish get teams endpoint
+// TODO add validation when no team exists
 const getTeams = async () => {
     try {
-        const response = await axios.get(`${apiUrl}/organizations/${organizationId}`);
+        const response = await axios.get(`${apiUrl}/organizations/${activeCompanyId}/teams`);
             // Store the fetched teams in state
             console.log(response.data);
             teams.value = response.data;
@@ -122,32 +131,85 @@ const startEditing = (index) => {
       editingIndex.value = index;
     };
 
-// Add new team
-const addTeam = async (newTeam) => {
+// Stop editing the team (disable the input field and save changes)
+const stopEditing = async () => {
+    const team = teams.value[editingIndex.value];
+    const updatedName = team.name; // The updated team name
+
     try {
-        const response = await axios.get(`${apiUrl}/organizations/${organizationId}`);
-        console.log(newTeam);
-        // console.log('New team saved:', toRaw(formData.value));
-        // alert('New team saved successfully!');
+        // Send PATCH request to update the team name in the backend
+        const response = await axios.patch(`${apiUrl}/teams/${team.id}`, {
+            name: updatedName // The new team name
+        });
+
+        if (response.status === 200) {
+            // Update the team name in the teams array (local state)
+            teams.value[editingIndex.value].name = updatedName;
+
+            // Stop editing after successful update
+            editingIndex.value = null;
+            alert('Team name updated successfully!');
+        } else {
+            alert('Failed to update the team name.');
+        }
+    } catch (err) {
+        console.error('Error updating team name:', err);
+        alert('An error occurred while updating the team name.');
+    }
+};
+
+// Add new team
+const addTeam = async () => {
+    try {
+        console.log(newTeam.value);
+        const newTeamName = newTeam.value;
+        const response = await axios.post(`${apiUrl}/organizations/${activeCompanyId}/teams`, {
+            newTeamName
+        });
+
+        if (response.data) {
+            teams.value.push(response.data); 
+            newTeam.value = ''; 
+        }
+
+        console.log('New team saved:', toRaw(response));
+        alert('New team saved successfully!');
     } catch (err) {
         console.error(err);
     }
 };
 
-// Stop editing and save changes
-const stopEditing = () => {
-      editingIndex.value = null;
-    };
+// Delete a team
+const deleteTeam = async (teamId) => {
+    try {
+
+        // Optimistically remove the team from the array
+        const originalTeams = [...teams.value];
+        teams.value = teams.value.filter(team => team.id !== teamId);
+
+        const response = await axios.delete(`${apiUrl}/teams/${teamId}`)
+
+        if (response.status !== 200) {
+            // If the deletion fails, revert the change
+            teams.value = originalTeams;
+            console.error('Failed to delete the team.');
+        } else {
+            console.error('Team deleted successfully!');
+        }
+
+    } catch (err) {
+        console.error(err);
+    }
+}
 
 // Save settings on click for admin settings outside of team list
 const saveSettings = async () => {
     try {
 
     const adminConsoleData = toRaw(formData.value);
-    // TEST DATA: Need to replace with state of logged in account and org id
-    const organizationId = 19;
+    organizationName.value = formData.value.organizationName;
 
-    await axios.patch(`${apiUrl}/organizations/${organizationId}`, {
+    await axios.patch(`${apiUrl}/organizations/${activeCompanyId}`, {
         adminConsoleData
     },
     {
@@ -165,6 +227,7 @@ const saveSettings = async () => {
 // Fetch teams when the component is mounted
 onMounted(() => {
     getTeams();
+    getOrganizationName();
 });
 
 </script>
