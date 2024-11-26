@@ -86,7 +86,6 @@ export default {
   },
   mounted() {
     const authStore = useAuthStore();
-    console.log("User ID from Pinia Store:", authStore.user?.id);
 
     if (!authStore.user || !authStore.user.id) {
       console.error("User ID is not defined in authStore");
@@ -101,11 +100,24 @@ export default {
       initialView: 'dayGridMonth',
       locale: this.locales[locale.value],
       selectable: true,
+      businessHours: {
+        // Mostra solo i giorni lavorativi (Lun-Ven)
+        daysOfWeek: [1, 2, 3, 4, 5],
+      },
       select: (selectionInfo) => {
-        const correctedEndDate = new Date(selectionInfo.endStr);
-        correctedEndDate.setDate(correctedEndDate.getDate() - 1);
-        const endStr = correctedEndDate.toISOString().split('T')[0];
-        this.selectionRange = `${selectionInfo.startStr} - ${endStr}`;
+        const startDate = new Date(selectionInfo.startStr);
+        const endDate = new Date(selectionInfo.endStr);
+        const dates = [];
+
+        // Genera tutte le date tra start e end, escludendo sabato (6) e domenica (0)
+        while (startDate < endDate) {
+          if (startDate.getDay() !== 0 && startDate.getDay() !== 6) {
+            dates.push(new Date(startDate));
+          }
+          startDate.setDate(startDate.getDate() + 1);
+        }
+
+        this.selectionRange = dates.map(date => date.toISOString().split('T')[0]).join(', ');
       },
       events: this.events,
       editable: true,
@@ -145,16 +157,12 @@ export default {
         .then((response) => {
           this.events = response.data.map((record) => ({
             id: record.id,
-            title: record.absence ? 'Absence' : 'Attendance',
+            title: `${record.punch_in.split('T')[1].slice(0, 5)} - ${record.punch_out.split('T')[1].slice(0, 5)}`,
             start: record.day,
             backgroundColor: this.getEventColor(record),
             extendedProps: {
-              startTime: record.punch_in
-                ? new Date(record.punch_in).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-                : 'N/A',
-              endTime: record.punch_out
-                ? new Date(record.punch_out).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-                : 'N/A',
+              startTime: record.punch_in.split('T')[1].slice(0, 5), // Mostra solo l'orario
+              endTime: record.punch_out.split('T')[1].slice(0, 5), // Mostra solo l'orario
             },
           }));
 
@@ -174,50 +182,39 @@ export default {
     },
     logAttendance() {
       const authStore = useAuthStore();
-      const day = new Date (this.selectionRange.split(' - ')[0]);
 
-      const punchIn = new Date(`${day}T${this.startTime}:00`);
-      const punchOut = new Date(`${day}T${this.endTime}:00`);
+      // Recupera tutte le date selezionate dal range
+      const days = this.selectionRange.split(', ');
 
-      const attendanceData = {
-        account_id: authStore.user.id,
-        day: day.toISOString(),
-        punch_in: punchIn.toISOString(),
-        punch_out: punchOut.toISOString(),
-        absence: this.attendanceType === 'absence',
-        full_pto: this.attendanceType === 'pto',
-        half_pto: this.attendanceType === 'halfPto',
-        special_pto: this.attendanceType === 'specialPto',
-        // TODO: NEED TO CHANGE
-        break_amount: 0,
-        totalHours: 0,
-      };
+      const attendancePromises = days.map((day) => {
+        const punchIn = `${day}T${this.startTime}:00Z`;
+        const punchOut = `${day}T${this.endTime}:00Z`;
 
-      if (this.selectedEventId) {
-        axios
-          .put(
-            `http://localhost:3000/accounts/${authStore.user.id}/attendance/${this.selectedEventId}`,
-            attendanceData
-          )
-          .then(() => {
-            this.fetchAttendanceData(authStore.user.id);
-            this.clearForm();
-          })
-          .catch((error) => {
-            console.error('Error editing attendance:', error.response?.data || error.message);
-          });
-      } else {
-        axios
-          .post(`http://localhost:3000/accounts/${authStore.user.id}/attendance`, attendanceData)
-          .then((response) => {
-            console.log('Attendance logged:', response.data);
-            this.fetchAttendanceData(authStore.user.id);
-            this.clearForm();
-          })
-          .catch((error) => {
-            console.error('Error logging attendance:', error.response?.data || error.message);
-          });
-      }
+        const attendanceData = {
+          account_id: authStore.user.id,
+          day: new Date(`${day}T00:00:00.000Z`).toISOString(),
+          punch_in: punchIn,
+          punch_out: punchOut,
+          absence: this.attendanceType === 'absence',
+          full_pto: this.attendanceType === 'pto',
+          half_pto: this.attendanceType === 'halfPto',
+          special_pto: this.attendanceType === 'specialPto',
+          break_amount: 0,
+          totalHours: 0,
+        };
+
+        return axios.post(`http://localhost:3000/accounts/${authStore.user.id}/attendance`, attendanceData);
+      });
+
+      Promise.all(attendancePromises)
+        .then(() => {
+          this.fetchAttendanceData(authStore.user.id);
+          this.clearForm();
+        })
+        .catch((error) => {
+          console.error('Error logging attendance:', error.response?.data || error.message);
+        });
+
     },
     getEventColor(data) {
       if (data.absence) return 'red';
@@ -246,4 +243,5 @@ export default {
     },
   },
 };
+
 </script>

@@ -98,6 +98,15 @@
         "type": "タイプ",
         "pto": "有給"
       },
+      "placeholders": {
+        "firstName": "名を入力してください",
+        "lastName": "姓を入力してください",
+        "email": "メールアドレスを入力してください",
+        "selectTeam": "チームを選択してください",
+        "supervisor": "上司の名前を入力してください",
+        "role": "役割を入力してください",
+        "pto": "有給日数を入力してください"
+      },
       "userType": {
         "user": "ユーザー",
         "admin": "管理者"
@@ -130,6 +139,28 @@
       "save": "保存",
       "delete": "削除"
     }
+  },
+  "calendar": {
+    "selection": "YYYY-MM-DD",
+    "type": "タイプを選択",
+    "startTime": "開始時間",
+    "endTime": "終了時間",
+    "attendance": "出勤記録",
+    "submission": "提出",
+    "logAttendance": "出勤を記録",
+    "submit": "送信",
+    "supervisorPlaceholder": "上司を選択してください",
+    "types": {
+      "general": "一般",
+      "pto": "有給休暇",
+      "specialPto": "特別有給休暇"
+    },
+    "months": [
+      "1月", "2月", "3月", "4月", "5月", "6月", "7月", "8月", "9月", "10月", "11月", "12月"
+    ],
+    "daysOfWeek": [
+      "日曜日", "月曜日", "火曜日", "水曜日", "木曜日", "金曜日", "土曜日"
+    ]
   }
 }
 
