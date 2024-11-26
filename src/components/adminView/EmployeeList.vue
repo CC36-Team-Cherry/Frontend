@@ -171,44 +171,45 @@ const closeAddUserModal = () => {
 };
 
 const handleSubmit = async () => {
-  //post new user to backend & send them an email (email is called as a part of addUserBackend())
-  addUserBackend();
+  // post new user to backend
+  await addUserBackend();
   // fetch employees from backend
+  // TODO: change this to read based on the currently logged-in user's company ID 
   await handleFetchEmployees(1);
+  // close the modal
+  closeAddUserModal();
+  // send email to the new user, delayed by two seconds to allow time for new account to post to Firebase
+  await new Promise(resolve => {setTimeout(resolve, 2000)});
+  sendFirebaseEmail();
   // reset formData
   formData.value = {
-    firstName: '',
-    lastName: '',
-    email: '',
+  firstName: '',
+  lastName: '',
+  email: '',
   };
-  //close the modal
-  closeAddUserModal();
 }
 
-async function addUserBackend () {
-  const newUser = {
+const addUserBackend = async () => {
+  const userData = {
     email: formData.email,
     first_name: formData.firstName,
     last_name: formData.lastName,
     birthdate: new Date(formData.dateOfBirth),
-    company_id: 1, //hardcoded for now
+    // TODO: update hardcoded company_id
+    company_id: 1,
     join_date: new Date(formData.joinDate),
     role: formData.role,
     is_admin: (formData.type === 'Admin'),
     is_supervisor: false,
     remaining_pto: formData.pto,
   };
-  axios.post(`${apiUrl}/accounts`, newUser).then((response) => {console.log(response)}).catch((error) => {console.log(error)})
+  await axios.post(`${apiUrl}/accounts`, userData).catch((err) => {console.log(err)});
 }
 
 const sendFirebaseEmail = () => {
-  console.log("before send: ",formData.email)
   sendPasswordResetEmail(auth, formData.email)
-  .then(() => {
-    console.log("after send: ",formData.email);
-    console.log("SENT");
-    // Password reset email sent!
-    // ..
+  .then((res) => {
+    //console.log("SENT");
   })
   .catch((error) => {
     console.log(error.code, error.message);
