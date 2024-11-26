@@ -44,7 +44,7 @@
     </table>
     <Modal :isVisible="isAddUserModalVisible" @close="closeAddUserModal">
       <h2 class="text-xl font-bold mb-4">{{ $t('employeeList.modal.modalTitle') }}</h2>
-      <form @submit.prevent="handleSubmit">
+      <form>
         <div class="grid grid-cols-2 gap-4">
           <div>
             <label class="block mb-1">{{ $t('employeeList.modal.fields.firstName') }}</label>
@@ -95,7 +95,7 @@
           </div>
         </div>
         <div class="mt-4">
-          <button type="submit" class="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600">
+          <button @click="handleSubmit()" type="button" class="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600">
             {{ $t('employeeList.modal.sendInvitation') }}
           </button>
         </div>
@@ -114,6 +114,8 @@ import { sendPasswordResetEmail } from 'firebase/auth';
 import Modal from '@/modal/ModalView.vue';
 import EmployeeDetailsModal from '@/modal/EmployeeDetailsModal.vue';
 import { reactive } from 'vue';
+
+const apiUrl = import.meta.env.VITE_API_URL;
 
 const searchTerm = ref('');
 
@@ -134,12 +136,13 @@ async function handleFetchEmployees(companyId) {
     if (response.ok) {
       const parsedRes = await response.json();
       fetchedEmployees.value = parsedRes;
-      console.log(parsedRes);
     }
   } catch (err) {
     console.error("Error: ", err);
   }
 }
+
+//TODO: change this function call to use the company ID of the currently logged-in user
 handleFetchEmployees(1);
 
 const formData = reactive({
@@ -168,7 +171,22 @@ const closeAddUserModal = () => {
 };
 
 const handleSubmit = async () => {
-  const payload = {
+  //post new user to backend & send them an email (email is called as a part of addUserBackend())
+  addUserBackend();
+  // fetch employees from backend
+  await handleFetchEmployees(1);
+  // reset formData
+  formData.value = {
+    firstName: '',
+    lastName: '',
+    email: '',
+  };
+  //close the modal
+  closeAddUserModal();
+}
+
+async function addUserBackend () {
+  const newUser = {
     email: formData.email,
     first_name: formData.firstName,
     last_name: formData.lastName,
@@ -180,34 +198,14 @@ const handleSubmit = async () => {
     is_supervisor: false,
     remaining_pto: formData.pto,
   };
-  console.log("formData before payload construction:", formData);
-  try {
-    const response = await axios.post(`${import.meta.env.VITE_API_URL}/accounts`, payload, {
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    });
-    sendFirebaseEmail(response.data.email);
-    console.log('New user created:', response.data);
-
-    await handleFetchEmployees(1);
-    closeAddUserModal();
-
-    formData.value = {
-      firstName: '',
-      lastName: '',
-      email: '',
-    };
-  } catch (err) {
-    console.error
-  }
-
-  closeAddUserModal();
+  axios.post(`${apiUrl}/accounts`, newUser).then((response) => {console.log(response)}).catch((error) => {console.log(error)})
 }
 
-const sendFirebaseEmail = (currentEmail) => {
-  sendPasswordResetEmail(auth, currentEmail)
+const sendFirebaseEmail = () => {
+  console.log("before send: ",formData.email)
+  sendPasswordResetEmail(auth, formData.email)
   .then(() => {
+    console.log("after send: ",formData.email);
     console.log("SENT");
     // Password reset email sent!
     // ..
