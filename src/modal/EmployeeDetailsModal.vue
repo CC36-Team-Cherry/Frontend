@@ -30,7 +30,8 @@
                 <label class="font-semibold block">{{ $t('employeeDetails.fields.firstName') }}</label>
                 <input
                   type="text"
-                  v-model="formData.firstName"
+                  v-model="formData.first_name"
+                  :placeholder="employee.first_name"
                   class="border w-full rounded px-2 py-1"
                 />
               </div>
@@ -38,7 +39,8 @@
                 <label class="font-semibold block">{{ $t('employeeDetails.fields.lastName') }}</label>
                 <input
                   type="text"
-                  v-model="formData.lastName"
+                  v-model="formData.last_name"
+                  :placeholder="employee.last_name"
                   class="border w-full rounded px-2 py-1"
                 />
               </div>
@@ -47,6 +49,7 @@
                 <input
                   type="email"
                   v-model="formData.email"
+                  :placeholder="employee.email"
                   class="border w-full rounded px-2 py-1"
                 />
               </div>
@@ -54,7 +57,7 @@
                 <label class="font-semibold block">{{ $t('employeeDetails.fields.dateOfBirth') }}</label>
                 <input
                   type="date"
-                  v-model="formData.dateOfBirth"
+                  v-model="formData.birthdate"
                   class="border w-full rounded px-2 py-1"
                 />
               </div>
@@ -73,6 +76,7 @@
                 <input
                   type="text"
                   v-model="formData.supervisor"
+                  :placeholder="employee.supervisor"
                   class="border w-full rounded px-2 py-1"
                 />
               </div>
@@ -90,6 +94,7 @@
                 <input
                   type="number"
                   v-model="formData.pto"
+                  :placeholder="employee.PTO?.remaining_pto || 0"
                   class="border w-full rounded px-2 py-1"
                 />
               </div>
@@ -138,7 +143,7 @@
   </template>
   
   <script setup>
-  import { defineProps, defineEmits, ref } from 'vue';
+  import { defineProps, defineEmits, ref, reactive, watch, onMounted } from 'vue';
   
   const props = defineProps({
     employee: {
@@ -154,24 +159,27 @@
   const emit = defineEmits(['close', 'save', 'delete']);
   
   const onClose = () => emit('close');
-  const onSave = () => emit('save', formData.value);
+  const onSave = () => emit('save', formData);
   const onDelete = () => emit('delete', formData.value);
   
   const teams = ref(['Team A', 'Team B', 'Team C']);
-  const formData = ref({
-    firstName: '',
-    lastName: '',
+  const formData = reactive({
+    first_name: '',
+    last_name: '',
     email: '',
-    dateOfBirth: '',
+    birthdate: '',
     team: '',
     supervisor: '',
     pto: 0,
     specialHolidays: '',
   });
+
+  onMounted(() => {
+    if (props.employee.birthdate) {
+      formData.dateOfBirth = props.employee.birthdate.split('T')[0];
+    }
+    if (props.employee.PTO.remaining_pto) {
+      formData.pto = Number(props.employee.PTO.remaining_pto);
+    }
+  });
   </script>
-  
-  
-  
-  
-  
-  
