@@ -30,7 +30,7 @@ const router = createRouter({
       component: RegisterOrganization,
     },
     {
-      path:'/calendar/accountid',
+      path:'/calendar/',
       name:'calendar',
       component: Calendar,
       meta: {
@@ -99,12 +99,12 @@ function authenticate () {
   })
 };
 
-// router.beforeEach(async (to) => {
-//   let requiresAuth = to.matched.some(record => record.meta.requiresAuth)
-//   if (!await authenticate() && requiresAuth) {
-//     return { name: 'login' }
-//   }
-// });
+router.beforeEach(async (to) => {
+  let requiresAuth = to.matched.some(record => record.meta.requiresAuth)
+  if (!await authenticate() && requiresAuth) {
+    return { name: 'login' }
+  }
+});
 
 // router.beforeEach((to, from, next) => {
 //   const authStore = useAuthStore();

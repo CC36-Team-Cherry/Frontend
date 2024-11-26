@@ -2,13 +2,13 @@
   <div class="flex justify-center items-center bg-gray-100">
     <div class="bg-white p-8 rounded shadow-md w-full max-w-lg">
       <h1 class="text-2xl font-bold mb-6 text-gray-800">{{ $t('register.title') }}</h1>
-      <form @submit.prevent="handleSubmit" class="flex flex-col space-y-4">
+      <form class="flex flex-col space-y-4">
         <div>
           <label class="block text-gray-700 font-medium mb-2">
             {{ $t('login.email') }}:
           </label>
           <input
-            v-model="formData.adminEmail"
+            v-model="formData.email"
             type="email"
             class="w-full p-3 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-400"
             required
@@ -19,7 +19,7 @@
             {{ $t('login.password') }}:
           </label>
           <input
-            v-model="formData.adminPassword"
+            v-model="formData.password"
             type="password"
             class="w-full p-3 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-400"
             required
@@ -30,7 +30,7 @@
             {{ $t('register.firstName') }}:
           </label>
           <input
-            v-model="formData.adminFirstName"
+            v-model="formData.first_name"
             type="text"
             class="w-full p-3 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-400"
             required
@@ -41,7 +41,7 @@
             {{ $t('register.lastName') }}:
           </label>
           <input
-            v-model="formData.adminLastName"
+            v-model="formData.last_name"
             type="text"
             class="w-full p-3 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-400"
             required
@@ -52,7 +52,7 @@
             {{ $t('employeeDetails.fields.dateOfBirth') }}:
           </label>
           <input
-            v-model="formData.adminDateOfBirth"
+            v-model="formData.birthdate"
             type="date"
             class="w-full p-3 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-400"
             required
@@ -63,7 +63,7 @@
             {{ $t('settings.fields.role') }}:
           </label>
           <input
-            v-model="formData.adminRole"
+            v-model="formData.role"
             type="text"
             class="w-full p-3 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-400"
             required
@@ -74,7 +74,7 @@
             {{ $t('settings.fields.joinDate') }}:
           </label>
           <input
-            v-model="formData.adminJoinDate"
+            v-model="formData.join_date"
             type="date"
             class="w-full p-3 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-400"
             required
@@ -85,7 +85,7 @@
             {{ $t('register.organizationName') }}:
           </label>
           <input
-            v-model="formData.organizationName"
+            v-model="formData.company_name"
             type="text"
             class="w-full p-3 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-400"
             required
@@ -93,7 +93,7 @@
         </div>
         <button
           @click="handleSubmit()"
-          type="submit"
+          type="button"
           class="bg-blue-500 text-white py-3 px-4 rounded hover:bg-blue-600 transition duration-200 font-semibold"
         >
           {{ $t('register.submit') }}
@@ -130,14 +130,17 @@ const router = useRouter();
 const apiUrl = import.meta.env.VITE_API_URL;
 
 const formData = ref({
-  adminEmail: '',
-  adminPassword: '',
-  adminFirstName: '',
-  adminLastName: '',
-  adminDateOfBirth: '',
-  adminRole: '',
-  adminJoinDate: '',
-  organizationName: '',
+  email: '',
+  auth_key: '',
+  password: '',
+  first_name: '',
+  last_name: '',
+  birthdate: '',
+  role: '',
+  join_date: '',
+  company_name: '',
+  is_admin: true,
+  remaining_pto: 0,
 });
 
 const goToLogin = () => {
@@ -150,31 +153,21 @@ const handleSubmit = async () => {
   try {
 
     if (
-      !formData.value.adminEmail ||
-      !formData.value.adminPassword ||
-      !formData.value.adminFirstName ||
-      !formData.value.adminLastName ||
-      !formData.value.adminDateOfBirth ||
-      !formData.value.adminRole ||
-      !formData.value.adminJoinDate ||
-      !formData.value.organizationName
+      !formData.value.email ||
+      !formData.value.password ||
+      !formData.value.first_name ||
+      !formData.value.last_name ||
+      !formData.value.birthdate ||
+      !formData.value.role ||
+      !formData.value.join_date ||
+      !formData.value.company_name
   ) {
     alert(t('register.errorFillAllFields')); 
     return;
   }
 
-    // create Firebase user with form data
+    // create Firebase user with form data and fetch post to add to backend
     createUserFirebase();
-
-    // convert reactive object to raw object to pass to backend
-    const adminData = toRaw(formData.value);
-
-    await axios.post(`${apiUrl}/registration`, {
-      adminData
-    },
-    {
-      withCredentials: true,
-    })
 
     console.log('Frontend - Registration completed:', formData.value);
     alert(t('register.success'));
@@ -191,8 +184,8 @@ const handleSubmit = async () => {
 };
 
 const createUserFirebase = () => {
-  const email = formData.value.adminEmail;
-  const password = formData.value.adminPassword;
+  const email = formData.value.email;
+  const password = formData.value.password;
 
   createUserWithEmailAndPassword(auth, email, password)
   .then((userCredential) => {
@@ -200,8 +193,39 @@ const createUserFirebase = () => {
     //TODO: save whatever info we need in the pinia store as a state
     const user = userCredential.user;
     console.log(user.uid);
-    // User will be logged in automatically if account is successfully created
-    router.push({ path: `/employee` });
+
+    formData.value.auth_key = user.uid;
+    const newAccount = toRaw(formData.value);
+
+    axios.post(`${apiUrl}/registration`, {
+      newAccount
+    },
+    {
+      withCredentials: true,
+    })    
+    .then((response) => {
+      const registeredAdmin = response.data;
+
+      console.log("frontend registration", registeredAdmin);
+
+      authStore.login({
+        first_name: registeredAdmin.first_name, 
+        last_name: registeredAdmin.last_name, 
+        email: registeredAdmin.email, 
+        is_admin: registeredAdmin.is_admin, 
+        is_supervisor: false, 
+        company_id: registeredAdmin.company_id, 
+        team_id: 0, 
+        team_name: "", 
+        role: registeredAdmin.role, 
+        join_date: registeredAdmin.join_date, 
+        pto: 0});
+      })
+
+      console.log("logged in user", authStore.user)
+
+      // User will be logged in automatically if account is successfully created
+      router.push({ path: `/employee` });
   })
   .catch((error) => {
     const errorCode = error.code;
