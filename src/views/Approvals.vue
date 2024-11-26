@@ -48,13 +48,24 @@
                     >
                         <td
                             v-if="activeTab === 'sent'"
-                        >{{  request.supervisor_id }}</td>
+                        >{{  request.supervisor.first_name + " " + request.supervisor.last_name }}</td>
                         <td
                             v-if="activeTab === 'received'"
-                        >{{  request.account_id }}</td>
+                        >{{ request.account.first_name + " " + request.account.last_name }}</td>
                         <td>{{  "Monthly Attendance" }}</td>
                         <!-- <td>{{  request.type }}</td> -->
-                        <td>{{  request.content }}</td>
+                        
+                        <td
+                            v-if="!request.isEditing"
+                        >{{  request.content }}</td>
+                        <input
+                            v-if="request.isEditing"
+                            v-model="request.newMessage"
+                            class="border-2"
+                            @keyup.enter="saveRemind(request)"
+                            @blur="cancelEditing(request)"
+                        />
+
                         <td>{{  request.status }}</td>
                         <td class="flex flex-col">
                             <button
@@ -75,7 +86,7 @@
                             <button
                                 v-if="activeTab==='sent'"
                                 class="border-2"
-                                @click="remindClick(request.id)"
+                                @click="remindClick(request)"
                             >Remind</button>
                             <button
                                 class="border-2"
@@ -98,20 +109,10 @@ import { useAuthStore } from '@/stores/authStore';
 
 const apiUrl = import.meta.env.VITE_API_URL;
 const authStore = useAuthStore();
-const activeAccountId = authStore.user.company_id;
+const activeAccountId = authStore.user.id;
 
 // Sample data for the approval requests
-const requests = ref({
-    // sent: 
-    // [
-    // // { name: 'Alice Johnson', type: 'Leave', message: 'Leave request for 2 days', status: 'Pending', date: '2024-11-15' },
-    // // { name: 'Bob Brown', type: 'Expense', message: 'Expense request for $500', status: 'Rejected', date: '2024-11-12' },
-    // ],
-    // received: [
-    // // { name: 'John Doe', type: 'Leave', message: 'Leave request for 3 days', status: 'Pending', date: '2024-11-20' },
-    // // { name: 'Jane Smith', type: 'Expense', message: 'Expense approval for $200', status: 'Approved', date: '2024-11-18' },
-    // ],
-});
+const requests = ref({});
 
 // Reactive state to store current tab
 const activeTab = ref('sent');
@@ -130,8 +131,8 @@ const switchTab = (tab) => {
 // TODO: Get all approvals, from monthly, pto, and special pto
 const getApprovals = async () => {
     try {
+        console.log(activeAccountId);
         const response = await axios.get(`${apiUrl}/accounts/${activeAccountId}/approvals`);
-        console.log(activeAccountId)
         // const requestsSent = {
         //     id: null, 
         //     toName: '',
@@ -173,18 +174,52 @@ const statusClick = async (approvalsId, statusChange) => {
                 statusChange
             }
         ); 
+
+        // Update the local state immediately if the status change is successful
+        // Loop through the filtered requests and update the status for the specific request
+        const tabRequests = requests.value[activeTab.value];
+        const requestIndex = tabRequests.findIndex(request => request.id === approvalsId);
+
+        if (requestIndex !== -1) {
+            tabRequests[requestIndex].status = statusChange; // update the status locally
+        }
+
     } catch (err) {
         console.error('Error changing approval status:', err)
     }
 }
 
-// Button click to update last updated and edit message 
-const remindClick = async () => {
+// Button click to update able to edit message 
+const remindClick = (request) => {
+    request.isEditing = true;
+    request.newMessage = request.content;
+}
+
+// Save remind with edited message and update last change
+const saveRemind = async (request) => {
+
+    const newMessage = request.newMessage;
+
     try {
+        const response = await axios.patch(`${apiUrl}/approvals/${request.id}/remind`, {
+            newMessage,
+        });
+
+        if (response.status === 200) {
+            request.content = request.newMessage;
+            request.updated_at = new Date().toISOString();
+            request.isEditing = false;
+        }
 
     } catch (err) {
-        console.error('Error sending reminder:', err)
+        console.error('Error setting sendingremind:', err)
     }
+}
+
+// Function to cancel editing without saving
+const cancelEditing = (request) => {
+    request.isEditing = false;
+    request.newMessage = request.content;
 }
 
 // Button click to see attendance, reroute OR modal to see that person's calendar view
@@ -199,7 +234,18 @@ const seeAttendanceClick = async () => {
 // TODO: Set up delete approval to delete depending on type of request
 const deleteClick = async (approvalsId) => {
     try {
+    
         const response = await axios.delete(`${apiUrl}/approvals/${approvalsId}`); 
+
+        // After a successful delete, remove the request from the local state
+        const tabRequests = requests.value[activeTab.value];  // Get requests for the active tab
+        const requestIndex = tabRequests.findIndex(request => request.id === approvalsId);
+
+        if (requestIndex !== -1) {
+            // Remove the deleted request from the local array
+            tabRequests.splice(requestIndex, 1);
+        }
+
     } catch (err) {
         console.error('Error deleting approval:', err)
     }
