@@ -50,22 +50,6 @@
           {{ $t('calendar.logAttendance') }}
         </button>
       </div>
-      <!-- Submission -->
-      <div>
-        <label class="block mb-1 font-bold">{{ $t('calendar.submission') }}</label>
-        <select v-model="submissionSupervisor" class="border border-gray-300 rounded p-2 w-full">
-          <option value="" disabled>{{ $t('calendar.supervisorPlaceholder') }}</option>
-          <option v-for="supervisor in supervisors" :key="supervisor" :value="supervisor">
-            {{ supervisor }}
-          </option>
-        </select>
-        <button
-          @click="submitAttendance"
-          class="bg-green-500 text-white py-2 px-4 rounded hover:bg-green-600 w-full mt-2"
-        >
-          {{ $t('calendar.submit') }}
-        </button>
-      </div>
     </div>
 
     <!-- Calendar Section -->
@@ -81,7 +65,7 @@ import enLocale from '@fullcalendar/core/locales/en-gb';
 import jaLocale from '@fullcalendar/core/locales/ja';
 import axios from 'axios';
 import { useI18n } from 'vue-i18n';
-import { useRoute } from 'vue-router';
+import { useAuthStore } from '@/stores/authStore';
 
 export default {
   name: 'FullCalendarComponent',
@@ -91,12 +75,9 @@ export default {
       attendanceType: '',
       startTime: '',
       endTime: '',
-      submissionSupervisor: '',
-      supervisors: ['Default Supervisor', 'User A', 'User B'],
       calendar: null,
       events: [],
       selectedEventId: null,
-      accountId: null,
       locales: {
         'en-US': enLocale,
         'ja-JP': jaLocale,
@@ -104,11 +85,16 @@ export default {
     };
   },
   mounted() {
+    const authStore = useAuthStore();
+    console.log("User ID from Pinia Store:", authStore.user?.id);
+
+    if (!authStore.user || !authStore.user.id) {
+      console.error("User ID is not defined in authStore");
+      return;
+    }
+
     const calendarEl = this.$refs.calendar;
     const { locale } = useI18n();
-    const route = useRoute();
-
-    this.accountId = route.params.accountId;
 
     this.calendar = new Calendar(calendarEl, {
       plugins: [interactionPlugin, dayGridPlugin],
@@ -150,12 +136,12 @@ export default {
       }
     );
 
-    this.fetchAttendanceData();
+    this.fetchAttendanceData(authStore.user.id);
   },
   methods: {
-    fetchAttendanceData() {
+    fetchAttendanceData(accountId) {
       axios
-        .get(`http://localhost:3000/accounts/${this.accountId}/attendance`)
+        .get(`http://localhost:3000/accounts/${accountId}/attendance`)
         .then((response) => {
           this.events = response.data.map((record) => ({
             id: record.id,
@@ -187,50 +173,52 @@ export default {
       this.attendanceType = this.getEventTypeFromColor(event.backgroundColor);
     },
     logAttendance() {
-  const day = this.selectionRange.split(' - ')[0];
+      const authStore = useAuthStore();
+      const day = new Date (this.selectionRange.split(' - ')[0]);
 
-  // Converti l'orario di `startTime` e `endTime` al formato corretto con il fuso orario locale
-  const punchIn = new Date(`${day}T${this.startTime}:00`);
-  const punchOut = new Date(`${day}T${this.endTime}:00`);
+      const punchIn = new Date(`${day}T${this.startTime}:00`);
+      const punchOut = new Date(`${day}T${this.endTime}:00`);
 
-  const attendanceData = {
-    account_id: this.accountId,
-    day,
-    punch_in: punchIn.toISOString(), // Ora convertita a ISO per il backend
-    punch_out: punchOut.toISOString(), 
-    absence: this.attendanceType === 'absence',
-    full_pto: this.attendanceType === 'pto',
-    half_pto: this.attendanceType === 'halfPto',
-    special_pto: this.attendanceType === 'specialPto',
-  };
+      const attendanceData = {
+        account_id: authStore.user.id,
+        day: day.toISOString(),
+        punch_in: punchIn.toISOString(),
+        punch_out: punchOut.toISOString(),
+        absence: this.attendanceType === 'absence',
+        full_pto: this.attendanceType === 'pto',
+        half_pto: this.attendanceType === 'halfPto',
+        special_pto: this.attendanceType === 'specialPto',
+        // TODO: NEED TO CHANGE
+        break_amount: 0,
+        totalHours: 0,
+      };
 
-  
-
-  if (this.selectedEventId) {
-    axios
-      .put(`http://localhost:3000/accounts/${this.accountId}/attendance/${this.selectedEventId}`, attendanceData)
-      .then(() => {
-        this.fetchAttendanceData();
-        this.clearForm();
-      })
-      .catch((error) => {
-        console.error('Error editing attendance:', error.response?.data || error.message);
-      });
-  } else {
-    axios
-      .post(`http://localhost:3000/accounts/${this.accountId}/attendance`, attendanceData)
-      .then((response) => {
-        console.log('Risposta dal server:', response.data); 
-        this.fetchAttendanceData();
-        this.clearForm();
-      })
-      .catch((error) => {
-        console.error('Error logging attendance:', error.response?.data || error.message);
-      });
-  }
-},
-
-
+      if (this.selectedEventId) {
+        axios
+          .put(
+            `http://localhost:3000/accounts/${authStore.user.id}/attendance/${this.selectedEventId}`,
+            attendanceData
+          )
+          .then(() => {
+            this.fetchAttendanceData(authStore.user.id);
+            this.clearForm();
+          })
+          .catch((error) => {
+            console.error('Error editing attendance:', error.response?.data || error.message);
+          });
+      } else {
+        axios
+          .post(`http://localhost:3000/accounts/${authStore.user.id}/attendance`, attendanceData)
+          .then((response) => {
+            console.log('Attendance logged:', response.data);
+            this.fetchAttendanceData(authStore.user.id);
+            this.clearForm();
+          })
+          .catch((error) => {
+            console.error('Error logging attendance:', error.response?.data || error.message);
+          });
+      }
+    },
     getEventColor(data) {
       if (data.absence) return 'red';
       if (data.full_pto) return 'orange';
@@ -259,6 +247,3 @@ export default {
   },
 };
 </script>
-
-
-

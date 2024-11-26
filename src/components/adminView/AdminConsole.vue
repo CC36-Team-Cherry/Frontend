@@ -11,7 +11,7 @@
                     >
                         <input
                             v-if="editingIndex === index"
-                            v-model="teams[index].name"
+                            v-model="teams[index].team_name"
                             @blur="stopEditing"
                             @keyup.enter="stopEditing"
                         />
@@ -134,17 +134,19 @@ const startEditing = (index) => {
 // Stop editing the team (disable the input field and save changes)
 const stopEditing = async () => {
     const team = teams.value[editingIndex.value];
-    const updatedName = team.name; // The updated team name
+    const updatedTeamName = team.team_name; // The updated team name
 
     try {
         // Send PATCH request to update the team name in the backend
         const response = await axios.patch(`${apiUrl}/teams/${team.id}`, {
-            name: updatedName // The new team name
+            updatedTeamName // The new team name
         });
 
         if (response.status === 200) {
             // Update the team name in the teams array (local state)
-            teams.value[editingIndex.value].name = updatedName;
+            console.log(updatedTeamName)
+            console.log(teams.value);
+            teams.value[editingIndex.value].team_name = updatedTeamName;
 
             // Stop editing after successful update
             editingIndex.value = null;
