@@ -128,6 +128,7 @@ const router = useRouter();
 // });
 
 const apiUrl = import.meta.env.VITE_API_URL;
+const authStore = useAuthStore();
 
 const formData = ref({
   email: '',
@@ -146,8 +147,6 @@ const formData = ref({
 const goToLogin = () => {
   router.push({ path: `/login` });
 }
-
-const authStore = useAuthStore();
 
 const handleSubmit = async () => {
   try {

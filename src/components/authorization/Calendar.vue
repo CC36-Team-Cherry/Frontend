@@ -86,7 +86,6 @@ export default {
   },
   mounted() {
     const authStore = useAuthStore();
-    console.log("User ID from Pinia Store:", authStore.user.id);
 
     if (!authStore.user || !authStore.user.id) {
       console.error("User ID is not defined in authStore");
@@ -215,6 +214,7 @@ export default {
         .catch((error) => {
           console.error('Error logging attendance:', error.response?.data || error.message);
         });
+
     },
     getEventColor(data) {
       if (data.absence) return 'red';
@@ -243,11 +243,5 @@ export default {
     },
   },
 };
+
 </script>
-
-
-
-
-
-
-
