@@ -31,6 +31,7 @@
                 <input
                   type="text"
                   v-model="formData.firstName"
+                  :placeholder="employee.first_name"
                   class="border w-full rounded px-2 py-1"
                 />
               </div>
@@ -39,6 +40,7 @@
                 <input
                   type="text"
                   v-model="formData.lastName"
+                  :placeholder="employee.last_name"
                   class="border w-full rounded px-2 py-1"
                 />
               </div>
@@ -47,6 +49,7 @@
                 <input
                   type="email"
                   v-model="formData.email"
+                  :placeholder="employee.email"
                   class="border w-full rounded px-2 py-1"
                 />
               </div>
@@ -73,6 +76,7 @@
                 <input
                   type="text"
                   v-model="formData.supervisor"
+                  :placeholder="employee.supervisor"
                   class="border w-full rounded px-2 py-1"
                 />
               </div>
@@ -90,6 +94,7 @@
                 <input
                   type="number"
                   v-model="formData.pto"
+                  :placeholder="employee.PTO?.remaining_pto || 0"
                   class="border w-full rounded px-2 py-1"
                 />
               </div>
@@ -138,7 +143,7 @@
   </template>
   
   <script setup>
-  import { defineProps, defineEmits, ref } from 'vue';
+  import { defineProps, defineEmits, ref, reactive, watch, onMounted } from 'vue';
   
   const props = defineProps({
     employee: {
@@ -158,7 +163,7 @@
   const onDelete = () => emit('delete', formData.value);
   
   const teams = ref(['Team A', 'Team B', 'Team C']);
-  const formData = ref({
+  const formData = reactive({
     firstName: '',
     lastName: '',
     email: '',
@@ -168,10 +173,13 @@
     pto: 0,
     specialHolidays: '',
   });
+
+  onMounted(() => {
+    if (props.employee.birthdate) {
+      formData.dateOfBirth = props.employee.birthdate.split('T')[0];
+    }
+    if (props.employee.PTO.remaining_pto) {
+      formData.pto = Number(props.employee.PTO.remaining_pto);
+    }
+  });
   </script>
-  
-  
-  
-  
-  
-  
