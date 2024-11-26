@@ -44,7 +44,7 @@
     </table>
     <Modal :isVisible="isAddUserModalVisible" @close="closeAddUserModal">
       <h2 class="text-xl font-bold mb-4">{{ $t('employeeList.modal.modalTitle') }}</h2>
-      <form @submit.prevent="handleSubmit">
+      <form>
         <div class="grid grid-cols-2 gap-4">
           <div>
             <label class="block mb-1">{{ $t('employeeList.modal.fields.firstName') }}</label>
@@ -95,7 +95,7 @@
           </div>
         </div>
         <div class="mt-4">
-          <button type="submit" class="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600">
+          <button @click="handleSubmit()" type="button" class="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600">
             {{ $t('employeeList.modal.sendInvitation') }}
           </button>
         </div>
@@ -113,6 +113,9 @@ import { auth } from '../../firebase/firebaseConfig.ts';
 import { sendPasswordResetEmail } from 'firebase/auth';
 import Modal from '@/modal/ModalView.vue';
 import EmployeeDetailsModal from '@/modal/EmployeeDetailsModal.vue';
+import { reactive } from 'vue';
+
+const apiUrl = import.meta.env.VITE_API_URL;
 
 const searchTerm = ref('');
 
@@ -124,7 +127,7 @@ const isEmployeeDetailsModalVisible = ref(false);
 let fetchedEmployees = ref([]);
 async function handleFetchEmployees(companyId) {
   try {
-    const response = await fetch(`${import.meta.env.VITE_API_URL}accounts/${companyId}`, {
+    const response = await fetch(`${import.meta.env.VITE_API_URL}/accounts/${companyId}`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json'
@@ -133,28 +136,22 @@ async function handleFetchEmployees(companyId) {
     if (response.ok) {
       const parsedRes = await response.json();
       fetchedEmployees.value = parsedRes;
-      console.log(parsedRes);
     }
   } catch (err) {
     console.error("Error: ", err);
   }
 }
+
+//TODO: change this function call to use the company ID of the currently logged-in user
 handleFetchEmployees(1);
 
-const formData = ref({
+const formData = reactive({
   firstName: '',
   lastName: '',
   email: '',
 });
 
 const selectedEmployee = ref(null);
-
-
-// const filteredEmployees = computed(() =>
-//   employeeList.filter((employee) =>
-//     employee.last_name.toLowerCase().includes(searchTerm.value.toLowerCase())
-//   )
-// );
 
 //employee search
 const filteredEmployees = computed(() => {
@@ -174,45 +171,42 @@ const closeAddUserModal = () => {
 };
 
 const handleSubmit = async () => {
-  const payload = {
-    email: formData.value.email,
-    first_name: formData.value.firstName,
-    last_name: formData.value.lastName,
-    birthdate: new Date(formData.value.birthdate),
-    company_id: 1, //harcoded for now
-    join_date: new Date(formData.value.joinDate),
-    role: formData.value.role,
-    
-  }
-
-//   type userAccount = {
-//   email: string;
-//   first_name: string;
-//   last_name: string;
-//   birthdate: Date;
-//   supervisor_id?: number;
-//   company_id: number;
-//   join_date: Date;
-//   leave_date?: Date;
-//   role: string;
-//   team_id?: number;
-//   is_admin: string;
-//   is_supervisor: string;
-//   remaining_pto: number;
-// };
-  
+  //post new user to backend & send them an email (email is called as a part of addUserBackend())
   addUserBackend();
-  sendFirebaseEmail();
+  // fetch employees from backend
+  await handleFetchEmployees(1);
+  // reset formData
+  formData.value = {
+    firstName: '',
+    lastName: '',
+    email: '',
+  };
+  //close the modal
   closeAddUserModal();
 }
 
-const addUserBackend = () => {
-  console.log('New user data:', formData.value.email);
-};
+async function addUserBackend () {
+  const newUser = {
+    email: formData.email,
+    first_name: formData.firstName,
+    last_name: formData.lastName,
+    birthdate: new Date(formData.dateOfBirth),
+    company_id: 1, //hardcoded for now
+    join_date: new Date(formData.joinDate),
+    role: formData.role,
+    is_admin: (formData.type === 'Admin'),
+    is_supervisor: false,
+    remaining_pto: formData.pto,
+  };
+  axios.post(`${apiUrl}/accounts`, newUser).then((response) => {console.log(response)}).catch((error) => {console.log(error)})
+}
 
 const sendFirebaseEmail = () => {
-  sendPasswordResetEmail(auth, formData.value.email)
+  console.log("before send: ",formData.email)
+  sendPasswordResetEmail(auth, formData.email)
   .then(() => {
+    console.log("after send: ",formData.email);
+    console.log("SENT");
     // Password reset email sent!
     // ..
   })
