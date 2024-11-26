@@ -30,8 +30,9 @@
             <td class="border p-2">{{ employee.role }}</td>
             <td class="border p-2">{{ employee.join_date.split('T')[0] }}</td>
             <td class="border p-2">{{ employee.leave_date || 'NA' }}</td>
-            <td class="border p-2">{{ employee.Privileges.is_admin ? 'Admin' : employee.Privileges.is_supervisor ? 'Supervisor' : 'none' }}</td>
-            <td class="border p-2">{{ employee.leave_date? 'Inactive' : 'Active' }}</td>
+            <td class="border p-2">{{ employee.Privileges.is_admin ? 'Admin' : employee.Privileges.is_supervisor ?
+              'Supervisor' : 'none' }}</td>
+            <td class="border p-2">{{ employee.leave_date ? 'Inactive' : 'Active' }}</td>
             <td class="border p-2">{{ employee.email }}</td>
             <td class="border p-2">
               <button class="bg-green-500 text-white px-2 py-1 rounded" @click.stop="viewEmployeeDetails(employee)">
@@ -95,14 +96,15 @@
           </div>
         </div>
         <div class="mt-4">
-          <button @click="handleSubmit()" type="button" class="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600">
+          <button @click="handleSubmit()" type="button"
+            class="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600">
             {{ $t('employeeList.modal.sendInvitation') }}
           </button>
         </div>
       </form>
     </Modal>
     <EmployeeDetailsModal v-if="selectedEmployee" :employee="selectedEmployee"
-      :isVisible="isEmployeeDetailsModalVisible" @close="closeEmployeeDetailsModal" />
+      :isVisible="isEmployeeDetailsModalVisible" @close="closeEmployeeDetailsModal" @save="handleUpdate" />
   </div>
 </template>
 
@@ -127,7 +129,7 @@ const isEmployeeDetailsModalVisible = ref(false);
 let fetchedEmployees = ref([]);
 async function handleFetchEmployees(companyId) {
   try {
-    const response = await fetch(`${import.meta.env.VITE_API_URL}/accounts/${companyId}`, {
+    const response = await fetch(`${apiUrl}/accounts/${companyId}`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json'
@@ -185,7 +187,7 @@ const handleSubmit = async () => {
   closeAddUserModal();
 }
 
-async function addUserBackend () {
+async function addUserBackend() {
   const newUser = {
     email: formData.email,
     first_name: formData.firstName,
@@ -198,21 +200,21 @@ async function addUserBackend () {
     is_supervisor: false,
     remaining_pto: formData.pto,
   };
-  axios.post(`${apiUrl}/accounts`, newUser).then((response) => {console.log(response)}).catch((error) => {console.log(error)})
+  axios.post(`${apiUrl}/accounts`, newUser).then((response) => { console.log(response) }).catch((error) => { console.log(error) })
 }
 
 const sendFirebaseEmail = () => {
-  console.log("before send: ",formData.email)
+  console.log("before send: ", formData.email)
   sendPasswordResetEmail(auth, formData.email)
-  .then(() => {
-    console.log("after send: ",formData.email);
-    console.log("SENT");
-    // Password reset email sent!
-    // ..
-  })
-  .catch((error) => {
-    console.log(error.code, error.message);
-  });
+    .then(() => {
+      console.log("after send: ", formData.email);
+      console.log("SENT");
+      // Password reset email sent!
+      // ..
+    })
+    .catch((error) => {
+      console.log(error.code, error.message);
+    });
 }
 
 const openEmployeeDetailsModal = (employee) => {
@@ -224,4 +226,35 @@ const closeEmployeeDetailsModal = () => {
   isEmployeeDetailsModalVisible.value = false;
   selectedEmployee.value = null;
 };
+
+const handleUpdate = async (updatedData) => {
+  try {
+    const employeeId = selectedEmployee.value.id;
+
+    const cleanedUpdates = Object.fromEntries(
+      Object.entries(updatedData).filter(([key, value]) => {
+        // Only include key-value pairs where value is not empty, null, undefined, or whitespace
+        return (
+          value !== "" &&
+          value !== null &&
+          value !== undefined &&
+          (typeof value === "string" ? value.trim() !== "" : true)
+        );
+      })
+    );
+
+    const response = await axios.patch(`${apiUrl}/accounts/${employeeId}`, cleanedUpdates);
+
+    if (response.status === 200) {
+      console.log("Account updated successfully");
+      await handleFetchEmployees(1);
+      closeEmployeeDetailsModal();
+    } else {
+      console.error("Failed to update account")
+    }
+  } catch (err) {
+    console.error("Error updating employee:", err);
+  }
+
+}
 </script>

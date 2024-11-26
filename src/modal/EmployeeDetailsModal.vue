@@ -30,7 +30,7 @@
                 <label class="font-semibold block">{{ $t('employeeDetails.fields.firstName') }}</label>
                 <input
                   type="text"
-                  v-model="formData.firstName"
+                  v-model="formData.first_name"
                   :placeholder="employee.first_name"
                   class="border w-full rounded px-2 py-1"
                 />
@@ -39,7 +39,7 @@
                 <label class="font-semibold block">{{ $t('employeeDetails.fields.lastName') }}</label>
                 <input
                   type="text"
-                  v-model="formData.lastName"
+                  v-model="formData.last_name"
                   :placeholder="employee.last_name"
                   class="border w-full rounded px-2 py-1"
                 />
@@ -57,7 +57,7 @@
                 <label class="font-semibold block">{{ $t('employeeDetails.fields.dateOfBirth') }}</label>
                 <input
                   type="date"
-                  v-model="formData.dateOfBirth"
+                  v-model="formData.birthdate"
                   class="border w-full rounded px-2 py-1"
                 />
               </div>
@@ -159,15 +159,15 @@
   const emit = defineEmits(['close', 'save', 'delete']);
   
   const onClose = () => emit('close');
-  const onSave = () => emit('save', formData.value);
+  const onSave = () => emit('save', formData);
   const onDelete = () => emit('delete', formData.value);
   
   const teams = ref(['Team A', 'Team B', 'Team C']);
   const formData = reactive({
-    firstName: '',
-    lastName: '',
+    first_name: '',
+    last_name: '',
     email: '',
-    dateOfBirth: '',
+    birthdate: '',
     team: '',
     supervisor: '',
     pto: 0,
