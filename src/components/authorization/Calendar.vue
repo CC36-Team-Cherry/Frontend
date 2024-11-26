@@ -47,7 +47,7 @@
           @click="logAttendance"
           class="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600 w-full"
         >
-          {{ $t('calendar.logAttendance') }}
+          {{ selectedEventId ? $t('calendar.updateAttendance') : $t('calendar.logAttendance') }}
         </button>
       </div>
     </div>
@@ -56,6 +56,7 @@
     <div ref="calendar"></div>
   </div>
 </template>
+
 
 <script>
 import { Calendar } from '@fullcalendar/core';
@@ -86,7 +87,6 @@ export default {
   },
   mounted() {
     const authStore = useAuthStore();
-    console.log("User ID from Pinia Store:", authStore.user.id);
 
     if (!authStore.user || !authStore.user.id) {
       console.error("User ID is not defined in authStore");
@@ -102,7 +102,7 @@ export default {
       locale: this.locales[locale.value],
       selectable: true,
       businessHours: {
-        // Mostra solo i giorni lavorativi (Lun-Ven)
+       
         daysOfWeek: [1, 2, 3, 4, 5],
       },
       select: (selectionInfo) => {
@@ -110,7 +110,7 @@ export default {
         const endDate = new Date(selectionInfo.endStr);
         const dates = [];
 
-        // Genera tutte le date tra start e end, escludendo sabato (6) e domenica (0)
+        
         while (startDate < endDate) {
           if (startDate.getDay() !== 0 && startDate.getDay() !== 6) {
             dates.push(new Date(startDate));
@@ -162,8 +162,8 @@ export default {
             start: record.day,
             backgroundColor: this.getEventColor(record),
             extendedProps: {
-              startTime: record.punch_in.split('T')[1].slice(0, 5), // Mostra solo l'orario
-              endTime: record.punch_out.split('T')[1].slice(0, 5), // Mostra solo l'orario
+              startTime: record.punch_in.split('T')[1].slice(0, 5), 
+              endTime: record.punch_out.split('T')[1].slice(0, 5), 
             },
           }));
 
@@ -184,7 +184,7 @@ export default {
     logAttendance() {
       const authStore = useAuthStore();
 
-      // Recupera tutte le date selezionate dal range
+      
       const days = this.selectionRange.split(', ');
 
       const attendancePromises = days.map((day) => {
@@ -204,7 +204,11 @@ export default {
           totalHours: 0,
         };
 
-        return axios.post(`http://localhost:3000/accounts/${authStore.user.id}/attendance`, attendanceData);
+        if(this.selectedEventId) {
+          return axios.put(`http://localhost:3000/accounts/${authStore.user.id}/attendance/${this.selectedEventId}`,attendanceData)
+        } else {
+         return axios.post(`http://localhost:3000/accounts/${authStore.user.id}/attendance`, attendanceData);
+        }
       });
 
       Promise.all(attendancePromises)
@@ -215,6 +219,7 @@ export default {
         .catch((error) => {
           console.error('Error logging attendance:', error.response?.data || error.message);
         });
+
     },
     getEventColor(data) {
       if (data.absence) return 'red';
@@ -243,11 +248,5 @@ export default {
     },
   },
 };
+
 </script>
-
-
-
-
-
-
-

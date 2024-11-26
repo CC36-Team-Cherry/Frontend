@@ -27,6 +27,9 @@
         >
           {{ $t('Logout') }}
         </button>
+        <div v-if="isSupervisor">
+         <button @click="navigateToTeamCalendar">Team Calendar</button>
+        </div>
       </div>
     </aside>
   </template>
