@@ -49,11 +49,11 @@
         <div class="grid grid-cols-2 gap-4">
           <div>
             <label class="block mb-1">{{ $t('employeeList.modal.fields.firstName') }}</label>
-            <input type="text" v-model="formData.firstName" class="border rounded p-2 w-full" />
+            <input type="text" v-model="formData.first_name" class="border rounded p-2 w-full" />
           </div>
           <div>
             <label class="block mb-1">{{ $t('employeeList.modal.fields.lastName') }}</label>
-            <input type="text" v-model="formData.lastName" class="border rounded p-2 w-full" />
+            <input type="text" v-model="formData.last_name" class="border rounded p-2 w-full" />
           </div>
 
           <div>
@@ -62,7 +62,7 @@
           </div>
           <div>
             <label class="block mb-1">{{ $t('employeeList.modal.fields.dateOfBirth') }}</label>
-            <input type="date" v-model="formData.dateOfBirth" class="border rounded p-2 w-full" />
+            <input type="date" v-model="formData.birthdate" class="border rounded p-2 w-full" />
           </div>
           <div>
             <label class="block mb-1">{{ $t('employeeList.modal.fields.team') }}</label>
@@ -85,10 +85,11 @@
           </div>
           <div>
             <label class="block mb-1">{{ $t('employeeList.modal.fields.type') }}</label>
-            <select v-model="formData.type" class="border rounded p-2 w-full">
-              <option value="User">{{ $t('employeeList.modal.userType.user') }}</option>
-              <option value="Admin">{{ $t('employeeList.modal.userType.admin') }}</option>
-            </select>
+            <!-- <select v-model="formData.type" class="border rounded p-2 w-full"> -->
+            <input type="checkbox" v-model="formData.is_supervisor">{{ $t('employeeList.modal.userType.supervisor')
+            }}</input>
+            <input type="checkbox" v-model="formData.is_admin">{{ $t('employeeList.modal.userType.admin') }}</input>
+            <!-- </select> -->
           </div>
           <div>
             <label class="block mb-1">{{ $t('employeeList.modal.fields.pto') }}</label>
@@ -151,10 +152,29 @@ async function handleFetchEmployees(companyId) {
 handleFetchEmployees(authStore.user.company_id);
 
 const formData = reactive({
-  firstName: '',
-  lastName: '',
   email: '',
+  first_name: '',
+  last_name: '',
+  birthdate: '',
+  company_id: authStore.user.company_id,
+  join_date: '',
+  role: '',
+  is_admin: false,
+  is_supervisor: false,
+  remaining_pto: 0,
 });
+
+function resetFormData() {
+  formData.email = '';
+  formData.first_name = '';
+  formData.last_name = '';
+  formData.birthdate = '';
+  formData.join_date = '';
+  formData.role = '';
+  formData.is_admin = false;
+  formData.is_supervisor = false;
+  formData.pto = 0;
+}
 
 const selectedEmployee = ref(null);
 
@@ -173,6 +193,7 @@ const openAddUserModal = () => {
 
 const closeAddUserModal = () => {
   isAddUserModalVisible.value = false;
+  resetFormData();
 };
 
 const handleSubmit = async () => {
@@ -184,41 +205,36 @@ const handleSubmit = async () => {
   // close the modal
   closeAddUserModal();
   // send email to the new user, delayed by two seconds to allow time for new account to post to Firebase
-  await new Promise(resolve => {setTimeout(resolve, 2000)});
-  sendFirebaseEmail();
-  // reset formData
-  formData.value = {
-  firstName: '',
-  lastName: '',
-  email: '',
-  };
+  await new Promise(resolve => { setTimeout(resolve, 2000) });
+  sendFirebaseEmail(formData.email);
+  // reset formData 
+  resetFormData();
 }
 
 const addUserBackend = async () => {
   const userData = {
     email: formData.email,
-    first_name: formData.firstName,
-    last_name: formData.lastName,
-    birthdate: new Date(formData.dateOfBirth),
-    // TODO: update hardcoded company_id
+    first_name: formData.first_name,
+    last_name: formData.last_name,
+    birthdate: new Date(formData.birthdate),
     company_id: authStore.user.company_id,
-    join_date: new Date(formData.joinDate),
+    join_date: new Date(formData.join_date),
     role: formData.role,
-    is_admin: (formData.type === 'Admin'),
-    is_supervisor: false,
+    is_admin: formData.is_admin,
+    is_supervisor: formData.is_supervisor,
     remaining_pto: formData.pto,
   };
-  await axios.post(`${apiUrl}/accounts`, userData).catch((err) => {console.log(err)});
+  await axios.post(`${apiUrl}/accounts`, userData).catch((err) => { console.log(err) });
 }
 
-const sendFirebaseEmail = () => {
-  sendPasswordResetEmail(auth, formData.email)
-  // .then((res) => {
-  //   console.log("SENT");
-  // })
-  .catch((error) => {
-    console.log(error.code, error.message);
-  });
+const sendFirebaseEmail = (email) => {
+  sendPasswordResetEmail(auth, email)
+    // .then((res) => {
+    //   console.log("SENT");
+    // })
+    .catch((error) => {
+      console.log(error.code, error.message);
+    });
 }
 
 const openEmployeeDetailsModal = (employee) => {
