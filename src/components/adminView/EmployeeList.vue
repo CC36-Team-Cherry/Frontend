@@ -116,8 +116,10 @@ import { sendPasswordResetEmail } from 'firebase/auth';
 import Modal from '@/modal/ModalView.vue';
 import EmployeeDetailsModal from '@/modal/EmployeeDetailsModal.vue';
 import { reactive } from 'vue';
+import { useAuthStore } from '@/stores/authStore';
 
 const apiUrl = import.meta.env.VITE_API_URL;
+const authStore = useAuthStore();
 
 const searchTerm = ref('');
 
@@ -146,7 +148,7 @@ async function handleFetchEmployees(companyId) {
 }
 
 //TODO: change this function call to use the company ID of the currently logged-in user
-handleFetchEmployees(1);
+handleFetchEmployees(authStore.user.company_id);
 
 const formData = reactive({
   firstName: '',
@@ -178,7 +180,7 @@ const handleSubmit = async () => {
   await addUserBackend();
   // fetch employees from backend
   // TODO: change this to read based on the currently logged-in user's company ID 
-  await handleFetchEmployees(1);
+  await handleFetchEmployees(authStore.user.company_id);
   // close the modal
   closeAddUserModal();
   // send email to the new user, delayed by two seconds to allow time for new account to post to Firebase
@@ -199,7 +201,7 @@ const addUserBackend = async () => {
     last_name: formData.lastName,
     birthdate: new Date(formData.dateOfBirth),
     // TODO: update hardcoded company_id
-    company_id: 1,
+    company_id: authStore.user.company_id,
     join_date: new Date(formData.joinDate),
     role: formData.role,
     is_admin: (formData.type === 'Admin'),
@@ -249,7 +251,7 @@ const handleUpdate = async (updatedData) => {
 
     if (response.status === 200) {
       console.log("Account updated successfully");
-      await handleFetchEmployees(1);
+      await handleFetchEmployees(authStore.user.company_id);
       closeEmployeeDetailsModal();
     } else {
       console.error("Failed to update account")

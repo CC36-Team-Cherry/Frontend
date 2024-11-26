@@ -176,7 +176,7 @@
 
   onMounted(() => {
     if (props.employee.birthdate) {
-      formData.dateOfBirth = props.employee.birthdate.split('T')[0];
+      formData.birthdate = props.employee.birthdate.split('T')[0];
     }
     if (props.employee.PTO.remaining_pto) {
       formData.pto = Number(props.employee.PTO.remaining_pto);
