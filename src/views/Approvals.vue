@@ -48,10 +48,10 @@
                     >
                         <td
                             v-if="activeTab === 'sent'"
-                        >{{  request.supervisor_id }}</td>
+                        >{{  request.supervisor.first_name + " " + request.supervisor.last_name }}</td>
                         <td
                             v-if="activeTab === 'received'"
-                        >{{  request.account_id }}</td>
+                        >{{ request.account.first_name + " " + request.account.last_name }}</td>
                         <td>{{  "Monthly Attendance" }}</td>
                         <!-- <td>{{  request.type }}</td> -->
                         
