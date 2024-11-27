@@ -7,10 +7,8 @@ interface User {
   last_name: string;
   email: string;
   is_admin: boolean;
-
   is_supervisor: boolean;
   supervisor_id?: string;
-
   company_id: number;
   team_id: number;
   team_name: string;
