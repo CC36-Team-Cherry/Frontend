@@ -109,8 +109,8 @@
         "pto": "Enter PTO"
       },
       "userType": {
-        "user": "User",
-        "admin": "Admin"
+        "supervisor": " Supervisor",
+        "admin": " Admin"
       },
       "sendInvitation": "Send Invitation"
     }

@@ -109,8 +109,8 @@
         "pto": "有給日数を入力してください"
       },
       "userType": {
-        "user": "ユーザー",
-        "admin": "管理者"
+        "supervisor": " 上司",
+        "admin": " 管理者"
       },
       "sendInvitation": "招待を送信"
     }
