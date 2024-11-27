@@ -21,7 +21,7 @@
             </label>
             <input
               type="password"
-              id="password"
+              id="password-confirm"
               v-model="confirmNewPassword"
               class="w-full p-2 border border-gray-300 rounded"
               required
@@ -32,7 +32,7 @@
             type="button"
             class="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600"
           >
-          Confirm
+          {{ $t('login.submit') }}
           </button>
         </form>
       </div>
