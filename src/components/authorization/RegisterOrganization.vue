@@ -212,14 +212,17 @@ const createUserFirebase = () => {
         first_name: registeredAdmin.first_name, 
         last_name: registeredAdmin.last_name, 
         email: registeredAdmin.email, 
-        is_admin: true, 
-        is_supervisor: false, 
         company_id: registeredAdmin.company_id, 
         team_id: 0, 
         team_name: "", 
         role: registeredAdmin.role, 
         join_date: registeredAdmin.join_date, 
-        pto: 0});
+        pto: 0,
+        privileges: {
+          is_admin: true,
+          is_supervisor: false,
+        }
+        });
       })
 
       // User will be logged in automatically if account is successfully created
