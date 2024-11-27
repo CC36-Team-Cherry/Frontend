@@ -20,7 +20,7 @@ interface User {
     is_supervisor: boolean;
   },
   company: {
-    company_name: string;
+    name: string;
   }
 }
 
