@@ -17,7 +17,6 @@
       <!-- Supervisor-specific link -->
        <div>
         <router-link
-        v-if="authStore.isSupervisor"
         to="/supervisor-calendar"
         class="block p-2 hover:bg-gray-200 rounded">
          {{ $t('Sidebar.SupervisorCalendar') }}
