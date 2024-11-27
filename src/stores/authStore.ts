@@ -7,8 +7,6 @@ interface User {
   first_name: string;
   last_name: string;
   email: string;
-  is_admin: boolean;
-  is_supervisor: boolean;
   supervisor_id?: boolean;
   company_id: number;
   team_id: number;
@@ -18,6 +16,10 @@ interface User {
   leave_date?: Date;
   pto: number;
   last_login?: Date;
+  privileges: {
+    is_admin: boolean,
+    is_supervisor: boolean;
+  };
 }
 
 interface Organization {
