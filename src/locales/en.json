@@ -99,6 +99,15 @@
         "type": "Type",
         "pto": "PTO"
       },
+      "placeholders": {
+        "firstName": "Enter your first name",
+        "lastName": "Enter your last name",
+        "email": "Enter your email address",
+        "selectTeam": "Select a Team",
+        "supervisor": "Select a Supervisor",
+        "role": "Enter a Role",
+        "pto": "Enter PTO"
+      },
       "userType": {
         "supervisor": " Supervisor",
         "admin": " Admin"

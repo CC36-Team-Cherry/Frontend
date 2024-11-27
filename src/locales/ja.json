@@ -38,6 +38,7 @@
   "register": {
     "title": "組織を登録",
     "firstName": "氏名",
+    "lastName": "",
     "organizationName": "組織名",
     "organizationDetails": "組織の詳細",
     "submit": "送信",
