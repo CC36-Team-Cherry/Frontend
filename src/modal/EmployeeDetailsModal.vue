@@ -160,7 +160,7 @@
   
   const onClose = () => emit('close');
   const onSave = () => emit('save', formData);
-  const onDelete = () => emit('delete', formData.value);
+  const onDelete = () => emit('delete');
   
   const teams = ref(['Team A', 'Team B', 'Team C']);
   const formData = reactive({
