@@ -1,6 +1,6 @@
 <template>
   <aside class="w-64 bg-gray-100 h-full shadow-md flex flex-col">
-    <div class="p-4 flex justify-center items-center font-bold"><img src="../../favicon.png" alt="Breeze logo" width="80" height="80"></div>
+    <div class="p-4 flex justify-center items-center"><img src="../../favicon.png" alt="Breeze logo" width="80" height="80"></div>
     <div class="text-center"> {{ authStore.user.company.name }} </div>
     <div class="border-b p-2 text-center"> Welcome {{ authStore.user.first_name + " " + authStore.user.last_name}} </div>
     <nav class="flex-1 p-4 space-y-2">
