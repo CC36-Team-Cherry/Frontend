@@ -8,8 +8,12 @@ interface User {
   last_name: string;
   email: string;
   is_admin: boolean;
-  is_supervisor: boolean;
-  supervisor_id?: boolean;
+  is_supervisor: true;
+  supervisor_id: number | null;
+  supervisor?: { 
+    first_name: string;
+    last_name: string;
+  };
   company_id: number;
   team_id: number;
   team_name: string;
@@ -19,6 +23,7 @@ interface User {
   pto: number;
   last_login?: Date;
 }
+
 
 interface Organization {
   name: string;
@@ -47,6 +52,7 @@ export const useAuthStore = defineStore('auth', {
   getters: {
     isAuthenticated: (state) => !!state.user,
     showSidebar: (state) => state.currentPage === AppPageType.EMPLOYEE_LIST, 
+    isSupervisor: (state) => state.user?.is_supervisor || true,
   },
   persist: true,
 });
