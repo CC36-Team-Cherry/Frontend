@@ -15,12 +15,14 @@
         {{ $t('Sidebar.AdminPage') }}
       </router-link>
       <!-- Supervisor-specific link -->
-      <router-link
+       <div>
+        <router-link
+        v-if="authStore.isSupervisor"
         to="/supervisor-calendar"
-        class="block p-2 hover:bg-gray-200 rounded"
-      >
-        {{ $t('Sidebar.SupervisorCalendar') }}
-      </router-link>
+        class="block p-2 hover:bg-gray-200 rounded">
+         {{ $t('Sidebar.SupervisorCalendar') }}
+        </router-link>
+      </div>
     </nav>
     <div class="flex justify-around p-4 border-t">
       <router-link to="/settings" class="w-full max-w-[120px] text-center">
