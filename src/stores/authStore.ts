@@ -15,7 +15,7 @@ interface User {
   leave_date?: Date;
   pto: number;
   last_login?: Date;
-  privileges: {
+  Privileges: {
     is_admin: boolean,
     is_supervisor: boolean;
   },
@@ -50,7 +50,6 @@ export const useAuthStore = defineStore('auth', {
   getters: {
     isAuthenticated: (state) => !!state.user,
     showSidebar: (state) => state.currentPage === AppPageType.EMPLOYEE_LIST, 
-    isSupervisor: (state) => state.user?.privileges.is_supervisor || true,
   },
   persist: true,
 });

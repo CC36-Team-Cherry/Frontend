@@ -185,6 +185,7 @@ const handleSubmit = async () => {
 const createUserFirebase = () => {
   const email = formData.value.email;
   const password = formData.value.password;
+  const companyName = formData.value.company_name;
 
   createUserWithEmailAndPassword(auth, email, password)
   .then((userCredential) => {
@@ -221,6 +222,9 @@ const createUserFirebase = () => {
         privileges: {
           is_admin: true,
           is_supervisor: false,
+        },
+        company: {
+          name: companyName,
         }
         });
       })
