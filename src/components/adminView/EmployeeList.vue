@@ -104,7 +104,7 @@
       </form>
     </Modal>
     <EmployeeDetailsModal v-if="selectedEmployee" :employee="selectedEmployee"
-      :isVisible="isEmployeeDetailsModalVisible" @close="closeEmployeeDetailsModal" @save="handleUpdate" />
+      :isVisible="isEmployeeDetailsModalVisible" @close="closeEmployeeDetailsModal" @save="handleUpdate" @delete="handleDelete"/>
   </div>
 </template>
 
@@ -255,8 +255,25 @@ const handleUpdate = async (updatedData) => {
       console.error("Failed to update account")
     }
   } catch (err) {
-    console.error("Error updating employee:", err);
+    console.error("Error updating employee: ", err);
   }
-
 }
+
+const handleDelete = async () => {
+  try {
+    const employeeId = selectedEmployee.value.id;
+    console.log(employeeId);
+    const response = await axios.delete(`${apiUrl}/accounts/${employeeId}`)
+    if (response.status === 200) {
+      console.log('Account deleted successfully');
+      await handleFetchEmployees(1);
+      closeEmployeeDetailsModal();
+    } else {
+      console.error('Failed to delete account');
+    }
+  } catch (err) {
+    console.error("Error deleting employee: ", err)
+  }
+}
+
 </script>
