@@ -42,6 +42,13 @@
                 </thead>
                 <tbody>
                     <tr 
+                        v-if="filteredRequests.length === 0"
+                    >
+                        <td colspan="7" class="text-center text-gray-500 p-4">
+                            No approvals to show.
+                        </td>
+                    </tr>
+                    <tr 
                         v-for="(request, index) in filteredRequests" 
                         :key="index"
                         class="border-2"
@@ -52,7 +59,7 @@
                         <td
                             v-if="activeTab === 'received'"
                         >{{ request.account.first_name + " " + request.account.last_name }}</td>
-                        <td>{{  "Monthly Attendance" }}</td>
+                        <td>{{  "Monthly Attendance for: " + request.month + "/" + request.year }}</td>
                         <!-- <td>{{  request.type }}</td> -->
                         
                         <td

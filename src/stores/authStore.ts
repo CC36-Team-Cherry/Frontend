@@ -1,5 +1,4 @@
 import { defineStore } from 'pinia';
-import piniaPersistedState from 'pinia-plugin-persistedstate';
 import { AppPageType } from '@/types/AppState';
 
 interface User {
@@ -8,12 +7,8 @@ interface User {
   last_name: string;
   email: string;
   is_admin: boolean;
-  is_supervisor: true;
-  supervisor_id: number | null;
-  supervisor?: { 
-    first_name: string;
-    last_name: string;
-  };
+  is_supervisor: boolean;
+  supervisor_id?: string;
   company_id: number;
   team_id: number;
   team_name: string;
