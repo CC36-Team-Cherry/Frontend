@@ -121,7 +121,6 @@ const apiUrl = import.meta.env.VITE_API_URL;
 
 const searchTerm = ref('');
 
-
 const isAddUserModalVisible = ref(false);
 const isEmployeeDetailsModalVisible = ref(false);
 

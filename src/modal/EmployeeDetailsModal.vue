@@ -100,24 +100,54 @@
               </div>
               <div>
                 <label class="font-semibold block">{{ $t('employeeDetails.fields.specialHolidays') }}</label>
-                <textarea
-                  v-model="formData.specialHolidays"
-                  class="border w-full rounded px-2 py-1"
-                  placeholder="{{ $t('employeeDetails.placeholders.specialHolidays') }}"
-                ></textarea>
-              </div>
-              <div>
-                <label class="font-semibold block">{{ $t('employeeDetails.fields.holidayType') }}</label>
-                <input
-                  type="text"
-                  class="border w-full rounded px-2 py-1"
-                  placeholder="{{ $t('employeeDetails.placeholders.holidayType') }}"
-                />
-                <button
-                  class="bg-blue-500 text-white py-1 px-4 rounded mt-2 hover:bg-blue-600"
-                >
-                  {{ $t('employeeDetails.buttons.addHoliday') }}
-                </button>
+                <div>
+                    <ul class="flex flex-col">
+                        <li 
+                            v-for="(specialPto, index) in specialPto" 
+                            :key="specialPto.id"
+                            class="flex justify-around"
+                        >
+                            <input
+                                v-if="editingIndex === index"
+                                v-model="specialPto[index].type"
+                                @blur="stopEditing"
+                                @keyup.enter="stopEditing"
+                            />
+                            <span 
+                                v-else
+                            >
+                            {{ specialPto.type }}</span>
+                            <button 
+                                @click="startEditing(index)" 
+                                v-if="editingIndex !== index"
+                                class="border-2"
+                            >
+                                Edit
+                            </button>
+                            <button 
+                                @click="deleteSpecialPto(specialPto.id)"
+                                class="border-2"
+                            >
+                                Delete
+                            </button>
+                        </li>
+                    </ul>
+                    <div class="flex justify-around">
+                        <input
+                            v-model="newSpecialPto"
+                            type="text"
+                            placeholder="Enter Special PTO"
+                            class="border-2"
+                        />
+                        <button
+                            @click="addSpecialPto"
+                            class="border-2"
+                            type="button"
+                        >
+                            Add
+                        </button>
+                    </div>
+                </div>
               </div>
             </div>
           </div>
@@ -143,7 +173,8 @@
   </template>
   
   <script setup>
-  import { defineProps, defineEmits, ref, reactive, watch, onMounted } from 'vue';
+  import { defineProps, defineEmits, ref, reactive, watch, onMounted, toRaw } from 'vue';
+  import axios from 'axios';
   
   const props = defineProps({
     employee: {
@@ -156,6 +187,8 @@
     },
   });
   
+  const apiUrl = import.meta.env.VITE_API_URL;
+
   const emit = defineEmits(['close', 'save', 'delete']);
   
   const onClose = () => emit('close');
@@ -173,8 +206,47 @@
     pto: 0,
     specialHolidays: '',
   });
+  const specialPto = ref([]);
+  const newSpecialPto = ref('');
+
+  const getSpecialPto = async () => {
+    try {
+      const response = await axios.get(`${apiUrl}/accounts/${props.employee.id}/specialPto`);
+      console.log(response.data);
+      specialPto.value = response.data;
+    } catch(err) {
+      console.error('Error fetching special pto:', err);
+    }
+  }
+
+  // Add new special PTO 
+  const addSpecialPto = async () => {
+    try {
+      // const newSpecialPto = newSpecialPto.value;
+      console.log(newSpecialPto.value)
+      const response = await axios.post(`${apiUrl}/accounts/${props.employee.id}/specialPto`, 
+        {content: newSpecialPto.value}
+      );
+
+      // TODO: Confirm if correct
+      specialPto.value.push({type: newSpecialPto.value, // The content of the new special PTO
+        });
+
+      console.log('New special pto saved', toRaw(response));
+
+      // Reset input 
+      newSpecialPto.value = ''; 
+
+    } catch (err) {
+      console.error(err);
+    }
+  }
 
   onMounted(() => {
+
+    // Get special pto for selected user
+    getSpecialPto();
+
     if (props.employee.birthdate) {
       formData.dateOfBirth = props.employee.birthdate.split('T')[0];
     }

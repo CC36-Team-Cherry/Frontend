@@ -2,7 +2,7 @@
     <div>
         <div class="border-2 flex flex-row justify-evenly">
             <button
-                class="w-full"
+                class="w-full h-8"
                 :class="{
                     'bg-blue-500 text-white': activeTab === 'sent', 
                     'bg-gray-200 text-black': activeTab !== 'sent'
@@ -12,7 +12,7 @@
                 Approval Requests Sent
             </button>
             <button
-                class="w-full"
+                class="w-full h-8"
                 :class="{
                     'bg-blue-500 text-white': activeTab === 'received', 
                     'bg-gray-200 text-black': activeTab !== 'received'
@@ -23,7 +23,7 @@
             </button>
         </div>
 
-        <div class="flex flex-col flex-grow overflow-y-auto">
+        <div class="flex flex-col flex-grow overflow-y-auto mt-5">
             <table class="min-w-full table-auto">
                 <thead>
                     <tr>
@@ -44,7 +44,7 @@
                     <tr 
                         v-if="filteredRequests.length === 0"
                     >
-                        <td colspan="7" class="text-center text-gray-500 p-4">
+                        <td colspan="7" class="text-center text-xl text-gray-500 p-10">
                             No approvals to show.
                         </td>
                     </tr>
@@ -59,7 +59,7 @@
                         <td
                             v-if="activeTab === 'received'"
                         >{{ request.account.first_name + " " + request.account.last_name }}</td>
-                        <td>{{  "Monthly Attendance for: " + request.month + "/" + request.year }}</td>
+                        <td>{{  "Monthly Attendance for " + request.month + "/" + request.year }}</td>
                         <!-- <td>{{  request.type }}</td> -->
                         
                         <td
