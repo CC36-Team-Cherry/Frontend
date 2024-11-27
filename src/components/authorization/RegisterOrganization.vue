@@ -219,7 +219,7 @@ const createUserFirebase = () => {
         role: registeredAdmin.role, 
         join_date: registeredAdmin.join_date, 
         pto: 0,
-        privileges: {
+        Privileges: {
           is_admin: true,
           is_supervisor: false,
         },
@@ -227,11 +227,11 @@ const createUserFirebase = () => {
           name: companyName,
         }
         });
+      }).then(() => {
+        // User will be logged in automatically if account is successfully created
+        router.push({ path: `/employee` });
+        console.log("logged in user", authStore.user)
       })
-
-      // User will be logged in automatically if account is successfully created
-      router.push({ path: `/employee` });
-      console.log("logged in user", authStore.user)
   })
   .catch((error) => {
     const errorCode = error.code;

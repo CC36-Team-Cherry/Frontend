@@ -50,7 +50,7 @@ const router = createRouter({
     {
       path: '/supervisor-calendar',
       name: 'supervisorCalendar',
-      component: () => SupervisorCalendar,
+      component: SupervisorCalendar,
       meta: {
         requiresAuth: true
       }

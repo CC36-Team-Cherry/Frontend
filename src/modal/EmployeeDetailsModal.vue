@@ -66,6 +66,74 @@
             <div>
               <input type="checkbox" v-model="formData.is_supervisor"> Supervisor</input>
               <input type="checkbox" v-model="formData.is_admin"> Admin</input>
+          </div>
+  
+          <!-- Attendance Settings -->
+          <div>
+            <h3 class="text-lg font-semibold mb-4">
+              --- {{ $t('employeeDetails.attendanceSettings') }} ---
+            </h3>
+            <div class="space-y-3">
+              <div>
+                <label class="font-semibold block">{{ $t('employeeDetails.fields.pto') }}</label>
+                <input
+                  type="number"
+                  v-model="formData.pto"
+                  :placeholder="employee.PTO?.remaining_pto || 0"
+                  class="border w-full rounded px-2 py-1"
+                />
+              </div>
+              <div>
+                <label class="font-semibold block">{{ $t('employeeDetails.fields.specialHolidays') }}</label>
+                <div>
+                    <ul class="flex flex-col">
+                        <li 
+                            v-for="(specialPto, index) in specialPto" 
+                            :key="specialPto.id"
+                            class="flex justify-around"
+                        >
+                            <input
+                                v-if="editingIndex === index"
+                                v-model="specialPto[index].type"
+                                @blur="stopEditing"
+                                @keyup.enter="stopEditing"
+                            />
+                            <span 
+                                v-else
+                            >
+                            {{ specialPto.type }}</span>
+                            <button 
+                                @click="startEditing(index)" 
+                                v-if="editingIndex !== index"
+                                class="border-2"
+                            >
+                                Edit
+                            </button>
+                            <button 
+                                @click="deleteSpecialPto(specialPto.id)"
+                                class="border-2"
+                            >
+                                Delete
+                            </button>
+                        </li>
+                    </ul>
+                    <div class="flex justify-around">
+                        <input
+                            v-model="newSpecialPto"
+                            type="text"
+                            placeholder="Enter Special PTO"
+                            class="border-2"
+                        />
+                        <button
+                            @click="addSpecialPto"
+                            class="border-2"
+                            type="button"
+                        >
+                            Add
+                        </button>
+                    </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -146,7 +214,44 @@ const formData = reactive({
   leave_date: '',
   is_admin: false,
   is_supervisor: false,
+  pto: 0,
 });
+
+  const specialPto = ref([]);
+  const newSpecialPto = ref('');
+
+  const getSpecialPto = async () => {
+    try {
+      const response = await axios.get(`${apiUrl}/accounts/${props.employee.id}/specialPto`);
+      console.log(response.data);
+      specialPto.value = response.data;
+    } catch(err) {
+      console.error('Error fetching special pto:', err);
+    }
+  }
+
+  // Add new special PTO 
+  const addSpecialPto = async () => {
+    try {
+      // const newSpecialPto = newSpecialPto.value;
+      console.log(newSpecialPto.value)
+      const response = await axios.post(`${apiUrl}/accounts/${props.employee.id}/specialPto`, 
+        {content: newSpecialPto.value}
+      );
+
+      // TODO: Confirm if correct
+      specialPto.value.push({type: newSpecialPto.value, // The content of the new special PTO
+        });
+
+      console.log('New special pto saved', toRaw(response));
+
+      // Reset input 
+      newSpecialPto.value = ''; 
+
+    } catch (err) {
+      console.error(err);
+    }
+  }
 
 onMounted(() => {
   formData.first_name = props.employee.first_name;
@@ -162,5 +267,18 @@ onMounted(() => {
   formData.leave_date = new Date(props.employee.leave_date).toISOString().split('T')[0];
   formData.is_admin = Boolean(props.employee.Privileges.is_admin);
   formData.is_supervisor = Boolean(props.employee.Privileges.is_supervisor);
+  
+      // Get special pto for selected user
+    getSpecialPto();
+
+    if (props.employee.birthdate) {
+      formData.dateOfBirth = props.employee.birthdate.split('T')[0];
+    }
+    if (props.employee.PTO.remaining_pto) {
+      formData.pto = Number(props.employee.PTO.remaining_pto);
+    }
+  });
+  </script>
+  
 });
 </script>

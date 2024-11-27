@@ -1,64 +1,66 @@
 <template>
     <div class="p-8 bg-gray-50 min-h-screen">
-        <h1 class="border-2 text-2xl font-bold">{{$t('adminConsole.title')}}</h1>
-        <h2 class="border-2 text-xl font-bold"> {{ organizationName }}</h2>
-            <div class="border-2 text-xl text-center my-5">{{$t('adminConsole.fields.teamList')}}</div>
-                <ul class="flex flex-col">
-                    <li 
-                        v-for="(team, index) in teams" 
-                        :key="team.id"
-                        class="flex justify-around"
-                    >
+        <h1 class="text-2xl font-bold">{{$t('adminConsole.title')}}</h1>
+        <h2 class="text-xl font-bold"> {{ organizationName }}</h2>
+            <div class="text-xl text-center my-5">{{$t('adminConsole.fields.teamList')}}</div>
+                <div>
+                    <ul class="flex flex-col">
+                        <li 
+                            v-for="(team, index) in teams" 
+                            :key="team.id"
+                            class="flex justify-around"
+                        >
+                            <input
+                                v-if="editingIndex === index"
+                                v-model="teams[index].team_name"
+                                @blur="stopEditing"
+                                @keyup.enter="stopEditing"
+                            />
+                            <span 
+                                v-else
+                                class="border-2"
+                            >
+                            {{ team.team_name }}</span>
+                            <button 
+                                @click="startEditing(index)" 
+                                v-if="editingIndex !== index"
+                                class="border-2"
+                            >
+                                Edit
+                            </button>
+                            <button 
+                                @click="deleteTeam(team.id)"
+                                class="border-2"
+                            >
+                                Delete
+                            </button>
+                        </li>
+                    </ul>
+                    <div class="flex justify-around">
                         <input
-                            v-if="editingIndex === index"
-                            v-model="teams[index].team_name"
-                            @blur="stopEditing"
-                            @keyup.enter="stopEditing"
+                            v-model="newTeam"
+                            type="text"
+                            placeholder="Enter Team Name"
+                            class="border-2"
                         />
-                        <span 
-                            v-else
+                        <button
+                            @click="addTeam(newTeam)"
                             class="border-2"
                         >
-                        {{ team.team_name }}</span>
-                        <button 
-                            @click="startEditing(index)" 
-                            v-if="editingIndex !== index"
-                            class="border-2"
-                        >
-                            Edit
+                            Add
                         </button>
-                        <button 
-                            @click="deleteTeam(team.id)"
-                            class="border-2"
-                        >
-                            Delete
-                        </button>
-                    </li>
-                </ul>
-                <div class="flex justify-around">
-                    <input
-                        v-model="newTeam"
-                        type="text"
-                        placeholder="Enter Team Name"
-                        class="border-2"
-                    />
-                    <button
-                        @click="addTeam(newTeam)"
-                        class="border-2"
-                    >
-                        Add
-                    </button>
+                    </div>
                 </div>
-            <div class="border-2 text-xl text-center my-5">{{$t('adminConsole.fields.adminSettings')}}</div>
-                <div class="grid grid-cols-2 border-2">
+            <div class="text-xl text-center my-5">{{$t('adminConsole.fields.adminSettings')}}</div>
+                <div class="grid grid-cols-2">
                     <label class="font-medium text-center">{{$t('adminConsole.fields.minimumWorkHours')}}</label>
                     <input
                         type="text"
                         class="border rounded p-2"
                         />
                 </div>
-            <div class="border-2 text-xl text-center my-5">{{$t('adminConsole.fields.organizationSettings')}}</div>
-                <div class="grid grid-cols-2 border-2">
+            <div class="text-xl text-center my-5">{{$t('adminConsole.fields.organizationSettings')}}</div>
+                <div class="grid grid-cols-2">
                     <label class="font-medium text-center">{{$t('adminConsole.fields.organizationName')}}</label>
                     <input
                         type="text"
@@ -66,15 +68,15 @@
                         class="border rounded p-2"
                     />
                 </div>
-        <div class="border-2 flex flex-col items-center my-5">
+        <div class="flex flex-col items-center my-5">
             <button 
                 @click="saveSettings"
-                class="border-2 my-1 w-1/2 py-1 px-3 rounded bg-blue-500 text-white"
+                class="my-1 w-1/2 py-1 px-3 rounded bg-blue-500 text-white"
             >
                 {{$t('adminConsole.buttons.save')}}
             </button>
             <button 
-                class="border-2 my-1 w-1/2 py-1 rounded bg-red-500 text-white"
+                class="my-1 w-1/2 py-1 rounded bg-red-500 text-white"
             >
                 {{$t('adminConsole.buttons.deleteOrganization')}}
             </button>
