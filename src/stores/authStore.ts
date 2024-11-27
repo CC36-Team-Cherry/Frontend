@@ -19,6 +19,7 @@ interface User {
   last_login?: Date;
 }
 
+
 interface Organization {
   name: string;
   details?: string;
@@ -46,6 +47,7 @@ export const useAuthStore = defineStore('auth', {
   getters: {
     isAuthenticated: (state) => !!state.user,
     showSidebar: (state) => state.currentPage === AppPageType.EMPLOYEE_LIST, 
+    isSupervisor: (state) => state.user?.is_supervisor || true,
   },
   persist: true,
 });
