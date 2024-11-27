@@ -124,7 +124,6 @@ const authStore = useAuthStore();
 
 const searchTerm = ref('');
 
-
 const isAddUserModalVisible = ref(false);
 const isEmployeeDetailsModalVisible = ref(false);
 
