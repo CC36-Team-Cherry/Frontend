@@ -144,8 +144,7 @@ const stopEditing = async () => {
 
         if (response.status === 200) {
             // Update the team name in the teams array (local state)
-            console.log(updatedTeamName)
-            console.log(teams.value);
+            console.log(updatedTeamName);
             teams.value[editingIndex.value].team_name = updatedTeamName;
 
             // Stop editing after successful update
@@ -211,15 +210,18 @@ const saveSettings = async () => {
     const adminConsoleData = toRaw(formData.value);
     organizationName.value = formData.value.organizationName;
 
-    await axios.patch(`${apiUrl}/organizations/${activeCompanyId}`, {
+    const response = await axios.patch(`${apiUrl}/organizations/${activeCompanyId}`, {
         adminConsoleData
     },
     {
         withCredentials: true,
     })
 
-    console.log('Settings saved:', toRaw(formData.value));
-    alert('Settings saved successfully!');
+    if (response.status === 200) {
+        authStore.user.company.name = organizationName.value;
+        console.log('Settings saved:', toRaw(formData.value));
+        alert('Settings saved successfully!');
+    }
 
     } catch(err) {
         console.error(err);

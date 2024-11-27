@@ -18,7 +18,10 @@ interface User {
   privileges: {
     is_admin: boolean,
     is_supervisor: boolean;
-  };
+  },
+  company: {
+    company_name: string;
+  }
 }
 
 
@@ -29,7 +32,6 @@ interface Organization {
 export const useAuthStore = defineStore('auth', {
   state: () => ({
     user: null as User | null,
-    organization: null as Organization | null,
     currentPage: AppPageType.LOGIN, 
   }),
   actions: {
@@ -39,7 +41,6 @@ export const useAuthStore = defineStore('auth', {
     },
     logout() {
       this.user = null;
-      this.organization = null;
       this.currentPage = AppPageType.LOGIN; 
     },
     navigateToPage(pageType: AppPageType) {
