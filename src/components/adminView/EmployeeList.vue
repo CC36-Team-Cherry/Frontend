@@ -127,6 +127,7 @@ const isEmployeeDetailsModalVisible = ref(false);
 
 //get employee list
 let fetchedEmployees = ref([]);
+
 async function handleFetchEmployees(companyId) {
   try {
     const response = await fetch(`${apiUrl}/accounts/${companyId}`, {

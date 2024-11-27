@@ -11,6 +11,7 @@ import NewLogin from '@/components/authorization/NewLogin.vue';
 import Settings from '@/views/Settings.vue'; 
 import AdminConsole from '@/components/adminView/AdminConsole.vue';
 import Approvals from '@/views/Approvals.vue'
+import SupervisorCalendar from '@/components/adminView/SupervisorCalendar.vue'
 
 //THIS IS FOR TESTING FIREBASE, DELETE THIS LATER
 import Playground from "@/components/authorization/Playground.vue";
@@ -42,6 +43,14 @@ const router = createRouter({
       path: '/employee',
       name: 'employee',
       component: EmployeeList,
+      meta: {
+        requiresAuth: true
+      }
+    },
+    {
+      path: '/supervisor-calendar',
+      name: 'supervisorCalendar',
+      component: () => SupervisorCalendar,
       meta: {
         requiresAuth: true
       }

@@ -1,5 +1,4 @@
 import { defineStore } from 'pinia';
-import piniaPersistedState from 'pinia-plugin-persistedstate';
 import { AppPageType } from '@/types/AppState';
 
 interface User {
@@ -7,7 +6,7 @@ interface User {
   first_name: string;
   last_name: string;
   email: string;
-  supervisor_id?: boolean;
+  supervisor_id?: number;
   company_id: number;
   team_id: number;
   team_name: string;
@@ -21,6 +20,7 @@ interface User {
     is_supervisor: boolean;
   };
 }
+
 
 interface Organization {
   name: string;
@@ -49,6 +49,7 @@ export const useAuthStore = defineStore('auth', {
   getters: {
     isAuthenticated: (state) => !!state.user,
     showSidebar: (state) => state.currentPage === AppPageType.EMPLOYEE_LIST, 
+    isSupervisor: (state) => state.user?.is_supervisor || true,
   },
   persist: true,
 });
