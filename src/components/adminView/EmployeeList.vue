@@ -84,11 +84,11 @@
             <input type="date" v-model="formData.joinDate" class="border rounded p-2 w-full" />
           </div>
           <div>
-            <label class="block mb-1">{{ $t('employeeList.modal.fields.type') }}</label>
-            <select v-model="formData.type" class="border rounded p-2 w-full">
-              <option value="User">{{ $t('employeeList.modal.userType.user') }}</option>
-              <option value="Admin">{{ $t('employeeList.modal.userType.admin') }}</option>
-            </select>
+            <!-- <label class="block mb-1">{{ $t('employeeList.modal.fields.type') }}</label> -->
+            <input type="checkbox" v-model="formData.isSupervisor">{{ $t('employeeList.modal.userType.supervisor')
+            }}</input>
+            <input type="checkbox" v-model="formData.isAdmin">{{ $t('employeeList.modal.userType.admin') }}</input>
+            <!-- </select> -->
           </div>
           <div>
             <label class="block mb-1">{{ $t('employeeList.modal.fields.pto') }}</label>
@@ -104,7 +104,7 @@
       </form>
     </Modal>
     <EmployeeDetailsModal v-if="selectedEmployee" :employee="selectedEmployee"
-      :isVisible="isEmployeeDetailsModalVisible" @close="closeEmployeeDetailsModal" @save="handleUpdate" />
+      :isVisible="isEmployeeDetailsModalVisible" @close="closeEmployeeDetailsModal" @save="handleUpdate" @delete="handleDelete"/>
   </div>
 </template>
 
@@ -116,8 +116,11 @@ import { sendPasswordResetEmail } from 'firebase/auth';
 import Modal from '@/modal/ModalView.vue';
 import EmployeeDetailsModal from '@/modal/EmployeeDetailsModal.vue';
 import { reactive } from 'vue';
+import { useAuthStore } from '@/stores/authStore';
 
 const apiUrl = import.meta.env.VITE_API_URL;
+
+const authStore = useAuthStore();
 
 const searchTerm = ref('');
 
@@ -145,14 +148,34 @@ async function handleFetchEmployees(companyId) {
   }
 }
 
-//TODO: change this function call to use the company ID of the currently logged-in user
-handleFetchEmployees(1);
+handleFetchEmployees(authStore.user.company_id);
 
 const formData = reactive({
   firstName: '',
   lastName: '',
   email: '',
+  dateOfBirth: '',
+  team: '',
+  supervisor: '',
+  role: '',
+  joinDate: '',
+  isSupervisor: false,
+  isAdmin: false,
+  pto: 0,
 });
+function resetFormData() {
+  formData.firstName = '';
+  formData.lastName = '';
+  formData.email = '';
+  formData.dateOfBirth = '';
+  formData.team = '';
+  formData.supervisor = '';
+  formData.role = '';
+  formData.joinDate = '';
+  formData.isSupervisor = false;
+  formData.isAdmin = false;
+  formData.pto = 0;
+}
 
 const selectedEmployee = ref(null);
 
@@ -171,25 +194,20 @@ const openAddUserModal = () => {
 
 const closeAddUserModal = () => {
   isAddUserModalVisible.value = false;
+  resetFormData();
 };
 
 const handleSubmit = async () => {
+  const email = formData.email;
   // post new user to backend
   await addUserBackend();
-  // fetch employees from backend
-  // TODO: change this to read based on the currently logged-in user's company ID 
-  await handleFetchEmployees(1);
   // close the modal
   closeAddUserModal();
   // send email to the new user, delayed by two seconds to allow time for new account to post to Firebase
   await new Promise(resolve => {setTimeout(resolve, 2000)});
-  sendFirebaseEmail();
-  // reset formData
-  formData.value = {
-  firstName: '',
-  lastName: '',
-  email: '',
-  };
+  sendFirebaseEmail(email);
+  // fetch employees from backend
+  await handleFetchEmployees(authStore.user.company_id);
 }
 
 const addUserBackend = async () => {
@@ -198,19 +216,18 @@ const addUserBackend = async () => {
     first_name: formData.firstName,
     last_name: formData.lastName,
     birthdate: new Date(formData.dateOfBirth),
-    // TODO: update hardcoded company_id
-    company_id: 1,
+    company_id: authStore.user.company_id,
     join_date: new Date(formData.joinDate),
     role: formData.role,
-    is_admin: (formData.type === 'Admin'),
-    is_supervisor: false,
+    is_admin: formData.isAdmin,
+    is_supervisor: formData.isSupervisor,
     remaining_pto: formData.pto,
   };
   await axios.post(`${apiUrl}/accounts`, userData).catch((err) => {console.log(err)});
 }
 
-const sendFirebaseEmail = () => {
-  sendPasswordResetEmail(auth, formData.email)
+const sendFirebaseEmail = (email) => {
+  sendPasswordResetEmail(auth, email)
   // .then((res) => {
   //   console.log("SENT");
   // })
@@ -249,14 +266,31 @@ const handleUpdate = async (updatedData) => {
 
     if (response.status === 200) {
       console.log("Account updated successfully");
-      await handleFetchEmployees(1);
+      await handleFetchEmployees(authStore.user.company_id);
       closeEmployeeDetailsModal();
     } else {
       console.error("Failed to update account")
     }
   } catch (err) {
-    console.error("Error updating employee:", err);
+    console.error("Error updating employee: ", err);
   }
-
 }
+
+const handleDelete = async () => {
+  try {
+    const employeeId = selectedEmployee.value.id;
+    console.log(employeeId);
+    const response = await axios.delete(`${apiUrl}/accounts/${employeeId}`)
+    if (response.status === 200) {
+      console.log('Account deleted successfully');
+      await handleFetchEmployees(1);
+      closeEmployeeDetailsModal();
+    } else {
+      console.error('Failed to delete account');
+    }
+  } catch (err) {
+    console.error("Error deleting employee: ", err)
+  }
+}
+
 </script>

@@ -1,6 +1,8 @@
 <template>
   <aside class="w-64 bg-gray-100 h-full shadow-md flex flex-col">
-    <div class="p-4 text-center font-bold border-b">{{ $t('Sidebar.Logo') }}</div>
+    <div class="p-4 text-center font-bold">{{ $t('Sidebar.Logo') }}</div>
+    <div class="text-center"> {{ authStore.user.company.name }} </div>
+    <div class="border-b p-2 text-center"> {{ $t('Sidebar.Welcome') }} {{ authStore.user.first_name + " " + authStore.user.last_name}} </div>
     <nav class="flex-1 p-4 space-y-2">
       <router-link to="/calendar" class="block p-2 hover:bg-gray-200 rounded">
         {{ $t('Sidebar.Calendar') }}
@@ -15,13 +17,11 @@
         {{ $t('Sidebar.AdminPage') }}
       </router-link>
       <!-- Supervisor-specific link -->
-       <div>
-        <router-link
-        to="/supervisor-calendar"
-        class="block p-2 hover:bg-gray-200 rounded">
-         {{ $t('Sidebar.SupervisorCalendar') }}
-        </router-link>
-      </div>
+       <router-link to="/supervisor-calendar"
+         v-if="authStore.user.Privileges.is_supervisor"
+         class="block p-2 hover:bg-gray-200 rounded">
+        {{ $t('Sidebar.SupervisorCalendar') }}
+       </router-link>
     </nav>
     <div class="flex justify-around p-4 border-t">
       <router-link to="/settings" class="w-full max-w-[120px] text-center">

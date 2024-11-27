@@ -15,7 +15,7 @@ interface User {
   leave_date?: Date;
   pto: number;
   last_login?: Date;
-  privileges: {
+  Privileges: {
     is_admin: boolean,
     is_supervisor: boolean;
   },
@@ -32,7 +32,6 @@ interface Organization {
 export const useAuthStore = defineStore('auth', {
   state: () => ({
     user: null as User | null,
-    organization: null as Organization | null,
     currentPage: AppPageType.LOGIN, 
   }),
   actions: {
@@ -42,7 +41,6 @@ export const useAuthStore = defineStore('auth', {
     },
     logout() {
       this.user = null;
-      this.organization = null;
       this.currentPage = AppPageType.LOGIN; 
     },
     navigateToPage(pageType: AppPageType) {
@@ -52,7 +50,6 @@ export const useAuthStore = defineStore('auth', {
   getters: {
     isAuthenticated: (state) => !!state.user,
     showSidebar: (state) => state.currentPage === AppPageType.EMPLOYEE_LIST, 
-    //isSupervisor: (state) => state.user?.is_supervisor || true,
   },
   persist: true,
 });

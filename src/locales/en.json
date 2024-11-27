@@ -2,11 +2,14 @@
   "Logout": "Logout",
   "Settings": "Settings",
   "Sidebar": {
+    "Welcome": "Welcome",
+    "Logo": "Logo",
     "Calendar": "Calendar",
     "Profile": "Profile",
     "Approvals": "Approvals",
     "EmployeeList": "Employee List",
-    "AdminPage": "Admin Page"
+    "AdminPage": "Admin Page",
+    "SupervisorCalendar": "Supervisor Calendar"
   },
   "settings": {
     "title": "Settings",
@@ -99,9 +102,18 @@
         "type": "Type",
         "pto": "PTO"
       },
+      "placeholders": {
+        "firstName": "Enter your first name",
+        "lastName": "Enter your last name",
+        "email": "Enter your email address",
+        "selectTeam": "Select a Team",
+        "supervisor": "Select a Supervisor",
+        "role": "Enter a Role",
+        "pto": "Enter PTO"
+      },
       "userType": {
-        "user": "User",
-        "admin": "Admin"
+        "supervisor": " Supervisor",
+        "admin": " Admin"
       },
       "sendInvitation": "Send Invitation"
     }
@@ -153,6 +165,28 @@
     "daysOfWeek": [
       "日曜日", "月曜日", "火曜日", "水曜日", "木曜日", "金曜日", "土曜日"
     ]
+  },
+  "Approval": {
+    "TabSent": "Approval Requests Sent",
+    "TabReceived": "Approval Requests Received",
+    "SentTo": "Sent To",
+    "From": "From",
+    "Type": "Type",
+    "Message": "Message",
+    "Status": "Status",
+    "Action": "Action",
+    "Date": "Date",
+    "NoApprovals": "No approvals to show.",
+    "MonthlyAttendance": "Monthly Attendance for",
+    "Approve": "Approve",
+    "Deny": "Deny",
+    "SeeAttendance": "See Attendance",
+    "Remind": "Remind",
+    "Delete": "Delete"
+  },
+  "SupervisorCalendar": {
+    "Title": "Supervisor Calendar",
+    "SelectPlaceholder": "Select a team member"
   }
 }
 

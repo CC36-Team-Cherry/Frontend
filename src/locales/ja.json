@@ -2,11 +2,14 @@
   "Logout": "ログアウト",
   "Settings": "設定",
   "Sidebar": {
+    "Welcome": "ようこそ",
+    "Logo": "ロゴ",
     "Calendar": "カレンダー",
     "Profile": "プロフィール",
     "Approvals": "承認",
     "EmployeeList": "従業員リスト",
-    "AdminPage": "管理ページ"
+    "AdminPage": "管理ページ",
+    "SupervisorCalendar": "監督者カレンダー"
   },
   "settings": {
     "title": "設定",
@@ -38,6 +41,7 @@
   "register": {
     "title": "組織を登録",
     "firstName": "氏名",
+    "lastName": "",
     "organizationName": "組織名",
     "organizationDetails": "組織の詳細",
     "submit": "送信",
@@ -108,8 +112,8 @@
         "pto": "有給日数を入力してください"
       },
       "userType": {
-        "user": "ユーザー",
-        "admin": "管理者"
+        "supervisor": " 上司",
+        "admin": " 管理者"
       },
       "sendInvitation": "招待を送信"
     }
@@ -161,6 +165,32 @@
     "daysOfWeek": [
       "日曜日", "月曜日", "火曜日", "水曜日", "木曜日", "金曜日", "土曜日"
     ]
+  },
+  "Approval": {
+    "TabSent": "承認リクエスト送信済み",
+    "TabReceived": "承認リクエスト受信済み",
+    "SentTo": "送信先",
+    "From": "送信元",
+    "Type": "タイプ",
+    "Message": "メッセージ",
+    "Status": "ステータス",
+    "Action": "アクション",
+    "Date": "日付",
+    "NoApprovals": "表示する承認がありません。",
+    "MonthlyAttendance": "月次出勤状況",
+    "Approve": "承認",
+    "Deny": "却下",
+    "SeeAttendance": "出勤状況を確認",
+    "Remind": "リマインド",
+    "Delete": "削除",
+    "Messages": {
+      "Approved": "承認が正常に行われました！",
+      "Denied": "承認リクエストを却下しました。"
+    }
+  },
+  "SupervisorCalendar": {
+    "Title": "監督者カレンダー",
+    "SelectPlaceholder": "チームメンバーを選択してください"
   }
 }
 
