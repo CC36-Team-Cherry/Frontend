@@ -50,6 +50,40 @@
           {{ selectedEventId ? $t('calendar.updateAttendance') : $t('calendar.logAttendance') }}
         </button>
       </div>
+      <div>
+        <div>
+          <label class="block mb-1 font-bold">{{ "Supervisor" }}</label>
+            <select 
+              v-model="selectedSupervisorId" 
+              class="border border-gray-300 rounded p-2 w-full"
+            >
+              <option value="" disabled>Select Supervisor</option>
+              <!-- Loop through supervisors to create the dropdown -->
+              <option 
+                v-for="supervisor in supervisors" 
+                :key="supervisor.id" 
+                :value="supervisor.id">
+                {{ supervisor.first_name + supervisor.last_name }}
+              </option>
+            </select>
+        </div>
+        <input
+          v-model="memo"
+          type="text"
+          placeholder="Optional Memo"
+          class="border-2"
+        />
+        <div>
+          <label class="block mb-1 font-bold">{{ Submit }}</label>
+          <button
+            @click="submitHandler"
+            class="bg-green-500 text-white py-2 px-4 rounded hover:bg-green-600 w-full"
+          >
+            {{ "Submit" }}
+          </button>
+        </div>
+      </div>
+
     </div>
 
     <!-- Calendar Section -->
@@ -68,6 +102,8 @@ import axios from 'axios';
 import { useI18n } from 'vue-i18n';
 import { useAuthStore } from '@/stores/authStore';
 
+const apiUrl = import.meta.env.VITE_API_URL;
+
 export default {
   name: 'FullCalendarComponent',
   data() {
@@ -78,6 +114,9 @@ export default {
       endTime: '',
       calendar: null,
       events: [],
+      supervisors: [],
+      selectedSupervisorId: '',
+      memo: '',
       selectedEventId: null,
       locales: {
         'en-US': enLocale,
@@ -91,6 +130,13 @@ export default {
     if (!authStore.user || !authStore.user.id) {
       console.error("User ID is not defined in authStore");
       return;
+    }
+
+    this.fetchSupervisors();
+
+    const activeAccountSupervisor = authStore.user.supervisor_id
+    if (activeAccountSupervisor) {
+      this.selectedSupervisorId = activeAccountSupervisor;
     }
 
     const calendarEl = this.$refs.calendar;
@@ -246,6 +292,45 @@ export default {
       this.endTime = '';
       this.selectedEventId = null;
     },
+    async fetchSupervisors() {
+      try {
+        const response = await axios.get(`${apiUrl}/supervisors`);
+        console.log(response.data)
+        this.supervisors = response.data; // Assume endpoint returns a list of supervisor objects
+      } catch (err) {
+        console.error('Error fetching supervisors:', error);
+      }
+    }
+    ,
+    async submitHandler() {
+
+        const authStore = useAuthStore();
+
+        const selectedDate = this.selectionRange.split(" - ");
+        const month = selectedDate[0] ? new Date(selectedDate[0]).getMonth() + 1 : new Date().getMonth() + 1;  // Extracting the month
+        const year = selectedDate[0] ? new Date(selectedDate[0]).getFullYear() : new Date().getFullYear();
+
+        const approvalData = {
+          account_id: authStore.user.id,
+          supervisor_id: this.selectedSupervisorId,
+          month: month,
+          year: year,
+          content: this.memo,
+          status: "pending", 
+        };
+
+        console.log(approvalData);
+
+        try {
+          // console.log(selectedSupervisor);
+          // const selectedSupervisor = selectedSupervisor.value;
+          const response = await axios.post(`${apiUrl}/approvals/monthAttendance`, approvalData);
+          console.log(response.data);
+
+        } catch (err) {
+          console.error('Error submitting approval:', err);
+        }
+      }
   },
 };
 
