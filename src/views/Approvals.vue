@@ -1,113 +1,117 @@
 <template>
     <div>
-        <div class="border-2 flex flex-row justify-evenly">
-            <button
-                class="w-full"
-                :class="{
-                    'bg-blue-500 text-white': activeTab === 'sent', 
-                    'bg-gray-200 text-black': activeTab !== 'sent'
-                }"
-                @click="switchTab('sent')"
+      <div class="border-2 flex flex-row justify-evenly">
+        <button
+          class="w-full"
+          :class="{
+            'bg-blue-500 text-white': activeTab === 'sent',
+            'bg-gray-200 text-black': activeTab !== 'sent'
+          }"
+          @click="switchTab('sent')"
+        >
+          {{ $t('Approval.TabSent') }}
+        </button>
+        <button
+          class="w-full"
+          :class="{
+            'bg-blue-500 text-white': activeTab === 'received',
+            'bg-gray-200 text-black': activeTab !== 'received'
+          }"
+          @click="switchTab('received')"
+        >
+          {{ $t('Approval.TabReceived') }}
+        </button>
+      </div>
+  
+      <div class="flex flex-col flex-grow overflow-y-auto">
+        <table class="min-w-full table-auto">
+          <thead>
+            <tr>
+              <th v-if="activeTab === 'sent'">{{ $t('Approval.SentTo') }}</th>
+              <th v-if="activeTab === 'received'">{{ $t('Approval.From') }}</th>
+              <th>{{ $t('Approval.Type') }}</th>
+              <th>{{ $t('Approval.Message') }}</th>
+              <th>{{ $t('Approval.Status') }}</th>
+              <th>{{ $t('Approval.Action') }}</th>
+              <th>{{ $t('Approval.Date') }}</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-if="filteredRequests.length === 0">
+              <td colspan="7" class="text-center text-gray-500 p-4">
+                {{ $t('Approval.NoApprovals') }}
+              </td>
+            </tr>
+            <tr
+              v-for="(request, index) in filteredRequests"
+              :key="index"
+              class="border-2"
             >
-                Approval Requests Sent
-            </button>
-            <button
-                class="w-full"
-                :class="{
-                    'bg-blue-500 text-white': activeTab === 'received', 
-                    'bg-gray-200 text-black': activeTab !== 'received'
-                }"
-                @click="switchTab('received')"
-            >
-                Approval Requests Received
-            </button>
-        </div>
-
-        <div class="flex flex-col flex-grow overflow-y-auto">
-            <table class="min-w-full table-auto">
-                <thead>
-                    <tr>
-                        <th 
-                            v-if="activeTab === 'sent'"
-                        >Sent To</th>
-                        <th
-                            v-if="activeTab === 'received'"
-                        >From</th>
-                        <th>Type</th>
-                        <th>Message</th>
-                        <th>Status</th>
-                        <th>Action</th>
-                        <th>Date</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr 
-                        v-if="filteredRequests.length === 0"
-                    >
-                        <td colspan="7" class="text-center text-gray-500 p-4">
-                            No approvals to show.
-                        </td>
-                    </tr>
-                    <tr 
-                        v-for="(request, index) in filteredRequests" 
-                        :key="index"
-                        class="border-2"
-                    >
-                        <td
-                            v-if="activeTab === 'sent'"
-                        >{{  request.supervisor.first_name + " " + request.supervisor.last_name }}</td>
-                        <td
-                            v-if="activeTab === 'received'"
-                        >{{ request.account.first_name + " " + request.account.last_name }}</td>
-                        <td>{{  "Monthly Attendance for: " + request.month + "/" + request.year }}</td>
-                        <!-- <td>{{  request.type }}</td> -->
-                        
-                        <td
-                            v-if="!request.isEditing"
-                        >{{  request.content }}</td>
-                        <input
-                            v-if="request.isEditing"
-                            v-model="request.newMessage"
-                            class="border-2"
-                            @keyup.enter="saveRemind(request)"
-                            @blur="cancelEditing(request)"
-                        />
-
-                        <td>{{  request.status }}</td>
-                        <td class="flex flex-col">
-                            <button
-                                v-if="activeTab==='received'"
-                                class="border-2"
-                                @click="statusClick(request.id, 'Approved')"
-                            >Approve</button>
-                            <button
-                                v-if="activeTab==='received'"
-                                class="border-2"
-                                @click="statusClick(request.id, 'Denied')"
-                            >Deny</button>
-                            <button
-                                v-if="activeTab==='received'"
-                                class="border-2"
-                                @click="seeAttendanceClick(request.id)"
-                            >See Attendance</button>
-                            <button
-                                v-if="activeTab==='sent'"
-                                class="border-2"
-                                @click="remindClick(request)"
-                            >Remind</button>
-                            <button
-                                class="border-2"
-                                @click="deleteClick(request.id)"
-                            >Delete</button>
-                        </td>
-                        <td>{{  request.updated_at }}</td>
-                    </tr> 
-                </tbody>
-            </table>
-        </div>
+              <td v-if="activeTab === 'sent'">
+                {{ request.supervisor.first_name + ' ' + request.supervisor.last_name }}
+              </td>
+              <td v-if="activeTab === 'received'">
+                {{ request.account.first_name + ' ' + request.account.last_name }}
+              </td>
+              <td>
+                {{ $t('Approval.MonthlyAttendance') }}: {{ request.month }}/{{ request.year }}
+              </td>
+              <td v-if="!request.isEditing">{{ request.content }}</td>
+              <input
+                v-if="request.isEditing"
+                v-model="request.newMessage"
+                class="border-2"
+                @keyup.enter="saveRemind(request)"
+                @blur="cancelEditing(request)"
+              />
+              <td>{{ request.status }}</td>
+              <td class="flex flex-col">
+                <button
+                  v-if="activeTab === 'received'"
+                  class="border-2"
+                  @click="statusClick(request.id, 'Approved')"
+                >
+                  {{ $t('Approval.Approve') }}
+                </button>
+                <button
+                  v-if="activeTab === 'received'"
+                  class="border-2"
+                  @click="statusClick(request.id, 'Denied')"
+                >
+                  {{ $t('Approval.Deny') }}
+                </button>
+                <button
+                  v-if="activeTab === 'received'"
+                  class="border-2"
+                  @click="seeAttendanceClick(request.id)"
+                >
+                  {{ $t('Approval.SeeAttendance') }}
+                </button>
+                <button
+                  v-if="activeTab === 'sent'"
+                  class="border-2"
+                  @click="remindClick(request)"
+                >
+                  {{ $t('Approval.Remind') }}
+                </button>
+                <button
+                  class="border-2"
+                  @click="deleteClick(request.id)"
+                >
+                  {{ $t('Approval.Delete') }}
+                </button>
+                <!-- Message display -->
+                  <div v-if="message" class="text-center mt-4 text-green-500">
+                  {{ message }}
+                </div>
+              </td>
+              <td>{{ request.updated_at }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
     </div>
-
-</template>
+  </template>
 
 <script setup>
 import { ref, computed, onMounted } from 'vue';
