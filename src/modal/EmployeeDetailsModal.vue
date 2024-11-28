@@ -173,7 +173,7 @@
   </template>
   
   <script setup>
-  import { defineProps, defineEmits, ref, reactive, watch, onMounted, toRaw } from 'vue';
+  import { ref, reactive, watch, onMounted, toRaw } from 'vue';
   import axios from 'axios';
   
   const props = defineProps({
