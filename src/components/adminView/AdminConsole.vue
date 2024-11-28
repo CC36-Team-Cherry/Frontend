@@ -99,9 +99,10 @@ const formData = ref({
 
 // Reactive state
 const teams = ref([]);
-
 // New team variable 
 const newTeam = ref('');
+// Index of team being edited
+const editingIndex = ref(null);
 // Organization name variable
 const organizationName = ref('');
 
@@ -128,7 +129,6 @@ const getTeams = async () => {
 };
 
 // Team editing 
-const editingIndex = ref(null);
 const startEditing = (index) => {
       editingIndex.value = index;
     };

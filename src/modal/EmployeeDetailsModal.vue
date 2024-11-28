@@ -10,10 +10,10 @@
       <h2 class="text-2xl font-bold mb-6 text-center">{{ $t('employeeDetails.title') }}</h2>
 
       <!-- Modal Content -->
-      <div class="grid grid-cols-2 gap-6">
+      <div>
         <!-- Account Info -->
         <div>
-          <h3 class="text-lg font-semibold mb-4">
+          <h3 class="text-lg text-center font-semibold mb-4">
             --- {{ $t('employeeDetails.accountInfo') }} ---
           </h3>
           <div class="space-y-3">
@@ -70,7 +70,7 @@
           </div>
           <!-- Attendance Settings -->
           <div>
-            <h3 class="text-lg font-semibold mb-4">
+            <h3 class="text-lg font-semibold text-center mb-4">
               --- {{ $t('employeeDetails.attendanceSettings') }} ---
             </h3>
             <div class="space-y-3">
@@ -88,13 +88,13 @@
                 <div>
                     <ul class="flex flex-col">
                         <li 
-                            v-for="(specialPto, index) in specialPto" 
+                            v-for="(specialPto, index) in specialPtos" 
                             :key="specialPto.id"
                             class="flex justify-around"
                         >
                             <input
-                                v-if="editingIndex === index"
-                                v-model="specialPto[index].type"
+                                v-if="editingSpecialPtoIndex === index"
+                                v-model="specialPtos[index].type"
                                 @blur="stopEditing"
                                 @keyup.enter="stopEditing"
                             />
@@ -103,8 +103,8 @@
                             >
                             {{ specialPto.type }}</span>
                             <button 
-                                @click="startEditing(index)" 
-                                v-if="editingIndex !== index"
+                                @click="startEditingSpecialPto(index)" 
+                                v-if="editingSpecialPtoIndex !== index"
                                 class="border-2"
                             >
                                 Edit
@@ -137,33 +137,6 @@
             </div>
           </div>
         </div>
-
-        <!-- Attendance Settings -->
-        <div>
-          <h3 class="text-lg font-semibold mb-4">
-            --- {{ $t('employeeDetails.attendanceSettings') }} ---
-          </h3>
-          <div class="space-y-3">
-            <div>
-              <label class="font-semibold block">{{ $t('employeeDetails.fields.pto') }}</label>
-              <input type="number" v-model="formData.remaining_pto"
-                class="border w-full rounded px-2 py-1" />
-            </div>
-            <div>
-              <label class="font-semibold block">{{ $t('employeeDetails.fields.specialHolidays') }}</label>
-              <textarea v-model="formData.special_holidays" class="border w-full rounded px-2 py-1"
-                placeholder="{{ $t('employeeDetails.placeholders.specialHolidays') }}"></textarea>
-            </div>
-            <div>
-              <label class="font-semibold block">{{ $t('employeeDetails.fields.holidayType') }}</label>
-              <input type="text" class="border w-full rounded px-2 py-1"
-                placeholder="{{ $t('employeeDetails.placeholders.holidayType') }}" />
-              <button class="bg-blue-500 text-white py-1 px-4 rounded mt-2 hover:bg-blue-600">
-                {{ $t('employeeDetails.buttons.addHoliday') }}
-              </button>
-            </div>
-          </div>
-        </div>
       </div>
 
       <!-- Footer Buttons -->
@@ -180,7 +153,8 @@
 </template>
 
 <script setup>
-import { defineProps, defineEmits, ref, reactive, onMounted } from 'vue';
+import { defineProps, defineEmits, ref, reactive, onMounted, toRaw } from 'vue';
+import axios from 'axios';
 
 const props = defineProps({
   employee: {
@@ -198,6 +172,8 @@ const emit = defineEmits(['close', 'save', 'delete']);
 const onClose = () => emit('close');
 const onSave = () => emit('save', formData);
 const onDelete = () => emit('delete');
+
+const apiUrl = import.meta.env.VITE_API_URL;
 
 const teams = ref(['Team A', 'Team B', 'Team C']);
 const formData = reactive({
@@ -217,14 +193,15 @@ const formData = reactive({
   pto: 0,
 });
 
-  const specialPto = ref([]);
+  const specialPtos = ref([]);
   const newSpecialPto = ref('');
+  // Track index of special pto being edited
+  const editingSpecialPtoIndex = ref(null);
 
   const getSpecialPto = async () => {
     try {
       const response = await axios.get(`${apiUrl}/accounts/${props.employee.id}/specialPto`);
-      console.log(response.data);
-      specialPto.value = response.data;
+      specialPtos.value = response.data;
     } catch(err) {
       console.error('Error fetching special pto:', err);
     }
@@ -240,13 +217,65 @@ const formData = reactive({
       );
 
       // TODO: Confirm if correct
-      specialPto.value.push({type: newSpecialPto.value, // The content of the new special PTO
+      specialPtos.value.push({type: newSpecialPto.value, // The content of the new special PTO
         });
 
       console.log('New special pto saved', toRaw(response));
 
       // Reset input 
       newSpecialPto.value = ''; 
+
+    } catch (err) {
+      console.error(err);
+    }
+  }
+
+  // Start editing and keep track of index of special pto editing
+  const startEditingSpecialPto = (index) => {
+    editingSpecialPtoIndex.value = index;
+  };
+
+  // Save the edited special pto
+  const stopEditing = async () => {
+    
+    try {
+    const specialPto = specialPtos.value[editingSpecialPtoIndex.value];
+    const updatedSpecialPtoType = specialPto.type;
+    console.log(specialPto)
+    console.log("updatedspecialpto",updatedSpecialPtoType);
+    
+      
+      const response = await axios.patch(`${apiUrl}/specialPto/${specialPto.id}`, {
+        updatedSpecialPtoType
+      });
+
+      if (response.status === 200) {
+        specialPtos.value[editingSpecialPtoIndex.value].type = updatedSpecialPtoType;
+      }
+    
+      editingSpecialPtoIndex.value = null; 
+
+      console.log('Special pto edited', toRaw(response))
+
+    } catch (err) {
+      console.error(err);
+    }
+  }
+
+  const deleteSpecialPto = async (specialPtoId) => {
+    try {
+
+      const originalSpecialPto = [...specialPtos.value];
+      specialPtos.value = specialPtos.value.filter(specialPto => specialPto.id !== specialPtoId);
+
+      const response = await axios.delete(`${apiUrl}/specialPto/${specialPtoId}`)
+
+      if (response.status !== 200) {
+        specialPtos.value = originalSpecialPto;
+        console.error('Failed to delete the special pto');
+      } else {
+        console.error('Special pto delete successful');
+      }
 
     } catch (err) {
       console.error(err);
