@@ -64,10 +64,10 @@
               class="border w-full rounded px-2 py-1" />
             </div>
             <div>
-              <input type="checkbox" v-model="formData.is_supervisor"> Supervisor</input>
-              <input type="checkbox" v-model="formData.is_admin"> Admin</input>
+              <input type="checkbox" v-model="formData.is_supervisor"> Supervisor
+              <input type="checkbox" v-model="formData.is_admin"> Admin
           </div>
-  
+          </div>
           <!-- Attendance Settings -->
           <div>
             <h3 class="text-lg font-semibold mb-4">
@@ -279,6 +279,3 @@ onMounted(() => {
     }
   });
   </script>
-  
-});
-</script>
