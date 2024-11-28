@@ -21,7 +21,6 @@
   import interactionPlugin from "@fullcalendar/interaction";
   import enLocale from "@fullcalendar/core/locales/en-gb";
   import axios from "axios";
-  import { useAuthStore } from "@/stores/authStore";
   
   export default {
     props: {
@@ -30,9 +29,8 @@
         required: true,
       },
       accountId: {
-        // Rendiamo questo opzionale, perché possiamo usare authStore per ottenere l'ID
         type: Number,
-        default: null,
+        required: true, // Required, so we ensure it's always provided
       },
       employeeName: {
         type: String,
@@ -46,47 +44,55 @@
       };
     },
     methods: {
-     fetchAttendanceData() {
-       console.log("Prop accountId:", this.accountId);
-       console.log("AuthStore User ID:", this.getUserIdFromAuthStore());
-
-      const idToFetch = this.accountId || this.getUserIdFromAuthStore();
-      console.log("ID to Fetch:", idToFetch);
-
-      if (!idToFetch) {
-       console.error("Account ID is not provided or available in authStore.");
-       return;
-      }
-    axios
-    .get(`http://localhost:3000/accounts/${idToFetch}/attendance`)
-    .then((response) => {
-      console.log("Attendance Data:", response.data);
-      this.events = response.data.map((record) => ({
-        id: record.id,
-        title: `${record.punch_in.split("T")[1].slice(0, 5)} - ${record.punch_out.split("T")[1].slice(0, 5)}`,
-        start: record.day,
-        backgroundColor: this.getEventColor(record),
-        extendedProps: {
-          punch_in: record.punch_in,
-          punch_out: record.punch_out,
-        },
-      }));
-
-      if (this.calendar) {
-        this.calendar.getEvents().forEach((event) => event.remove());
-        this.events.forEach((event) => this.calendar.addEvent(event));
-      }
-    })
-    .catch((error) => {
-      console.error("Error fetching attendance records:", error);
-    });
-  },
+      /**
+       * Fetch attendance data for the given accountId.
+       */
+      fetchAttendanceData() {
+        console.log(`Fetching attendance data for Account ID: ${this.accountId}`);
+        if (!this.accountId) {
+          console.error("Account ID is required but not provided.");
+          return;
+        }
+  
+        axios
+          .get(`http://localhost:3000/accounts/${this.accountId}/attendance`)
+          .then((response) => {
+            console.log("Attendance data fetched successfully:", response.data);
+  
+            // Map data to FullCalendar event structure
+            this.events = response.data.map((record) => ({
+              id: record.id,
+              title: `${record.punch_in.split("T")[1].slice(0, 5)} - ${record.punch_out.split("T")[1].slice(0, 5)}`,
+              start: record.day,
+              backgroundColor: this.getEventColor(record),
+              extendedProps: {
+                punch_in: record.punch_in,
+                punch_out: record.punch_out,
+              },
+            }));
+  
+            // Add events to the calendar
+            if (this.calendar) {
+              this.calendar.getEvents().forEach((event) => event.remove());
+              this.events.forEach((event) => this.calendar.addEvent(event));
+            }
+          })
+          .catch((error) => {
+            console.error("Error fetching attendance records:", error);
+          });
+      },
+      /**
+       * Determine the color of the event based on the record data.
+       */
       getEventColor(record) {
         if (record.absence) return "red";
         if (record.full_pto) return "orange";
         if (record.special_pto) return "green";
         return "blue";
       },
+      /**
+       * Initialize the FullCalendar instance.
+       */
       initializeCalendar() {
         const calendarEl = this.$refs.calendar;
   
@@ -110,42 +116,46 @@
   
         this.calendar.render();
       },
+      /**
+       * Close the modal and destroy the calendar instance.
+       */
       onClose() {
         this.$emit("close");
       },
-      getUserIdFromAuthStore() {
-        const authStore = useAuthStore();
-        return authStore.user?.id || null;
-      },
     },
     watch: {
-     isVisible(newVal) {
-      console.log("isVisible changed:", newVal); // Verifica se il watcher si attiva
-      if (newVal) {
-       this.fetchAttendanceData();
-      }
-     },
+      /**
+       * Watch for visibility changes and fetch attendance data if the modal is opened.
+       */
+      isVisible(newVal) {
+        if (newVal) {
+          console.log("CalendarModal opened. Fetching attendance data...");
+          this.fetchAttendanceData();
+        }
+      },
+      /**
+       * Watch for accountId changes and fetch new attendance data if the ID changes.
+       */
+      accountId(newAccountId) {
+        if (newAccountId) {
+          console.log(`Account ID changed to: ${newAccountId}. Fetching attendance data...`);
+          this.fetchAttendanceData();
+        }
+      },
     },
     mounted() {
-      const authStore = useAuthStore();
-      console.log("AuthStore:", authStore);
-      console.log("User in AuthStore:", authStore.user);
-
-      if (!authStore.user) {
-        console.error("AuthStore user is not set. Please ensure the user is logged in.");
-      }
-
-  this.initializeCalendar();
-  },
+      console.log("Initializing calendar...");
+      this.initializeCalendar();
+  
+      // Fetch initial attendance data
+      this.fetchAttendanceData();
+    },
     beforeUnmount() {
       if (this.calendar) {
         this.calendar.destroy();
       }
     },
   };
-</script>
-  
-  
-  
+  </script>
 
   
