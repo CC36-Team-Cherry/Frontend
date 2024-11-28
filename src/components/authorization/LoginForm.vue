@@ -82,15 +82,19 @@ const goToRegister = () => {
 
 const loginFirebase = () => {
   signInWithEmailAndPassword(auth, email.value, password.value)
-  .then((userCredential) => {
-    // Signed in 
-    router.push({ path: `/calendar` });
-  })
-  .catch((error) => {
-    const errorCode = error.code;
-    const errorMessage = error.message;
-    console.log(errorCode, errorMessage);
-  });
-}
+    .then((userCredential) => {
+      router.push({ path: `/calendar` });
+    })
+    .catch((error) => {
+      const errorCode = error.code;
+      if (errorCode === 'auth/user-not-found') {
+        console.error('Nessun utente trovato con questa email.');
+      } else if (errorCode === 'auth/wrong-password') {
+        console.error('Password errata.');
+      } else {
+        console.error('Errore di autenticazione:', error.message);
+      }
+    });
+};
 
 </script>
