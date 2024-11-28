@@ -73,7 +73,7 @@
       "role": "役割",
       "joinDate": "入社日",
       "lastDate": "退社日",
-      "type": "タイプ",
+      "privileges": "権利",
       "status": "ステータス",
       "email": "メールアドレス",
       "att": "出席"
