@@ -217,7 +217,7 @@ const formData = reactive({
       );
 
       // TODO: Confirm if correct
-      specialPto.value.push({type: newSpecialPto.value, // The content of the new special PTO
+      specialPtos.value.push({type: newSpecialPto.value, // The content of the new special PTO
         });
 
       console.log('New special pto saved', toRaw(response));
