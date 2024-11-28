@@ -149,7 +149,7 @@
 </template>
 
 <script setup>
-import { ref, computed, reactive } from 'vue';
+import { ref, computed, reactive, onMounted } from 'vue';
 import axios from 'axios';
 import { auth } from '../../firebase/firebaseConfig.ts';
 import { sendPasswordResetEmail } from 'firebase/auth';
@@ -168,6 +168,7 @@ const isEmployeeDetailsModalVisible = ref(false);
 const isCalendarModalVisible = ref(false);
 
 const fetchedEmployees = ref([]);
+const fetchedTeams = ref([]);
 const selectedEmployee = ref(null);
 const selectedUser = ref(null);
 
@@ -319,6 +320,7 @@ const closeCalendarModal = () => {
   selectedUser.value = null;
 };
 
+//get all employees for list
 const handleFetchEmployees = async () => {
   try {
     const response = await axios.get(`${apiUrl}/accounts/${authStore.user.company_id}`);
@@ -328,7 +330,15 @@ const handleFetchEmployees = async () => {
   }
 };
 
-handleFetchEmployees();
+//get all teams
+const handleFetchTeams = async () => {
+  try {
+    const response = await axios.get(`${apiUrl}/organizations/${authStore.user.company_id}/teams`);
+    fetchedTeams.value = response.data;
+  } catch (err) {
+    console.error('Error fetching teams:', err);
+  }
+}
 
 //employee search
 const filteredEmployees = computed(() => {
@@ -337,4 +347,10 @@ const filteredEmployees = computed(() => {
     (employee.first_name + employee.last_name).toLowerCase().includes(searchTerm.value.toLowerCase())
   );
 });
+console.log(fetchedTeams);
+
+onMounted(() => {
+  handleFetchEmployees();
+  handleFetchTeams();
+})
 </script>
