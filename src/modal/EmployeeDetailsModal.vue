@@ -38,10 +38,10 @@
             </div>
             <div>
               <label class="font-semibold block">{{ $t('employeeDetails.fields.team') }}</label>
-              <select v-model="formData.team" class="border w-full rounded px-2 py-1">
-                <option value="" disabled>{{ $t('employeeDetails.placeholders.selectTeam') }}</option>
-                <option v-for="team in teams" :key="team" :value="team">{{ team }}</option>
-              </select>
+              <select v-model="formData.team_id" class="border rounded p-2 w-full">
+              <option value="" disabled>{{ $t('employeeDetails.placeholders.selectTeam') }}</option>
+              <option v-for="team in teams" :key="team.id" :value="team.id">{{ team.team_name }}</option>
+            </select>
             </div>
             <div>
               <label class="font-semibold block">{{ $t('employeeDetails.fields.supervisor') }}</label>
@@ -187,6 +187,10 @@ const props = defineProps({
     type: Object,
     required: true,
   },
+  teams: {
+    type: Array,
+    required: true,
+  },
   isVisible: {
     type: Boolean,
     required: true,
@@ -199,7 +203,6 @@ const onClose = () => emit('close');
 const onSave = () => emit('save', formData);
 const onDelete = () => emit('delete');
 
-const teams = ref(['Team A', 'Team B', 'Team C']);
 const formData = reactive({
   first_name: '',
   last_name: '',
@@ -215,6 +218,7 @@ const formData = reactive({
   is_admin: false,
   is_supervisor: false,
   pto: 0,
+  team_id: '',
 });
 
   const specialPto = ref([]);
@@ -267,6 +271,7 @@ onMounted(() => {
   formData.leave_date = new Date(props.employee.leave_date).toISOString().split('T')[0];
   formData.is_admin = Boolean(props.employee.Privileges.is_admin);
   formData.is_supervisor = Boolean(props.employee.Privileges.is_supervisor);
+  formData.team_id = props.employee.team_id;
   
       // Get special pto for selected user
     getSpecialPto();
