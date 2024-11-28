@@ -37,7 +37,7 @@
             class="cursor-pointer hover:bg-gray-100"
           >
             <td class="border p-2">{{ employee.first_name + ' ' + employee.last_name }}</td>
-            <td class="border p-2">{{ employee.team_id || 'no team' }}</td>
+            <td class="border p-2">{{ employee.team ? employee.team.team_name : 'no team' }}</td>
             <td class="border p-2">{{ employee.role }}</td>
             <td class="border p-2">{{ employee.join_date.split('T')[0] }}</td>
             <td class="border p-2">{{ employee.leave_date || 'NA' }}</td>
@@ -89,9 +89,9 @@
           </div>
           <div>
             <label class="block mb-1">{{ $t('employeeList.modal.fields.team') }}</label>
-            <select v-model="formData.team" class="border rounded p-2 w-full">
+            <select v-model="formData.team_id" class="border rounded p-2 w-full">
               <option value="" disabled>{{ $t('employeeDetails.placeholders.selectTeam') }}</option>
-              <option v-for="team in teams" :key="team" :value="team">{{ team }}</option>
+              <option v-for="team in fetchedTeams" :key="team.id" :value="team.id">{{ team.team_name }}</option>
             </select>
           </div>
           <div>
@@ -132,6 +132,7 @@
     <EmployeeDetailsModal
       v-if="selectedEmployee"
       :employee="selectedEmployee"
+      :teams="fetchedTeams"
       :isVisible="isEmployeeDetailsModalVisible"
       @close="closeEmployeeDetailsModal"
       @save="handleUpdate"
@@ -149,7 +150,7 @@
 </template>
 
 <script setup>
-import { ref, computed, reactive } from 'vue';
+import { ref, computed, reactive, onMounted } from 'vue';
 import axios from 'axios';
 import { auth } from '../../firebase/firebaseConfig.ts';
 import { sendPasswordResetEmail } from 'firebase/auth';
@@ -168,6 +169,7 @@ const isEmployeeDetailsModalVisible = ref(false);
 const isCalendarModalVisible = ref(false);
 
 const fetchedEmployees = ref([]);
+const fetchedTeams = ref([]);
 const selectedEmployee = ref(null);
 const selectedUser = ref(null);
 
@@ -176,8 +178,8 @@ const formData = reactive({
   last_name: '',
   email: '',
   birthdate: '',
-  team: '',
-  supervisor: '',
+  team_id: '',
+  supervisor_id: '',
   remaining_pto: 0,
   special_holidays: '',
   role: '',
@@ -185,8 +187,6 @@ const formData = reactive({
   leave_date: '',
   is_admin: false,
   is_supervisor: false,
-  is_admin: false,
-  remaining_pto: 0,
 });
 
 function resetFormData() {
@@ -194,8 +194,8 @@ function resetFormData() {
   formData.last_name = '';
   formData.email = '';
   formData.birthdate = '';
-  formData.team = '';
-  formData.supervisor = '';
+  formData.team_id = '';
+  formData.supervisor_id = '';
   formData.remaining_pto = 0;
   formData.special_holidays = '';
   formData.role = '';
@@ -236,8 +236,20 @@ const addUserBackend = async () => {
     is_admin: formData.is_admin,
     is_supervisor: formData.is_supervisor,
     remaining_pto: formData.remaining_pto,
+    team_id: formData.team_id,
   };
-  await axios.post(`${apiUrl}/accounts`, userData).catch((err) => {console.log(err)});
+  const cleanedData = Object.fromEntries(
+      Object.entries(userData).filter(([key, value]) => {
+        // Only include key-value pairs where value is not empty, null, undefined, or whitespace
+        return (
+          value !== "" &&
+          value !== null &&
+          value !== undefined &&
+          (typeof value === "string" ? value.trim() !== "" : true)
+        );
+      })
+    );
+  await axios.post(`${apiUrl}/accounts`, cleanedData).catch((err) => {console.log(err)});
 }
 const sendFirebaseEmail = (email) => {
   sendPasswordResetEmail(auth, email)
@@ -319,6 +331,7 @@ const closeCalendarModal = () => {
   selectedUser.value = null;
 };
 
+//get all employees for list
 const handleFetchEmployees = async () => {
   try {
     const response = await axios.get(`${apiUrl}/accounts/${authStore.user.company_id}`);
@@ -328,7 +341,15 @@ const handleFetchEmployees = async () => {
   }
 };
 
-handleFetchEmployees();
+//get all teams
+const handleFetchTeams = async () => {
+  try {
+    const response = await axios.get(`${apiUrl}/organizations/${authStore.user.company_id}/teams`);
+    fetchedTeams.value = response.data;
+  } catch (err) {
+    console.error('Error fetching teams:', err);
+  }
+}
 
 //employee search
 const filteredEmployees = computed(() => {
@@ -337,4 +358,9 @@ const filteredEmployees = computed(() => {
     (employee.first_name + employee.last_name).toLowerCase().includes(searchTerm.value.toLowerCase())
   );
 });
+
+onMounted(() => {
+  handleFetchEmployees();
+  handleFetchTeams();
+})
 </script>
