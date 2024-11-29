@@ -218,7 +218,7 @@ export default {
   methods: {
     fetchAttendanceData(accountId) {
       axios
-        .get(`http://localhost:3000/accounts/${accountId}/attendance`)
+        .get(`${apiUrl}/accounts/${accountId}/attendance`)
         .then((response) => {
           this.events = response.data.map((record) => ({
             id: record.id,
@@ -274,12 +274,12 @@ export default {
         console.log('Attendance Data:', attendanceData);
         if (this.selectedEventId) {
           return axios.put(
-            `http://localhost:3000/accounts/${authStore.user.id}/attendance/${this.selectedEventId}`,
+            `${apiUrl}/accounts/${authStore.user.id}/attendance/${this.selectedEventId}`,
             attendanceData
           );
         } else {
           return axios.post(
-            `http://localhost:3000/accounts/${authStore.user.id}/attendance`,
+            `${apiUrl}/accounts/${authStore.user.id}/attendance`,
             attendanceData
           );
         }

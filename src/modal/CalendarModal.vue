@@ -21,6 +21,8 @@
   import interactionPlugin from "@fullcalendar/interaction";
   import enLocale from "@fullcalendar/core/locales/en-gb";
   import axios from "axios";
+
+  const apiUrl = import.meta.env.VITE_API_URL;
   
   export default {
     props: {
@@ -53,7 +55,7 @@
         }
   
         axios
-          .get(`http://localhost:3000/accounts/${this.accountId}/attendance`)
+          .get(`${apiUrl}/accounts/${this.accountId}/attendance`)
           .then((response) => {
             console.log("Attendance data fetched successfully:", response.data);
   
