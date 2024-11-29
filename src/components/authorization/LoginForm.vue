@@ -61,13 +61,12 @@ const authStore = useAuthStore();
 const router = useRouter();
 
 const handleLogin = async () => {
-  //await getUserFromBackend('ene');
   await loginFirebase();
 };
 
-const getUserFromBackend = async (token: string, csrfToken: string) => {
+const getUserFromBackend = async (token: string) => {
   try {
-    const backendData = await axios.post(`${apiUrl}/login`, {email: email.value, token: token, csrfToken: csrfToken}, { withCredentials: true });
+    const backendData = await axios.post(`${apiUrl}/login`, {email: email.value, token: token}, { withCredentials: true });
     // store user data in Pinia
     authStore.login(backendData.data)
   } catch (err) {
@@ -79,35 +78,12 @@ const goToRegister = () => {
   router.push({ path: `/adminorg` });
 }
 
-function getCookie(name: string) {
-  const v = document.cookie.match('(^|;) ?' + name + '=([^;]*)(;|$)');
-  return v ? v[2] : null;
-}
-
 const loginFirebase = async () => {
   const credential = await signInWithEmailAndPassword(auth, email.value, password.value);
   const user = credential.user;
   const token = await user.getIdToken();
-  const csrfToken = getCookie('csrfToken');
-  if (csrfToken) {
-    await getUserFromBackend(token, csrfToken);
-    router.push({ path: `/calendar` });
-  }
-
-  // .then((userCredential) => {
-  //   // Signed in
-  //   const user = userCredential.user;
-  //   return user.getIdToken()
-  //   .then((token) => {
-  //     return getUserFromBackend(token);
-  //   }).then((res) => {
-  //     router.push({ path: `/calendar` });
-  //   })
-  // })
-  // .catch((error) => {
-  //   console.log(error.code, error.message);
-  // });
-
+  await getUserFromBackend(token);
+  router.push({ path: `/calendar` });
 }
 
 </script>
