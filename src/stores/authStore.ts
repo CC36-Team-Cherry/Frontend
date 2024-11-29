@@ -24,7 +24,6 @@ interface User {
   }
 }
 
-
 interface Organization {
   name: string;
   details?: string;
@@ -49,8 +48,10 @@ export const useAuthStore = defineStore('auth', {
   },
   getters: {
     isAuthenticated: (state) => !!state.user,
-    showSidebar: (state) => state.currentPage === AppPageType.EMPLOYEE_LIST, 
+    showSidebar: (state) => state.currentPage !== AppPageType.LOGIN &&
+                            state.currentPage !== AppPageType.REGISTRATION,
   },
-  persist: true,
+  
+  persist: false,
 });
 

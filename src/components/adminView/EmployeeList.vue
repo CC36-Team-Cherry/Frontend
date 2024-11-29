@@ -163,11 +163,11 @@
     />
     <!-- Calendar Modal -->
     <CalendarModal
-     v-if="isCalendarModalVisible"
-     :isVisible="isCalendarModalVisible"
-     :accountId="selectedUser.id"
-     :employeeName="`${selectedUser.first_name} ${selectedUser.last_name}`"
-    @close="closeCalendarModal"
+      v-if="isCalendarModalVisible"
+      :isVisible="isCalendarModalVisible"
+      :accountId="selectedUser.id"
+      :employeeName="`${selectedUser.first_name} ${selectedUser.last_name}`"
+      @close="closeCalendarModal"
     />
   </div>
 </template>
@@ -347,9 +347,11 @@ const handleDelete = async () => {
 }
 
 const openCalendarModal = (user) => {
+  console.log("Opening calendar for user:", user);
   selectedUser.value = user;
   isCalendarModalVisible.value = true;
 };
+
 const closeCalendarModal = () => {
   isCalendarModalVisible.value = false;
   selectedUser.value = null;
