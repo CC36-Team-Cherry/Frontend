@@ -13,7 +13,7 @@ import { computed } from 'vue';
 import { useAuthStore } from '@/stores/authStore';
 
 import Sidebar from '@/views/Sidebar.vue';
-import EmployeeHeader from '@/views/EmployeeHeader.vue';
+
 
 const authStore = useAuthStore();
 
