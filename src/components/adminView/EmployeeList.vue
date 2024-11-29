@@ -70,7 +70,7 @@
     <Modal :isVisible="isAddUserModalVisible" @close="closeAddUserModal">
       <h2 class="text-xl font-bold mb-4">{{ $t('employeeList.modal.modalTitle') }}</h2>
       <form>
-        <div class="grid grid-cols-2 gap-4">
+        <div>
           <div>
             <label class="block mb-1">{{ $t('employeeList.modal.fields.firstName') }}</label>
             <input type="text" v-model="formData.first_name" class="border rounded p-2 w-full" />
@@ -93,6 +93,28 @@
               <option value="" disabled>{{ $t('employeeDetails.placeholders.selectTeam') }}</option>
               <option v-for="team in fetchedTeams" :key="team.id" :value="team.id">{{ team.team_name }}</option>
             </select>
+          </div>
+          <div>
+            <label class="block mb-1">{{ "Supervisor" }}</label>
+            <input 
+              v-model="supervisorSearch" 
+              @input="filterSupervisors"
+              type="text"
+              placeholder="Select Supervisor"
+              class="border rounded p-2 w-full"
+            >
+            <ul v-if="filteredSupervisors.length > 0" ref="dropdown" class="border rounded mt-2 max-h-48 overflow-y-auto">
+              <li
+                v-for="supervisor in filteredSupervisors"
+                :key="supervisor.id"
+                @click="selectedSupervisor(supervisor)"
+                class="cursor-pointer hover:bg-gray-100 p-2"
+              >
+                {{ supervisor.first_name + " " + supervisor.last_name }}
+              </li>
+            </ul>
+              <!-- <option value="" disabled>{{ $t("Select Supervisor") }}</option>
+              <option v-for="supervisor in fetchedSupervisors" :key="supervisor.id" :value="supervisor.id">{{ supervisor.first_name + " " + supervisor.last_name }}</option> -->
           </div>
           <div>
             <label class="block mb-1">{{ $t('employeeList.modal.fields.role') }}</label>
@@ -133,6 +155,7 @@
       v-if="selectedEmployee"
       :employee="selectedEmployee"
       :teams="fetchedTeams"
+      :supervisors="fetchedSupervisors"
       :isVisible="isEmployeeDetailsModalVisible"
       @close="closeEmployeeDetailsModal"
       @save="handleUpdate"
@@ -158,6 +181,7 @@ import Modal from '@/modal/ModalView.vue';
 import EmployeeDetailsModal from '@/modal/EmployeeDetailsModal.vue';
 import CalendarModal from '@/modal/CalendarModal.vue';
 import { useAuthStore } from '@/stores/authStore';
+import { onClickOutside } from '@vueuse/core';
 
 const apiUrl = import.meta.env.VITE_API_URL;
 
@@ -172,6 +196,10 @@ const fetchedEmployees = ref([]);
 const fetchedTeams = ref([]);
 const selectedEmployee = ref(null);
 const selectedUser = ref(null);
+const fetchedSupervisors = ref([]);
+const supervisorSearch = ref('');
+const filteredSupervisors = ref([]);
+const dropdown = ref(null);
 
 const formData = reactive({
   first_name: '',
@@ -261,8 +289,6 @@ const sendFirebaseEmail = (email) => {
   });
 }
 
-
-
 const openEmployeeDetailsModal = (employee) => {
   selectedEmployee.value = employee;
   isEmployeeDetailsModalVisible.value = true;
@@ -320,8 +346,6 @@ const handleDelete = async () => {
   }
 }
 
-
-
 const openCalendarModal = (user) => {
   selectedUser.value = user;
   isCalendarModalVisible.value = true;
@@ -359,8 +383,46 @@ const filteredEmployees = computed(() => {
   );
 });
 
+// get all supervisors
+const fetchSupervisors = async () => {
+      try {
+        const response = await axios.get(`${apiUrl}/supervisors`);
+        console.log(response.data)
+        fetchedSupervisors.value = response.data; 
+      } catch (err) {
+        console.error('Error fetching supervisors:', err);
+      }
+    }
+
+const filterSupervisors = () => {
+    if (!supervisorSearch.value) {
+      filteredSupervisors.value = fetchedSupervisors.value;
+    } else {
+        console.log(fetchSupervisors.value)
+        filteredSupervisors.value = fetchedSupervisors.value.filter((supervisor) => {
+        const fullName = (supervisor.first_name + " " + supervisor.last_name).toLowerCase();
+        return fullName.includes(supervisorSearch.value.toLowerCase());
+    });
+  }
+}
+
+// function to select a supervisor from filtered list
+const selectedSupervisor = (supervisor) => {
+  formData.supervisor_id = supervisor.id;
+  supervisorSearch.value = `${supervisor.first_name} ${supervisor.last_name}`;
+  filteredSupervisors.value = [];
+}
+
+const closeDropdown = () => {
+  filteredSupervisors.value = [];  // Close the dropdown by clearing the filtered list
+};
+
+// handle click outside
+onClickOutside(dropdown, closeDropdown);
+
 onMounted(() => {
   handleFetchEmployees();
   handleFetchTeams();
+  fetchSupervisors();
 })
 </script>
