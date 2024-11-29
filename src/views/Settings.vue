@@ -28,7 +28,7 @@
         </select>
 
         <!-- Display as a disabled text input if the user is not an admin -->
-        <input v-else type="text" class="border rounded p-2 w-full bg-gray-100 text-gray-500 cursor-not-allowed"
+        <input v-else type="text" class="border rounded p-2 w-full bg-gray-100 text-gray-500"
           :value="(fetchedTeams.find(team => team.id === formData.team_id)?.team_name) || 'no team'" disabled />
       </div>
       <div class="flex flex-col">
@@ -37,12 +37,11 @@
       </div>
       <div class="flex flex-col">
         <label class="font-medium">{{ $t('settings.fields.role') }}</label>
-        <input type="text" v-model="formData.role" class="border rounded p-2"
-          :disabled="!authStore.user.Privileges.is_admin" />
+        <input type="text" v-model="formData.role" class="border rounded p-2"/>
       </div>
       <div class="flex flex-col">
-        <label class="font-medium">{{ $t('settings.fields.joinDate') }}</label>
-        <input type="date" v-model="formData.join_date.split('T')[0]" class="border rounded p-2" />
+        <label class="font-medium">{{ $t('settings.fields.joinDate') }} </label>
+        <input type="date" v-model="formData.join_date.split('T')[0]" class="border rounded p-2"  :disabled="!authStore.user.Privileges.is_admin" />
       </div>
       <div v-if="authStore.user.Privileges.is_admin" class="flex flex-col">
         <label class="font-medium">{{ 'Privileges' }}</label>
@@ -51,7 +50,7 @@
       </div>
       <div v-else>
         <label class="font-medium">{{ 'Privileges' }}</label>
-        <input type="text" class="border rounded p-2 w-full bg-gray-100 text-gray-500 cursor-not-allowed" disabled
+        <input type="text" class="border rounded p-2 w-full bg-gray-100 text-gray-500" disabled
           :value="authStore.user.Privileges.is_supervisor ? 'Supervisor' : 'None'" />
       </div>
       <div class="flex flex-col">
@@ -71,7 +70,7 @@
       </div>
     </div>
     <div class="mt-8">
-      <button @click="saveSettings" class="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600">
+      <button @click="handleSave" class="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600">
         {{ $t('settings.save') }}
       </button>
     </div>
@@ -133,13 +132,38 @@ const handleFetchTeams = async () => {
 }
 
 const switchLanguage = (lang) => {
+  formData.language_preference = lang.substring(0, 2);
+  authStore.user.language_preference = lang.substring(0, 2);
   locale.value = lang;
 };
 
-const saveSettings = () => {
-  console.log('Settings saved:', formData.value);
-  alert('Settings saved successfully!');
-};
+const handleSave = async () => {
+  try {
+    const employeeId = authStore.user.id;
+    const cleanedUpdates = Object.fromEntries(
+      Object.entries(formData).filter(([key, value]) => {
+        // Only include key-value pairs where value is not empty, null, undefined, or whitespace
+        return (
+          value !== "" &&
+          value !== null &&
+          value !== undefined &&
+          (typeof value === "string" ? value.trim() !== "" : true)
+        );
+      })
+    );
+    cleanedUpdates.join_date = new Date(cleanedUpdates.join_date);
+    cleanedUpdates.birthdate = new Date(cleanedUpdates.birthdate);
+    const response = await axios.patch(`${apiUrl}/accounts/${employeeId}`, cleanedUpdates);
+    if (response.status === 200) {
+      console.log("Account updated successfully");
+      handleFetchCurrentUserData();
+    } else {
+      console.error("Failed to update account")
+    }
+  } catch (err) {
+    console.error("Error updating employee: ", err);
+  }
+}
 
 onMounted(() => {
   handleFetchCurrentUserData();
