@@ -362,5 +362,5 @@ const filteredEmployees = computed(() => {
 onMounted(() => {
   handleFetchEmployees();
   handleFetchTeams();
-})
+});
 </script>

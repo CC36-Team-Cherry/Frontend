@@ -16,11 +16,25 @@
       </div>
       <div class="flex flex-col">
         <label class="font-medium">{{ $t('settings.fields.dateOfBirth') }}</label>
-        <input type="date" v-model="formData.birthdate" class="border rounded p-2" />
+        <input type="date" v-model="formData.birthdate.split('T')[0]" class="border rounded p-2" />
       </div>
-      <div class="flex flex-col">
-        <label class="font-medium">{{ $t('settings.fields.team') }}</label>
-        <input type="text" v-model="formData.team" class="border rounded p-2" />
+      <div>
+        <label class="block mb-1">{{ $t('settings.fields.team') }}</label>
+        <select v-if="authStore.user.Privileges.is_admin" v-model="formData.team_id" class="border rounded p-2 w-full">
+          <option value="" disabled>{{ $t('employeeDetails.placeholders.selectTeam') }}</option>
+          <option v-for="team in fetchedTeams" :key="team.id" :value="team.id">
+            {{ team.team_name }}
+          </option>
+        </select>
+
+        <!-- Display as a disabled text input if the user is not an admin -->
+        <input v-else type="text" class="border rounded p-2 w-full bg-gray-100 text-gray-500 cursor-not-allowed"
+          :value="(fetchedTeams.find(team => team.id === formData.team_id)?.team_name) || 'no team'" disabled />
+        <!-- <label class="block mb-1">{{ $t('settings.fields.team') }}</label>
+        <select v-model="formData.team_id" class="border rounded p-2 w-full" :disabled="!authStore.user.Privileges.is_admin">
+          <option value="" disabled>{{ $t('employeeDetails.placeholders.selectTeam') }}</option>
+          <option v-for="team in fetchedTeams" :key="team.id" :value="team.id">{{ team.team_name }}</option>
+        </select> -->
       </div>
       <div class="flex flex-col">
         <label class="font-medium">{{ $t('settings.fields.defaultSupervisor') }}</label>
@@ -28,18 +42,21 @@
       </div>
       <div class="flex flex-col">
         <label class="font-medium">{{ $t('settings.fields.role') }}</label>
-        <input type="text" v-model="formData.role" class="border rounded p-2" />
+        <input type="text" v-model="formData.role" class="border rounded p-2"
+          :disabled="!authStore.user.Privileges.is_admin" />
       </div>
       <div class="flex flex-col">
         <label class="font-medium">{{ $t('settings.fields.joinDate') }}</label>
-        <input type="date" v-model="formData.join_date" class="border rounded p-2" />
+        <input type="date" v-model="formData.join_date.split('T')[0]" class="border rounded p-2" />
       </div>
-      <div class="flex flex-col">
-        <label class="font-medium">{{ $t('settings.fields.type') }}</label>
-        <select v-model="formData.type" class="border rounded p-2">
-          <option value="User">{{ $t('settings.user') }}</option>
-          <option value="Admin">{{ $t('settings.admin') }}</option>
-        </select>
+      <div v-if="authStore.user.Privileges.is_admin" class="flex flex-col">
+        <label class="font-medium">{{ 'Privileges' }}</label>
+        <input type="checkbox" v-model="formData.is_supervisor" />{{ $t('employeeList.modal.userType.supervisor') }}
+        <input type="checkbox" v-model="formData.is_admin" />{{ $t('employeeList.modal.userType.admin') }}
+      </div>
+      <div v-else>
+        <label class="font-medium">{{ 'Privileges' }}</label>
+        <p>{{ authStore.user.Privileges.is_supervisor ? 'Supervisor' : 'None' }}</p>
       </div>
       <div class="flex flex-col">
         <label class="font-medium">{{ $t('settings.fields.languagePreference') }}</label>
@@ -66,7 +83,7 @@
 </template>
 
 <script setup>
-import { reactive, onMounted } from 'vue';
+import { ref, reactive, onMounted } from 'vue';
 import axios from 'axios';
 import { useI18n } from 'vue-i18n';
 import { useAuthStore } from '@/stores/authStore';
@@ -77,16 +94,19 @@ const authStore = useAuthStore();
 
 const { locale } = useI18n();
 
+const fetchedTeams = ref([]);
+
 const formData = reactive({
-  firstName: '',
-  lastName: '',
+  first_name: '',
+  last_name: '',
   email: '',
   birthdate: '',
-  team: '',
+  team_id: '',
   supervisor: '',
   role: '',
   join_date: '',
-  type: '',
+  is_admin: '',
+  is_supervisor: '',
   language_preference: 'en',
 });
 
@@ -107,6 +127,15 @@ async function handleFetchCurrentUserData() {
   }
 }
 
+const handleFetchTeams = async () => {
+  try {
+    const response = await axios.get(`${apiUrl}/organizations/${authStore.user.company_id}/teams`);
+    fetchedTeams.value = response.data;
+  } catch (err) {
+    console.error('Error fetching teams:', err);
+  }
+}
+
 const switchLanguage = (lang) => {
   locale.value = lang;
 };
@@ -118,5 +147,6 @@ const saveSettings = () => {
 
 onMounted(() => {
   handleFetchCurrentUserData();
+  handleFetchTeams();
 })
 </script>
