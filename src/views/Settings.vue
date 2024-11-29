@@ -30,11 +30,6 @@
         <!-- Display as a disabled text input if the user is not an admin -->
         <input v-else type="text" class="border rounded p-2 w-full bg-gray-100 text-gray-500 cursor-not-allowed"
           :value="(fetchedTeams.find(team => team.id === formData.team_id)?.team_name) || 'no team'" disabled />
-        <!-- <label class="block mb-1">{{ $t('settings.fields.team') }}</label>
-        <select v-model="formData.team_id" class="border rounded p-2 w-full" :disabled="!authStore.user.Privileges.is_admin">
-          <option value="" disabled>{{ $t('employeeDetails.placeholders.selectTeam') }}</option>
-          <option v-for="team in fetchedTeams" :key="team.id" :value="team.id">{{ team.team_name }}</option>
-        </select> -->
       </div>
       <div class="flex flex-col">
         <label class="font-medium">{{ $t('settings.fields.defaultSupervisor') }}</label>
@@ -56,7 +51,8 @@
       </div>
       <div v-else>
         <label class="font-medium">{{ 'Privileges' }}</label>
-        <p>{{ authStore.user.Privileges.is_supervisor ? 'Supervisor' : 'None' }}</p>
+        <input type="text" class="border rounded p-2 w-full bg-gray-100 text-gray-500 cursor-not-allowed" disabled
+          :value="authStore.user.Privileges.is_supervisor ? 'Supervisor' : 'None'" />
       </div>
       <div class="flex flex-col">
         <label class="font-medium">{{ $t('settings.fields.languagePreference') }}</label>
