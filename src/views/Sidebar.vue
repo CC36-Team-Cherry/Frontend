@@ -40,17 +40,19 @@
 </template>
 
 <script setup>
+import { useRouter } from 'vue-router'
 import { getAuth, signOut } from "firebase/auth";
 import { useAuthStore } from "@/stores/authStore";
 import axios from "axios";
 
 const apiUrl = import.meta.env.VITE_API_URL;
 const authStore = useAuthStore();
+const router = useRouter();
 
 const handleLogout = async () => {
   logoutFirebase();
   clearCookie();
-  window.location.href = "/login";
+  router.push({ path: `/login` });
 }
 
 const logoutFirebase = async () => {
