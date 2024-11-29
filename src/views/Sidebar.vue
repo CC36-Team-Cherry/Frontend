@@ -30,7 +30,7 @@
         </button>
       </router-link>
       <button
-        @click="logoutFirebase()"
+        @click="handleLogout()"
         class="bg-red-500 text-white p-2 rounded w-full max-w-[120px] text-center"
       >
         {{ $t('Logout') }}
@@ -42,20 +42,25 @@
 <script setup>
 import { getAuth, signOut } from "firebase/auth";
 import { useAuthStore } from "@/stores/authStore";
+import axios from "axios";
 
+const apiUrl = import.meta.env.VITE_API_URL;
 const authStore = useAuthStore();
 
-const logoutFirebase = () => {
+const handleLogout = async () => {
+  logoutFirebase();
+  clearCookie();
+  window.location.href = "/login";
+}
+
+const logoutFirebase = async () => {
   signOut(getAuth())
-    .then(() => {
-      authStore.logout();
-      window.location.href = "/login";
-    })
-    .catch((error) => {
-      // An error happened.
-      console.error(error);
-    });
+  authStore.logout();
 };
+
+const clearCookie = async () => {
+  await axios.post(`${apiUrl}/logout`, {}, { withCredentials: true });
+}
 </script>
 
   

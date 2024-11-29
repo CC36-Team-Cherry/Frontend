@@ -28,7 +28,6 @@
           />
         </div>
         <button
-          @click="handleLogin()"
           type="submit"
           class="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600"
         >
@@ -62,13 +61,13 @@ const authStore = useAuthStore();
 const router = useRouter();
 
 const handleLogin = async () => {
-  await getUserFromBackend();
-  loginFirebase();
+  //await getUserFromBackend('ene');
+  await loginFirebase();
 };
 
-const getUserFromBackend = async () => {
+const getUserFromBackend = async (token: string, csrfToken: string) => {
   try {
-    const backendData = await axios.post(`${apiUrl}/login`, {email: email.value});
+    const backendData = await axios.post(`${apiUrl}/login`, {email: email.value, token: token, csrfToken: csrfToken}, { withCredentials: true });
     // store user data in Pinia
     authStore.login(backendData.data)
   } catch (err) {
@@ -80,17 +79,35 @@ const goToRegister = () => {
   router.push({ path: `/adminorg` });
 }
 
-const loginFirebase = () => {
-  signInWithEmailAndPassword(auth, email.value, password.value)
-  .then((userCredential) => {
-    // Signed in 
+function getCookie(name: string) {
+  const v = document.cookie.match('(^|;) ?' + name + '=([^;]*)(;|$)');
+  return v ? v[2] : null;
+}
+
+const loginFirebase = async () => {
+  const credential = await signInWithEmailAndPassword(auth, email.value, password.value);
+  const user = credential.user;
+  const token = await user.getIdToken();
+  const csrfToken = getCookie('csrfToken');
+  if (csrfToken) {
+    await getUserFromBackend(token, csrfToken);
     router.push({ path: `/calendar` });
-  })
-  .catch((error) => {
-    const errorCode = error.code;
-    const errorMessage = error.message;
-    console.log(errorCode, errorMessage);
-  });
+  }
+
+  // .then((userCredential) => {
+  //   // Signed in
+  //   const user = userCredential.user;
+  //   return user.getIdToken()
+  //   .then((token) => {
+  //     return getUserFromBackend(token);
+  //   }).then((res) => {
+  //     router.push({ path: `/calendar` });
+  //   })
+  // })
+  // .catch((error) => {
+  //   console.log(error.code, error.message);
+  // });
+
 }
 
 </script>
