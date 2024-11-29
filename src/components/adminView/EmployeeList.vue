@@ -113,8 +113,6 @@
                 {{ supervisor.first_name + " " + supervisor.last_name }}
               </li>
             </ul>
-              <!-- <option value="" disabled>{{ $t("Select Supervisor") }}</option>
-              <option v-for="supervisor in fetchedSupervisors" :key="supervisor.id" :value="supervisor.id">{{ supervisor.first_name + " " + supervisor.last_name }}</option> -->
           </div>
           <div>
             <label class="block mb-1">{{ $t('employeeList.modal.fields.role') }}</label>
@@ -394,11 +392,11 @@ const fetchSupervisors = async () => {
       }
     }
 
+// filter supervisors in dropdown 
 const filterSupervisors = () => {
     if (!supervisorSearch.value) {
       filteredSupervisors.value = fetchedSupervisors.value;
     } else {
-        console.log(fetchSupervisors.value)
         filteredSupervisors.value = fetchedSupervisors.value.filter((supervisor) => {
         const fullName = (supervisor.first_name + " " + supervisor.last_name).toLowerCase();
         return fullName.includes(supervisorSearch.value.toLowerCase());
@@ -417,7 +415,7 @@ const closeDropdown = () => {
   filteredSupervisors.value = [];  // Close the dropdown by clearing the filtered list
 };
 
-// handle click outside
+// handle click outside of dropdown of supervisors
 onClickOutside(dropdown, closeDropdown);
 
 onMounted(() => {

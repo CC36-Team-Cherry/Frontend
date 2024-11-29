@@ -45,8 +45,23 @@
             </div>
             <div>
               <label class="font-semibold block">{{ $t('employeeDetails.fields.supervisor') }}</label>
-              <input type="text" v-model="formData.supervisor"
-                class="border w-full rounded px-2 py-1" />
+              <input
+                v-model="supervisorSearch"
+                @input="filterSupervisors"
+                type="text"
+                placeholder="Select Supervisor"
+                class="border rounded p-2 w-ull"
+              >
+              <ul v-if="filteredSupervisors.length > 0" ref="dropdown" class="border rounded mt-2 max-h-48 overflow-y-auto">
+                <li
+                  v-for="supervisor in filteredSupervisors"
+                  :key="supervisor.id"
+                  @click="selectedSupervisor(supervisor)"
+                  class="cursor-pointer hover:bg-gray-100 p-2"
+                >
+                  {{ supervisor.first_name + " " + supervisor.last_name }}
+                </li>
+              </ul>
             </div>
             <div>
               <label class="font-semibold block">Role</label>
@@ -154,6 +169,7 @@
 
 <script setup>
 import { defineProps, defineEmits, ref, reactive, onMounted, toRaw } from 'vue';
+import { onClickOutside } from '@vueuse/core';
 import axios from 'axios';
 
 const props = defineProps({
@@ -169,6 +185,10 @@ const props = defineProps({
     type: Boolean,
     required: true,
   },
+  supervisors: {
+    type: Array,
+    required: true,
+  }
 });
 
 const emit = defineEmits(['close', 'save', 'delete']);
@@ -195,12 +215,16 @@ const formData = reactive({
   is_supervisor: false,
   pto: 0,
   team_id: '',
+  supervisor_id: '',
 });
 
   const specialPtos = ref([]);
   const newSpecialPto = ref('');
   // Track index of special pto being edited
   const editingSpecialPtoIndex = ref(null);
+  const supervisorSearch = ref('');
+  const filteredSupervisors = ref([]);
+  const dropdown = ref(null);
 
   const getSpecialPto = async () => {
     try {
@@ -285,6 +309,33 @@ const formData = reactive({
       console.error(err);
     }
   }
+
+  // filter supervisors in dropdown 
+  const filterSupervisors = () => {
+    if (!supervisorSearch.value) {
+      filteredSupervisors.value = props.supervisors;
+    } else {
+        console.log(props.supervisors)
+        filteredSupervisors.value = props.supervisors.filter((supervisor) => {
+        const fullName = (supervisor.first_name + " " + supervisor.last_name).toLowerCase();
+        return fullName.includes(supervisorSearch.value.toLowerCase());
+    });
+  }
+}
+
+// function to select a supervisor from filtered list
+const selectedSupervisor = (supervisor) => {
+  formData.supervisor_id = supervisor.id;
+  supervisorSearch.value = `${supervisor.first_name} ${supervisor.last_name}`;
+  filteredSupervisors.value = [];
+}
+
+const closeDropdown = () => {
+  filteredSupervisors.value = [];  // Close the dropdown by clearing the filtered list
+};
+
+// handle click outside of dropdown of supervisors
+onClickOutside(dropdown, closeDropdown);
 
 onMounted(() => {
   formData.first_name = props.employee.first_name;
