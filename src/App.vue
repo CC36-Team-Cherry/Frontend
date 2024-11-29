@@ -22,6 +22,7 @@ const authStore = useAuthStore();
 });*/
 
 const showSidebar = computed(() => authStore.showSidebar);
+
 </script>
 
 

@@ -48,13 +48,10 @@ export const useAuthStore = defineStore('auth', {
   },
   getters: {
     isAuthenticated: (state) => !!state.user,
-    showSidebar: (state) => state.currentPage === AppPageType.EMPLOYEE_LIST ||
-                            state.currentPage === AppPageType.CALENDAR ||
-                            state.currentPage === AppPageType.ADMINCONSOLE ||
-                            state.currentPage === AppPageType.SUPERVISORCALENDAR ||
-                            state.currentPage === AppPageType.SETTINGS ||
-                            state.currentPage === AppPageType.APPROVAL
+    showSidebar: (state) => state.currentPage !== AppPageType.LOGIN &&
+                            state.currentPage !== AppPageType.REGISTRATION,
   },
-  persist: true,
+  
+  persist: false,
 });
 
