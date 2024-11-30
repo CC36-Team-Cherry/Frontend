@@ -354,31 +354,92 @@ export default {
       }
     },
     async submitHandler() {
+
       const authStore = useAuthStore();
-      const selectedDate = this.selectionRange.split(' - ');
-      const month = selectedDate[0] ? new Date(selectedDate[0]).getMonth() + 1 : new Date().getMonth() + 1;
-      const year = selectedDate[0] ? new Date(selectedDate[0]).getFullYear() : new Date().getFullYear();
 
-      const approvalData = {
-        account_id: authStore.user.id,
-        supervisor_id: this.selectedSupervisorId,
-        month: month,
-        year: year,
-        content: this.memo,
-        status: 'pending',
-      };
+      switch (this.attendanceType) {
+        case "specialPto":
+        console.log(this.attendanceType);
+        break;
 
-      try {
-        const response = await axios.post(
-          `${apiUrl}/approvals/monthAttendance`,
-          approvalData
-        );
-        console.log(response.data);
-      } catch (err) {
-        console.error('Error submitting approval:', err);
-      }
-    },
-  },
-};
+        case "general":
+          const selectedDate = this.selectionRange.split(' - ');
+          const month = selectedDate[0] ? new Date(selectedDate[0]).getMonth() + 1 : new Date().getMonth() + 1;
+          const year = selectedDate[0] ? new Date(selectedDate[0]).getFullYear() : new Date().getFullYear();
+
+          const generalApproval = {
+            account_id: authStore.user.id,
+            supervisor_id: this.selectedSupervisorId,
+            month: month,
+            year: year,
+            content: this.memo,
+            status: 'pending',
+          };
+
+          try {
+            const response = await axios.post(`${apiUrl}/approvals/monthAttendance`, generalApproval);
+            console.log(response.data);
+          } catch (err) {
+            console.error('Error general attendance approval:', err);
+          }
+        break;
+
+        case "pto":
+          const ptoDay = new Date(this.selectionRange).toISOString();
+          console.log(ptoDay)
+
+          const ptoApproval = {
+            account_id: authStore.user.id,
+            supervisor_id: this.selectedSupervisorId,
+            content: this.memo,
+            status: 'pending',
+            day: ptoDay, 
+            all_day: true,
+          }
+
+          try {
+            const response = await axios.post(`${apiUrl}/approvals/pto`, ptoApproval);
+            console.log(response.data);
+          } catch (err) {
+            console.error('Error submitting pto approval: ', err)
+          }
+        break;
+
+        case "halfpto":
+          const halfPtoDate = new Date(this.selectionRange)
+          const halfPtoDay = halfPtoDate.toISOString();
+          const halfPtoStartTime = new Date(`${this.selectionRange}T${this.startTime}:00.000Z`).toISOString();
+          const halfPtoEndTime = new Date(`${this.selectionRange}T${this.endTime}:00.000Z`).toISOString();
+
+          const halfPtoApproval = {
+            account_id: authStore.user.id,
+            supervisor_id: this.selectedSupervisorId,
+            content: this.memo,
+            status: 'pending',
+            day: halfPtoDay, 
+            all_day: false,
+            hour_start: halfPtoStartTime,
+            hour_end: halfPtoEndTime
+          }
+
+          try {
+            const response = await axios.post(`${apiUrl}/approvals/pto`, halfPtoApproval);
+            console.log(response.data);
+          } catch (err) {
+            console.error('Error submitting pto approval: ', err)
+          }
+
+        break;
+
+        case "specialPto":
+          // add special pto single select from type dropdown
+        break
+
+        default:
+          console.log("Unkown attendance type");
+      }    
+    }
+  }
+}
 </script>
 
