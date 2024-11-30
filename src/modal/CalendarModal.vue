@@ -1,15 +1,15 @@
 <template>
     <div v-if="isVisible" class="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-50">
       <div class="bg-white p-6 rounded shadow-lg max-w-5xl w-full relative">
-        <!-- Close Button -->
+        
         <button @click="onClose" class="absolute top-4 right-4 text-gray-500 hover:text-gray-800">✕</button>
   
-        <!-- Title -->
+        
         <h2 class="text-2xl font-bold mb-6 text-center">
           {{ $t("attendance.title") }} - {{ employeeName }}
         </h2>
   
-        <!-- FullCalendar -->
+        
         <div id="calendar" ref="calendar" class="w-full"></div>
       </div>
     </div>
@@ -21,7 +21,8 @@
   import interactionPlugin from "@fullcalendar/interaction";
   import enLocale from "@fullcalendar/core/locales/en-gb";
   import axios from "axios";
-  import { useAuthStore } from "@/stores/authStore";
+
+  const apiUrl = import.meta.env.VITE_API_URL;
   
   export default {
     props: {
@@ -30,9 +31,8 @@
         required: true,
       },
       accountId: {
-        // Rendiamo questo opzionale, perché possiamo usare authStore per ottenere l'ID
         type: Number,
-        default: null,
+        required: true,
       },
       employeeName: {
         type: String,
@@ -46,47 +46,49 @@
       };
     },
     methods: {
-     fetchAttendanceData() {
-       console.log("Prop accountId:", this.accountId);
-       console.log("AuthStore User ID:", this.getUserIdFromAuthStore());
-
-      const idToFetch = this.accountId || this.getUserIdFromAuthStore();
-      console.log("ID to Fetch:", idToFetch);
-
-      if (!idToFetch) {
-       console.error("Account ID is not provided or available in authStore.");
-       return;
-      }
-    axios
-    .get(`http://localhost:3000/accounts/${idToFetch}/attendance`)
-    .then((response) => {
-      console.log("Attendance Data:", response.data);
-      this.events = response.data.map((record) => ({
-        id: record.id,
-        title: `${record.punch_in.split("T")[1].slice(0, 5)} - ${record.punch_out.split("T")[1].slice(0, 5)}`,
-        start: record.day,
-        backgroundColor: this.getEventColor(record),
-        extendedProps: {
-          punch_in: record.punch_in,
-          punch_out: record.punch_out,
-        },
-      }));
-
-      if (this.calendar) {
-        this.calendar.getEvents().forEach((event) => event.remove());
-        this.events.forEach((event) => this.calendar.addEvent(event));
-      }
-    })
-    .catch((error) => {
-      console.error("Error fetching attendance records:", error);
-    });
-  },
+      
+      fetchAttendanceData() {
+        console.log(`Fetching attendance data for Account ID: ${this.accountId}`);
+        if (!this.accountId) {
+          console.error("Account ID is required but not provided.");
+          return;
+        }
+  
+        axios
+          .get(`${apiUrl}/accounts/${this.accountId}/attendance`)
+          .then((response) => {
+            console.log("Attendance data fetched successfully:", response.data);
+  
+            
+            this.events = response.data.map((record) => ({
+              id: record.id,
+              title: `${record.punch_in.split("T")[1].slice(0, 5)} - ${record.punch_out.split("T")[1].slice(0, 5)}`,
+              start: record.day,
+              backgroundColor: this.getEventColor(record),
+              extendedProps: {
+                punch_in: record.punch_in,
+                punch_out: record.punch_out,
+              },
+            }));
+  
+            
+            if (this.calendar) {
+              this.calendar.getEvents().forEach((event) => event.remove());
+              this.events.forEach((event) => this.calendar.addEvent(event));
+            }
+          })
+          .catch((error) => {
+            console.error("Error fetching attendance records:", error);
+          });
+      },
+      
       getEventColor(record) {
         if (record.absence) return "red";
         if (record.full_pto) return "orange";
         if (record.special_pto) return "green";
         return "blue";
       },
+      
       initializeCalendar() {
         const calendarEl = this.$refs.calendar;
   
@@ -110,42 +112,40 @@
   
         this.calendar.render();
       },
+      
       onClose() {
         this.$emit("close");
       },
-      getUserIdFromAuthStore() {
-        const authStore = useAuthStore();
-        return authStore.user?.id || null;
-      },
     },
     watch: {
-     isVisible(newVal) {
-      console.log("isVisible changed:", newVal); // Verifica se il watcher si attiva
-      if (newVal) {
-       this.fetchAttendanceData();
-      }
-     },
+      
+      isVisible(newVal) {
+        if (newVal) {
+          console.log("CalendarModal opened. Fetching attendance data...");
+          this.fetchAttendanceData();
+        }
+      },
+      
+      accountId(newAccountId) {
+        if (newAccountId) {
+          console.log(`Account ID changed to: ${newAccountId}. Fetching attendance data...`);
+          this.fetchAttendanceData();
+        }
+      },
     },
     mounted() {
-      const authStore = useAuthStore();
-      console.log("AuthStore:", authStore);
-      console.log("User in AuthStore:", authStore.user);
-
-      if (!authStore.user) {
-        console.error("AuthStore user is not set. Please ensure the user is logged in.");
-      }
-
-  this.initializeCalendar();
-  },
+      console.log("Initializing calendar...");
+      this.initializeCalendar();
+  
+      
+      this.fetchAttendanceData();
+    },
     beforeUnmount() {
       if (this.calendar) {
         this.calendar.destroy();
       }
     },
   };
-</script>
-  
-  
-  
+  </script>
 
   
