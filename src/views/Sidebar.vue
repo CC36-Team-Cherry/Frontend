@@ -40,16 +40,18 @@
 </template>
 
 <script setup>
+import { useRouter } from 'vue-router'
 import { getAuth, signOut } from "firebase/auth";
 import { useAuthStore } from "@/stores/authStore";
 
 const authStore = useAuthStore();
+const router = useRouter();
 
 const logoutFirebase = () => {
   signOut(getAuth())
     .then(() => {
       authStore.logout();
-      window.location.href = "/login";
+      router.push({ path: `/login` });
     })
     .catch((error) => {
       // An error happened.

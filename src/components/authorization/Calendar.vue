@@ -19,7 +19,9 @@
           <option value="" disabled>Select Type</option>
           <option value="general">{{ $t('calendar.types.general') }}</option>
           <option value="pto">{{ $t('calendar.types.pto') }}</option>
+          <option value="halfpto">{{ $t('calendar.types.halfpto') }}</option>
           <option value="specialPto">{{ $t('calendar.types.specialPto') }}</option>
+          <option value="absence">{{ $t('calendar.types.absence') }}</option>
         </select>
       </div>
       <!-- Start Time -->
@@ -118,6 +120,7 @@ export default {
       selectedSupervisorId: '',
       memo: '',
       selectedEventId: null,
+      holidays: [], // Array per le festività giapponesi
       locales: {
         'en-US': enLocale,
         'ja-JP': jaLocale,
@@ -133,8 +136,9 @@ export default {
     }
 
     this.fetchSupervisors();
+    this.holidays = this.generateJapaneseHolidays(new Date().getFullYear()); // Genera festività
 
-    const activeAccountSupervisor = authStore.user.supervisor_id
+    const activeAccountSupervisor = authStore.user.supervisor_id;
     if (activeAccountSupervisor) {
       this.selectedSupervisorId = activeAccountSupervisor;
     }
@@ -148,37 +152,51 @@ export default {
       locale: this.locales[locale.value],
       selectable: true,
       businessHours: {
-       
-        daysOfWeek: [1, 2, 3, 4, 5],
+        daysOfWeek: [1, 2, 3, 4, 5], // Lunedì - Venerdì
       },
+      events: [...this.holidays, ...this.events], 
+      editable: true,
       select: (selectionInfo) => {
         const startDate = new Date(selectionInfo.startStr);
         const endDate = new Date(selectionInfo.endStr);
         const dates = [];
 
-        
         while (startDate < endDate) {
-          if (startDate.getDay() !== 0 && startDate.getDay() !== 6) {
+          if (
+            startDate.getDay() !== 0 &&
+            startDate.getDay() !== 6 &&
+            !this.isHoliday(startDate)
+          ) {
             dates.push(new Date(startDate));
           }
           startDate.setDate(startDate.getDate() + 1);
         }
 
-        this.selectionRange = dates.map(date => date.toISOString().split('T')[0]).join(', ');
+        this.selectionRange = dates
+          .map((date) => date.toISOString().split('T')[0])
+          .join(', ');
       },
-      events: this.events,
-      editable: true,
       eventClick: (info) => {
         this.handleEventClick(info.event);
       },
       eventContent: (arg) => {
+        if (arg.event.extendedProps.isHoliday) {
+          return {
+            html: `
+              <div style="text-align: center; font-size: 0.9em; color: black; background-color: rgba(255, 0, 0, 0.2); padding: 70px; border-radius: 4px;">
+                <b>${arg.event.title}</b>
+              </div>
+            `,
+          };
+        }
         if (arg.event.extendedProps.startTime && arg.event.extendedProps.endTime) {
           return {
             html: `
-              <div style="text-align: center; font-size: 0.9em; color: white; background-color: ${
+              <div style="text-align: center; font-size: 0.9em; color: black; background-color: ${
                 arg.event.backgroundColor
-              }; padding: 5px; border-radius: 4px;">
+              }; padding: 70px; border-radius: 4px;">
                 <b>${arg.event.extendedProps.startTime} - ${arg.event.extendedProps.endTime}</b>
+                
               </div>
             `,
           };
@@ -200,7 +218,7 @@ export default {
   methods: {
     fetchAttendanceData(accountId) {
       axios
-        .get(`http://localhost:3000/accounts/${accountId}/attendance`)
+        .get(`${apiUrl}/accounts/${accountId}/attendance`)
         .then((response) => {
           this.events = response.data.map((record) => ({
             id: record.id,
@@ -208,19 +226,22 @@ export default {
             start: record.day,
             backgroundColor: this.getEventColor(record),
             extendedProps: {
-              startTime: record.punch_in.split('T')[1].slice(0, 5), 
-              endTime: record.punch_out.split('T')[1].slice(0, 5), 
+              startTime: record.punch_in.split('T')[1].slice(0, 5),
+              endTime: record.punch_out.split('T')[1].slice(0, 5),
             },
           }));
 
           this.calendar.getEvents().forEach((event) => event.remove());
-          this.events.forEach((event) => this.calendar.addEvent(event));
+          [...this.holidays, ...this.events].forEach((event) =>
+            this.calendar.addEvent(event)
+          );
         })
         .catch((error) => {
           console.error('Error fetching attendance records:', error);
         });
     },
     handleEventClick(event) {
+      if (event.extendedProps.isHoliday) return; // Evita modifiche sulle festività
       this.selectedEventId = event.id;
       this.selectionRange = event.start.toISOString().split('T')[0];
       this.startTime = event.extendedProps.startTime || '';
@@ -229,9 +250,9 @@ export default {
     },
     logAttendance() {
       const authStore = useAuthStore();
-
-      
       const days = this.selectionRange.split(', ');
+
+      console.log('Attendance Type:', this.attendanceType);
 
       const attendancePromises = days.map((day) => {
         const punchIn = `${day}T${this.startTime}:00Z`;
@@ -244,16 +265,23 @@ export default {
           punch_out: punchOut,
           absence: this.attendanceType === 'absence',
           full_pto: this.attendanceType === 'pto',
-          half_pto: this.attendanceType === 'halfPto',
+          half_pto: this.attendanceType === 'halfpto',
           special_pto: this.attendanceType === 'specialPto',
           break_amount: 0,
           totalHours: 0,
         };
 
-        if(this.selectedEventId) {
-          return axios.put(`http://localhost:3000/accounts/${authStore.user.id}/attendance/${this.selectedEventId}`,attendanceData)
+        console.log('Attendance Data:', attendanceData);
+        if (this.selectedEventId) {
+          return axios.put(
+            `${apiUrl}/accounts/${authStore.user.id}/attendance/${this.selectedEventId}`,
+            attendanceData
+          );
         } else {
-         return axios.post(`http://localhost:3000/accounts/${authStore.user.id}/attendance`, attendanceData);
+          return axios.post(
+            `${apiUrl}/accounts/${authStore.user.id}/attendance`,
+            attendanceData
+          );
         }
       });
 
@@ -265,13 +293,36 @@ export default {
         .catch((error) => {
           console.error('Error logging attendance:', error.response?.data || error.message);
         });
-
+    },
+    generateJapaneseHolidays(year) {
+      return [
+        { title: "New Year's Day", start: `${year}-01-01`, isHoliday: true },
+        { title: 'Coming of Age Day', start: `${year}-01-08`, isHoliday: true },
+        { title: 'National Foundation Day', start: `${year}-02-11`, isHoliday: true },
+        { title: "Emperor's Birthday", start: `${year}-02-23`, isHoliday: true },
+        { title: 'Spring Equinox', start: `${year}-03-21`, isHoliday: true },
+        { title: 'Showa Day', start: `${year}-04-29`, isHoliday: true },
+        { title: 'Constitution Memorial Day', start: `${year}-05-03`, isHoliday: true },
+        { title: 'Greenery Day', start: `${year}-05-04`, isHoliday: true },
+        { title: "Children's Day", start: `${year}-05-05`, isHoliday: true },
+        { title: 'Marine Day', start: `${year}-07-15`, isHoliday: true },
+        { title: 'Mountain Day', start: `${year}-08-11`, isHoliday: true },
+        { title: 'Autumn Equinox', start: `${year}-09-23`, isHoliday: true },
+        { title: 'Sports Day', start: `${year}-10-14`, isHoliday: true },
+        { title: 'Culture Day', start: `${year}-11-03`, isHoliday: true },
+        { title: 'Labor Thanksgiving Day', start: `${year}-11-23`, isHoliday: true },
+      ];
+    },
+    isHoliday(date) {
+      const formattedDate = date.toISOString().split('T')[0];
+      return this.holidays.some((holiday) => holiday.start === formattedDate);
     },
     getEventColor(data) {
       if (data.absence) return 'red';
       if (data.full_pto) return 'orange';
       if (data.special_pto) return 'green';
-      return 'blue';
+      if (data.half_pto) return 'yellow';
+      return 'lightblue';
     },
     getEventTypeFromColor(color) {
       switch (color) {
@@ -281,6 +332,8 @@ export default {
           return 'pto';
         case 'green':
           return 'specialPto';
+        case 'yellow':
+          return 'halfpto';
         default:
           return 'general';
       }
@@ -295,43 +348,37 @@ export default {
     async fetchSupervisors() {
       try {
         const response = await axios.get(`${apiUrl}/supervisors`);
-        console.log(response.data)
-        this.supervisors = response.data; // Assume endpoint returns a list of supervisor objects
+        this.supervisors = response.data;
       } catch (err) {
-        console.error('Error fetching supervisors:', error);
+        console.error('Error fetching supervisors:', err);
       }
-    }
-    ,
+    },
     async submitHandler() {
+      const authStore = useAuthStore();
+      const selectedDate = this.selectionRange.split(' - ');
+      const month = selectedDate[0] ? new Date(selectedDate[0]).getMonth() + 1 : new Date().getMonth() + 1;
+      const year = selectedDate[0] ? new Date(selectedDate[0]).getFullYear() : new Date().getFullYear();
 
-        const authStore = useAuthStore();
+      const approvalData = {
+        account_id: authStore.user.id,
+        supervisor_id: this.selectedSupervisorId,
+        month: month,
+        year: year,
+        content: this.memo,
+        status: 'pending',
+      };
 
-        const selectedDate = this.selectionRange.split(" - ");
-        const month = selectedDate[0] ? new Date(selectedDate[0]).getMonth() + 1 : new Date().getMonth() + 1;  // Extracting the month
-        const year = selectedDate[0] ? new Date(selectedDate[0]).getFullYear() : new Date().getFullYear();
-
-        const approvalData = {
-          account_id: authStore.user.id,
-          supervisor_id: this.selectedSupervisorId,
-          month: month,
-          year: year,
-          content: this.memo,
-          status: "pending", 
-        };
-
-        console.log(approvalData);
-
-        try {
-          // console.log(selectedSupervisor);
-          // const selectedSupervisor = selectedSupervisor.value;
-          const response = await axios.post(`${apiUrl}/approvals/monthAttendance`, approvalData);
-          console.log(response.data);
-
-        } catch (err) {
-          console.error('Error submitting approval:', err);
-        }
+      try {
+        const response = await axios.post(
+          `${apiUrl}/approvals/monthAttendance`,
+          approvalData
+        );
+        console.log(response.data);
+      } catch (err) {
+        console.error('Error submitting approval:', err);
       }
+    },
   },
 };
-
 </script>
+

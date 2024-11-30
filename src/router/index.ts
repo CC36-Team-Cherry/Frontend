@@ -115,20 +115,36 @@ router.beforeEach(async (to) => {
   }
 });
 
-// router.beforeEach((to, from, next) => {
-//   const authStore = useAuthStore();
+router.beforeEach((to, from, next) => {
+  const authStore = useAuthStore();
+
+  switch (to.name) {
+    case 'employee':
+      authStore.navigateToPage(AppPageType.EMPLOYEE_LIST);
+      break;
+    case 'calendar':
+      authStore.navigateToPage(AppPageType.CALENDAR);
+      break;
+    case 'supervisorCalendar':
+      authStore.navigateToPage(AppPageType.SUPERVISORCALENDAR);
+      break;
+    case 'settings':
+      authStore.navigateToPage(AppPageType.SETTINGS);
+      break;
+    case 'admin':
+      authStore.navigateToPage(AppPageType.ADMINCONSOLE);
+      break;
+    case 'approvals':
+      authStore.navigateToPage(AppPageType.APPROVAL);
+      break;
+    default:
+      break;
+  }
+
+  next();
+});
 
   
-//   if (to.name === 'login') {
-//     authStore.navigateToPage(AppPageType.LOGIN);
-//   } else if (to.name === 'adminorg') {
-//     authStore.navigateToPage(AppPageType.REGISTRATION);
-//   } else if (to.name === 'employee') {
-//     authStore.navigateToPage(AppPageType.EMPLOYEE_LIST);
-//   }
-
-//   next();
-// });
 
 export default router;
 
