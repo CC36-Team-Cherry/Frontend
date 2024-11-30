@@ -52,6 +52,12 @@
                 :placeholder="supervisorPlaceholder"
                 class="border rounded p-2 w-ull"
               >
+              <button 
+                v-if="formData.supervisor_id" 
+                @click="clearSupervisor" 
+              >
+                ✕
+              </button>
               <ul v-if="filteredSupervisors.length > 0" ref="dropdown" class="border rounded mt-2 max-h-48 overflow-y-auto">
                 <li
                   v-for="supervisor in filteredSupervisors"
@@ -339,6 +345,12 @@ const supervisorPlaceholder = computed(() => {
   const supervisor = props.supervisors.find(s => s.id === formData.supervisor_id);
   return supervisor ? `${supervisor.first_name} ${supervisor.last_name}` : "Select Supervisor";
 });
+
+const clearSupervisor = () => {
+  formData.supervisor_id = '';  // Reset the supervisor ID
+  supervisorSearch.value = '';   // Clear the input field
+  filteredSupervisors.value = [];  // Clear the filtered supervisors list
+};
 
 // handle click outside of dropdown of supervisors
 onClickOutside(dropdown, closeDropdown);

@@ -302,6 +302,8 @@ const openEmployeeDetailsModal = (employee) => {
 const closeEmployeeDetailsModal = () => {
   isEmployeeDetailsModalVisible.value = false;
   selectedEmployee.value = null;
+  // fetch supervisors so that changes reflect after exiting modal
+  fetchSupervisors();
 };
 
 const handleUpdate = async (updatedData) => {
@@ -396,7 +398,7 @@ const fetchSupervisors = async () => {
       try {
         const response = await axios.get(`${apiUrl}/supervisors`);
         console.log(response.data)
-        fetchedSupervisors.value = response.data; 
+        fetchedSupervisors.value = response.data.filter(supervisor => supervisor.id !== authStore.user.id);; 
       } catch (err) {
         console.error('Error fetching supervisors:', err);
       }
@@ -412,7 +414,6 @@ const filterSupervisors = () => {
         return fullName.includes(supervisorSearch.value.toLowerCase());
     });
   }
-
 }
 
 // function to select a supervisor from filtered list

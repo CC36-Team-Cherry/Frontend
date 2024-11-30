@@ -42,14 +42,32 @@
             class="border rounded p-2"
           />
         </div>
-        <div class="flex flex-col">
-          <label class="font-medium">{{ $t('settings.fields.defaultSupervisor') }}</label>
-          <input
-            type="text"
-            v-model="formData.supervisor"
-            class="border rounded p-2"
-          />
-        </div>
+        <div>
+            <label class="block mb-1">{{ "Supervisor" }}</label>
+            <input 
+              v-model="supervisorSearch" 
+              @input="filterSupervisors"
+              type="text"
+              placeholder="Select Supervisor"
+              class="border rounded p-2 w-full"
+            >
+            <button 
+                v-if="formData.supervisor_id" 
+                @click="clearSupervisor" 
+              >
+                ✕
+              </button>
+            <ul v-if="filteredSupervisors.length > 0" ref="dropdown" class="border rounded mt-2 max-h-48 overflow-y-auto">
+              <li
+                v-for="supervisor in filteredSupervisors"
+                :key="supervisor.id"
+                @click="selectedSupervisor(supervisor)"
+                class="cursor-pointer hover:bg-gray-100 p-2"
+              >
+                {{ supervisor.first_name + " " + supervisor.last_name }}
+              </li>
+            </ul>
+          </div>
         <div class="flex flex-col">
           <label class="font-medium">{{ $t('settings.fields.role') }}</label>
           <input
@@ -105,11 +123,20 @@
   </template>
   
   <script setup>
-  import { ref } from 'vue';
+  import { ref, onMounted } from 'vue';
   import { useI18n } from 'vue-i18n';
+  import { onClickOutside } from '@vueuse/core';
+  import axios from 'axios';
   
   const { locale } = useI18n(); 
+
+  const apiUrl = import.meta.env.VITE_API_URL;
   
+  const fetchedSupervisors = ref([]);
+  const supervisorSearch = ref('');
+  const filteredSupervisors = ref([]);
+  const dropdown = ref(null);
+
   const formData = ref({
     firstName: '',
     lastName: '',
@@ -131,6 +158,53 @@
     console.log('Settings saved:', formData.value);
     alert('Settings saved successfully!');
   };
+
+  // get all supervisors
+  const fetchSupervisors = async () => {
+      try {
+        const response = await axios.get(`${apiUrl}/supervisors`);
+        console.log(response.data)
+        fetchedSupervisors.value = response.data.filter(supervisor => supervisor.id !== authStore.user.id); 
+      } catch (err) {
+        console.error('Error fetching supervisors:', err);
+      }
+    }
+
+  // filter supervisors in dropdown 
+  const filterSupervisors = () => {
+      if (!supervisorSearch.value) {
+        filteredSupervisors.value = fetchedSupervisors.value;
+      } else {
+          filteredSupervisors.value = fetchedSupervisors.value.filter((supervisor) => {
+          const fullName = (supervisor.first_name + " " + supervisor.last_name).toLowerCase();
+          return fullName.includes(supervisorSearch.value.toLowerCase());
+      });
+    }
+  }
+
+  // function to select a supervisor from filtered list
+  const selectedSupervisor = (supervisor) => {
+    formData.supervisor_id = supervisor.id;
+    supervisorSearch.value = `${supervisor.first_name} ${supervisor.last_name}`;
+    filteredSupervisors.value = [];
+  }
+
+  const closeDropdown = () => {
+    filteredSupervisors.value = [];  // Close the dropdown by clearing the filtered list
+  };
+
+  // handle click outside of dropdown of supervisors
+  onClickOutside(dropdown, closeDropdown);
+
+  const clearSupervisor = () => {
+    formData.supervisor_id = '';  // Reset the supervisor ID
+    supervisorSearch.value = '';   // Clear the input field
+    filteredSupervisors.value = [];  // Clear the filtered supervisors list
+  };
+
+  onMounted(() => {
+  fetchSupervisors();
+})
   </script>
   
   
