@@ -231,7 +231,13 @@ function resetFormData() {
   formData.is_admin = false;
 }
 
-const openAddUserModal = () => (isAddUserModalVisible.value = true);
+const openAddUserModal = () => {
+  isAddUserModalVisible.value = true;
+  formData.supervisor_id = null; // Reset supervisor to null when opening the modal for adding a new user
+  supervisorSearch.value = '';  // Reset search term for supervisor
+}
+
+
 const closeAddUserModal = () => {
   isAddUserModalVisible.value = false;
   resetFormData();
@@ -290,7 +296,9 @@ const sendFirebaseEmail = (email) => {
 const openEmployeeDetailsModal = (employee) => {
   selectedEmployee.value = employee;
   isEmployeeDetailsModalVisible.value = true;
+
 };
+
 const closeEmployeeDetailsModal = () => {
   isEmployeeDetailsModalVisible.value = false;
   selectedEmployee.value = null;
@@ -404,6 +412,7 @@ const filterSupervisors = () => {
         return fullName.includes(supervisorSearch.value.toLowerCase());
     });
   }
+
 }
 
 // function to select a supervisor from filtered list

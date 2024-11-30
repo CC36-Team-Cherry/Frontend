@@ -49,7 +49,7 @@
                 v-model="supervisorSearch"
                 @input="filterSupervisors"
                 type="text"
-                placeholder="Select Supervisor"
+                :placeholder="supervisorPlaceholder"
                 class="border rounded p-2 w-ull"
               >
               <ul v-if="filteredSupervisors.length > 0" ref="dropdown" class="border rounded mt-2 max-h-48 overflow-y-auto">
@@ -168,7 +168,7 @@
 </template>
 
 <script setup>
-import { defineProps, defineEmits, ref, reactive, onMounted, toRaw } from 'vue';
+import { defineProps, defineEmits, ref, reactive, onMounted, toRaw, computed } from 'vue';
 import { onClickOutside } from '@vueuse/core';
 import axios from 'axios';
 
@@ -334,6 +334,12 @@ const closeDropdown = () => {
   filteredSupervisors.value = [];  // Close the dropdown by clearing the filtered list
 };
 
+const supervisorPlaceholder = computed(() => {
+  // If a supervisor is selected, show their full name, otherwise default to "Select Supervisor"
+  const supervisor = props.supervisors.find(s => s.id === formData.supervisor_id);
+  return supervisor ? `${supervisor.first_name} ${supervisor.last_name}` : "Select Supervisor";
+});
+
 // handle click outside of dropdown of supervisors
 onClickOutside(dropdown, closeDropdown);
 
@@ -352,6 +358,7 @@ onMounted(() => {
   formData.is_admin = Boolean(props.employee.Privileges.is_admin);
   formData.is_supervisor = Boolean(props.employee.Privileges.is_supervisor);
   formData.team_id = props.employee.team_id;
+  formData.supervisor_id = props.employee.supervisor_id;
   
       // Get special pto for selected user
     getSpecialPto();
