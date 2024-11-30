@@ -19,22 +19,22 @@
           <div class="space-y-3">
             <div>
               <label class="font-semibold block">{{ $t('employeeDetails.fields.firstName') }}</label>
-              <input type="text" v-model="formData.first_name"
+              <input :disabled="!authStore.user.Privileges?.is_admin && !authStore.user.Privileges?.is_supervisor" type="text" v-model="formData.first_name"
                 class="border w-full rounded px-2 py-1" />
             </div>
             <div>
               <label class="font-semibold block">{{ $t('employeeDetails.fields.lastName') }}</label>
-              <input type="text" v-model="formData.last_name"
+              <input :disabled="!authStore.user.Privileges?.is_admin && !authStore.user.Privileges?.is_supervisor" type="text" v-model="formData.last_name"
                 class="border w-full rounded px-2 py-1" />
             </div>
             <div>
               <label class="font-semibold block">{{ $t('employeeDetails.fields.email') }}</label>
-              <input type="email" v-model="formData.email"
+              <input :disabled="!authStore.user.Privileges.is_admin && !authStore.user.Privileges.is_supervisor" type="email" v-model="formData.email"
                 class="border w-full rounded px-2 py-1" />
             </div>
             <div>
               <label class="font-semibold block">{{ $t('employeeDetails.fields.dateOfBirth') }}</label>
-              <input type="date" v-model="formData.birthdate" class="border w-full rounded px-2 py-1" />
+              <input :disabled="!authStore.user.Privileges.is_admin && !authStore.user.Privileges.is_supervisor" type="date" v-model="formData.birthdate" class="border w-full rounded px-2 py-1" />
             </div>
             <div>
               <label class="font-semibold block">{{ $t('employeeDetails.fields.team') }}</label>
@@ -45,25 +45,25 @@
             </div>
             <div>
               <label class="font-semibold block">{{ $t('employeeDetails.fields.supervisor') }}</label>
-              <input type="text" v-model="formData.supervisor"
+              <input  :disabled="!authStore.user.Privileges.is_admin && !authStore.user.Privileges.is_supervisor" type="text" v-model="formData.supervisor"
                 class="border w-full rounded px-2 py-1" />
             </div>
             <div>
               <label class="font-semibold block">Role</label>
-              <input type="text" v-model="formData.role"
+              <input :disabled="!authStore.user.Privileges.is_admin && !authStore.user.Privileges.is_supervisor" type="text" v-model="formData.role"
                 class="border w-full rounded px-2 py-1" />
             </div>
             <div>
               <label class="font-semibold block">Join Date</label>
-              <input type="date" v-model="formData.join_date"
+              <input :disabled="!authStore.user.Privileges.is_admin && !authStore.user.Privileges.is_supervisor" type="date" v-model="formData.join_date"
                 class="border w-full rounded px-2 py-1" />
             </div>
             <div>
               <label class="font-semibold block">Leave Date</label>
-              <input type="date" v-model="formData.leave_date" 
+              <input :disabled="!authStore.user.Privileges.is_admin && !authStore.user.Privileges.is_supervisor" type="date" v-model="formData.leave_date" 
               class="border w-full rounded px-2 py-1" />
             </div>
-            <div>
+            <div v-if="authStore.user.Privileges.is_admin">
               <input type="checkbox" v-model="formData.is_supervisor"> Supervisor
               <input type="checkbox" v-model="formData.is_admin"> Admin
           </div>
@@ -155,6 +155,10 @@
 <script setup>
 import { defineProps, defineEmits, ref, reactive, onMounted, toRaw } from 'vue';
 import axios from 'axios';
+import { useAuthStore } from '@/stores/authStore';
+
+
+const authStore = useAuthStore();
 
 const props = defineProps({
   employee: {

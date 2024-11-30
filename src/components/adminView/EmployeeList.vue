@@ -8,6 +8,7 @@
         class="border rounded p-2 w-1/2"
       />
       <button
+        v-if="authStore.Privileges?.is_admin || authStore.user.Privileges?.is_supervisor"
         @click="openAddUserModal"
         class="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600"
       >
