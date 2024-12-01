@@ -1,6 +1,6 @@
 <template>
   <div v-if="isVisible" class="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-50">
-    <div class="bg-white p-6 rounded shadow-lg max-w-4xl w-full relative overflow-y-auto" style="max-height: 90%">
+    <div class="bg-white p-6 rounded shadow-lg max-w-4xl w-4/5 relative overflow-y-auto" style="max-height: 90%">
       <!-- Close Button -->
       <button @click="onClose" class="absolute top-4 right-4 text-gray-500 hover:text-gray-800">
         ✕
