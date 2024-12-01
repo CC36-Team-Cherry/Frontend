@@ -17,7 +17,8 @@
           <th class="border p-2">{{ $t('employeeList.tableHeaders.joinDate') }}</th>
           <th class="border p-2">{{ $t('employeeList.tableHeaders.lastDate') }}</th>
           <th class="border p-2">{{ $t('employeeList.tableHeaders.privileges') }}</th>
-          <th class="border p-2">{{ $t('employeeList.tableHeaders.status') }}</th>
+          <th v-if="authStore.Privileges?.is_admin || authStore.user.Privileges?.is_supervisor" class="border p-2">Last
+            Login</th>
           <th class="border p-2">{{ $t('employeeList.tableHeaders.email') }}</th>
           <th v-if="authStore.Privileges?.is_admin || authStore.user.Privileges?.is_supervisor" class="border p-2">{{
             $t('employeeList.tableHeaders.att') }}</th>
@@ -43,7 +44,7 @@
                       : 'none'
               }}
             </td>
-            <td class="border p-2">{{ employee.leave_date ? 'Inactive' : 'Active' }}</td>
+            <td class="border p-2">{{ employee.last_login ? employee.last_login.split('T')[0] : 'Invite Sent' }}</td>
             <td class="border p-2">{{ employee.email }}</td>
             <td v-if="authStore.Privileges?.is_admin || authStore.user.Privileges?.is_supervisor" class="border p-2">
               <button class="bg-green-500 text-white px-2 py-1 rounded" @click.stop="openCalendarModal(employee)">
@@ -56,74 +57,74 @@
     </table>
     <!-- Modal for Adding User -->
     <Modal :isVisible="isAddUserModalVisible" @close="closeAddUserModal">
-        <h2 class="text-xl font-bold mb-4">{{ $t('employeeList.modal.modalTitle') }}</h2>
-        <form>
+      <h2 class="text-xl font-bold mb-4">{{ $t('employeeList.modal.modalTitle') }}</h2>
+      <form>
+        <div>
           <div>
-            <div>
-              <label class="block mb-1">{{ $t('employeeList.modal.fields.firstName') }}</label>
-              <input type="text" v-model="formData.first_name" class="border rounded p-2 w-full" />
-            </div>
-            <div>
-              <label class="block mb-1">{{ $t('employeeList.modal.fields.lastName') }}</label>
-              <input type="text" v-model="formData.last_name" class="border rounded p-2 w-full" />
-            </div>
-            <div>
-              <label class="block mb-1">{{ $t('employeeList.modal.fields.email') }}</label>
-              <input type="email" v-model="formData.email" class="border rounded p-2 w-full" />
-            </div>
-            <div>
-              <label class="block mb-1">{{ $t('employeeList.modal.fields.dateOfBirth') }}</label>
-              <input type="date" v-model="formData.birthdate" class="border rounded p-2 w-full" />
-            </div>
-            <div>
-              <label class="block mb-1">{{ $t('employeeList.modal.fields.team') }}</label>
-              <select v-model="formData.team_id" class="border rounded p-2 w-full">
-                <option value="" disabled>{{ $t('employeeDetails.placeholders.selectTeam') }}</option>
-                <option v-for="team in fetchedTeams" :key="team.id" :value="team.id">{{ team.team_name }}</option>
-              </select>
-            </div>
-            <div>
-              <label class="block mb-1">{{ "Supervisor" }}</label>
-              <input v-model="supervisorSearch" @input="filterSupervisors" type="text" placeholder="Select Supervisor"
-                class="border rounded p-2 w-full">
-              <ul v-if="filteredSupervisors.length > 0" ref="dropdown"
-                class="border rounded mt-2 max-h-48 overflow-y-auto">
-                <li v-for="supervisor in filteredSupervisors" :key="supervisor.id"
-                  @click="selectedSupervisor(supervisor)" class="cursor-pointer hover:bg-gray-100 p-2">
-                  {{ supervisor.first_name + " " + supervisor.last_name }}
-                </li>
-              </ul>
-              <!-- <option value="" disabled>{{ $t("Select Supervisor") }}</option>
+            <label class="block mb-1">{{ $t('employeeList.modal.fields.firstName') }}</label>
+            <input type="text" v-model="formData.first_name" class="border rounded p-2 w-full" />
+          </div>
+          <div>
+            <label class="block mb-1">{{ $t('employeeList.modal.fields.lastName') }}</label>
+            <input type="text" v-model="formData.last_name" class="border rounded p-2 w-full" />
+          </div>
+          <div>
+            <label class="block mb-1">{{ $t('employeeList.modal.fields.email') }}</label>
+            <input type="email" v-model="formData.email" class="border rounded p-2 w-full" />
+          </div>
+          <div>
+            <label class="block mb-1">{{ $t('employeeList.modal.fields.dateOfBirth') }}</label>
+            <input type="date" v-model="formData.birthdate" class="border rounded p-2 w-full" />
+          </div>
+          <div>
+            <label class="block mb-1">{{ $t('employeeList.modal.fields.team') }}</label>
+            <select v-model="formData.team_id" class="border rounded p-2 w-full">
+              <option value="" disabled>{{ $t('employeeDetails.placeholders.selectTeam') }}</option>
+              <option v-for="team in fetchedTeams" :key="team.id" :value="team.id">{{ team.team_name }}</option>
+            </select>
+          </div>
+          <div>
+            <label class="block mb-1">{{ "Supervisor" }}</label>
+            <input v-model="supervisorSearch" @input="filterSupervisors" type="text" placeholder="Select Supervisor"
+              class="border rounded p-2 w-full">
+            <ul v-if="filteredSupervisors.length > 0" ref="dropdown"
+              class="border rounded mt-2 max-h-48 overflow-y-auto">
+              <li v-for="supervisor in filteredSupervisors" :key="supervisor.id" @click="selectedSupervisor(supervisor)"
+                class="cursor-pointer hover:bg-gray-100 p-2">
+                {{ supervisor.first_name + " " + supervisor.last_name }}
+              </li>
+            </ul>
+            <!-- <option value="" disabled>{{ $t("Select Supervisor") }}</option>
               <option v-for="supervisor in fetchedSupervisors" :key="supervisor.id" :value="supervisor.id">{{ supervisor.first_name + " " + supervisor.last_name }}</option> -->
-            </div>
-            <div>
-              <label class="block mb-1">{{ $t('employeeList.modal.fields.role') }}</label>
-              <input type="text" v-model="formData.role" class="border rounded p-2 w-full" />
-            </div>
-            <div>
-              <label class="block mb-1">{{ $t('employeeList.modal.fields.joinDate') }}</label>
-              <input type="date" v-model="formData.join_date" class="border rounded p-2 w-full" />
-            </div>
-            <div>
-              <input type="checkbox" v-model="formData.is_supervisor" />{{ $t('employeeList.modal.userType.supervisor')
-              }}
-              <template v-if="authStore.user.is_admin">
-                <input type="checkbox" v-if="authStore.user.is_admin" v-model="formData.is_admin" />{{
-                  $t('employeeList.modal.userType.admin') }}
-              </template>
-            </div>
-            <div>
-              <label class="block mb-1">{{ $t('employeeList.modal.fields.pto') }}</label>
-              <input type="number" v-model="formData.remaining_pto" class="border rounded p-2 w-full" />
-            </div>
           </div>
-          <div class="mt-4">
-            <button @click="handleSubmit()" type="button"
-              class="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600">
-              {{ $t('employeeList.modal.sendInvitation') }}
-            </button>
+          <div>
+            <label class="block mb-1">{{ $t('employeeList.modal.fields.role') }}</label>
+            <input type="text" v-model="formData.role" class="border rounded p-2 w-full" />
           </div>
-        </form>
+          <div>
+            <label class="block mb-1">{{ $t('employeeList.modal.fields.joinDate') }}</label>
+            <input type="date" v-model="formData.join_date" class="border rounded p-2 w-full" />
+          </div>
+          <div>
+            <input type="checkbox" v-model="formData.is_supervisor" />{{ $t('employeeList.modal.userType.supervisor')
+            }}
+            <template v-if="authStore.user.is_admin">
+              <input type="checkbox" v-if="authStore.user.is_admin" v-model="formData.is_admin" />{{
+                $t('employeeList.modal.userType.admin') }}
+            </template>
+          </div>
+          <div>
+            <label class="block mb-1">{{ $t('employeeList.modal.fields.pto') }}</label>
+            <input type="number" v-model="formData.remaining_pto" class="border rounded p-2 w-full" />
+          </div>
+        </div>
+        <div class="mt-4">
+          <button @click="handleSubmit()" type="button"
+            class="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600">
+            {{ $t('employeeList.modal.sendInvitation') }}
+          </button>
+        </div>
+      </form>
     </Modal>
     <!-- Employee Details Modal -->
     <EmployeeDetailsModal v-if="selectedEmployee" :employee="selectedEmployee" :teams="fetchedTeams"
