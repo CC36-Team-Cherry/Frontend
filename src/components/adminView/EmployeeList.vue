@@ -433,6 +433,7 @@ onClickOutside(dropdown, closeDropdown);
 onMounted(() => {
   handleFetchEmployees();
   handleFetchTeams();
+
   fetchSupervisors();
-})
+});
 </script>
