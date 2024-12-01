@@ -37,11 +37,11 @@
               v-model="supervisorSearch" 
               @input="filterSupervisors"
               type="text"
-              placeholder="Select Supervisor"
+              :placeholder="supervisorPlaceholder"
               class="border rounded p-2 w-full"
             >
             <button 
-                v-if="formData.supervisor_id" 
+                v-if="formData.supervisor.id" 
                 @click="clearSupervisor" 
               >
                 ✕
@@ -100,7 +100,7 @@
 </template>
 
 <script setup>
-import { ref, reactive, onMounted } from 'vue';
+import { ref, reactive, onMounted, computed } from 'vue';
 import axios from 'axios';
 import { useI18n } from 'vue-i18n';
 import { useAuthStore } from '@/stores/authStore';
@@ -189,7 +189,7 @@ const switchLanguage = (lang) => {
 
   // function to select a supervisor from filtered list
   const selectedSupervisor = (supervisor) => {
-    formData.supervisor_id = supervisor.id;
+    formData.supervisor.id = supervisor.id;
     supervisorSearch.value = `${supervisor.first_name} ${supervisor.last_name}`;
     filteredSupervisors.value = [];
   }
@@ -197,15 +197,21 @@ const switchLanguage = (lang) => {
   const closeDropdown = () => {
     filteredSupervisors.value = [];  // Close the dropdown by clearing the filtered list
   };
-
-  // handle click outside of dropdown of supervisors
-  onClickOutside(dropdown, closeDropdown);
-
+  
+  const supervisorPlaceholder = computed(() => {
+    // If a supervisor is selected, show their full name, otherwise default to "Select Supervisor"
+    const supervisor = fetchedSupervisors.value.find(s => s.id === formData.supervisor.id);
+    return supervisor ? `${supervisor.first_name} ${supervisor.last_name}` : "Select Supervisor";
+  });
+  
   const clearSupervisor = () => {
-    formData.supervisor_id = '';  // Reset the supervisor ID
+    formData.supervisor.id = '';  // Reset the supervisor ID
     supervisorSearch.value = '';   // Clear the input field
     filteredSupervisors.value = [];  // Clear the filtered supervisors list
   };
+  
+  // handle click outside of dropdown of supervisors
+  onClickOutside(dropdown, closeDropdown);
 
 const handleSave = async () => {
   try {
@@ -234,7 +240,6 @@ const handleSave = async () => {
     console.error("Error updating employee: ", err);
   }
 }
-
 
 onMounted(() => {
   handleFetchCurrentUserData();
