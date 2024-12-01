@@ -61,7 +61,7 @@
               <input :disabled="!authStore.user.Privileges.is_admin && !authStore.user.Privileges.is_supervisor"
                 type="date" v-model="formData.join_date" class="border w-full rounded px-2 py-1" />
             </div>
-            <div>
+            <div v-if="authStore.user.Privileges.is_admin || authStore.user.Privileges.is_supervisor">
               <label class="font-semibold block">Leave Date</label>
               <input :disabled="!authStore.user.Privileges.is_admin && !authStore.user.Privileges.is_supervisor"
                 type="date" v-model="formData.leave_date" class="border w-full rounded px-2 py-1" />
@@ -72,7 +72,7 @@
             </div>
           </div>
           <!-- Attendance Settings -->
-          <div>
+          <div v-if="authStore.user.Privileges.is_admin || authStore.user.Privileges.is_supervisor">
             <h3 class="text-lg font-semibold text-center mb-4">
               --- {{ $t('employeeDetails.attendanceSettings') }} ---
             </h3>
