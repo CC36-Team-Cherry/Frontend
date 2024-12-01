@@ -19,9 +19,28 @@
           <option value="" disabled>Select Type</option>
           <option value="general">{{ $t('calendar.types.general') }}</option>
           <option value="pto">{{ $t('calendar.types.pto') }}</option>
-          <option value="halfpto">{{ $t('calendar.types.halfpto') }}</option>
-          <option value="specialPto">{{ $t('calendar.types.specialPto') }}</option>
+          <option value="halfpto">{{ $t('calendar.types.halfPto') }}</option>
+          <!-- Special PTO options dynamically inserted -->
+          <optgroup v-if="specialPtos.length > 0" label="Special PTO">
+            <option 
+              v-for="specialPto in specialPtos" 
+              :key="specialPto.id" 
+              :value="'specialPto_' + specialPto.id"
+            >
+              {{ specialPto.type }}
+            </option>
+          </optgroup>
           <option value="absence">{{ $t('calendar.types.absence') }}</option>
+        </select>
+      </div>
+      <!-- Special PTO Dropdown (only shown when 'specialPto' is selected) -->
+      <div v-if="attendanceType === 'specialPto'">
+        <label class="block mb-1 font-bold">{{ $t('calendar.specialPtoType') }}</label>
+        <select v-model="selectedSpecialPtoId" class="border border-gray-300 rounded p-2 w-full">
+          <option value="" disabled>Select Special PTO</option>
+          <option v-for="specialPto in specialPtos" :key="specialPto.id" :value="specialPto.id">
+            {{ specialPto.name }}
+          </option>
         </select>
       </div>
       <!-- Start Time -->
@@ -125,10 +144,12 @@ export default {
         'en-US': enLocale,
         'ja-JP': jaLocale,
       },
+      specialPtos: [],
     };
   },
   mounted() {
     const authStore = useAuthStore();
+    this.getSpecialPto();
 
     if (!authStore.user || !authStore.user.id) {
       console.error("User ID is not defined in authStore");
@@ -438,7 +459,19 @@ export default {
         default:
           console.log("Unkown attendance type");
       }    
+    },
+    async getSpecialPto() {
+
+      const authStore = useAuthStore();
+
+    try {
+      const response = await axios.get(`${apiUrl}/accounts/${authStore.user.id}/specialPto`);
+      this.specialPtos = response.data;
+      console.log(this.specialPtos)
+    } catch(err) {
+      console.error('Error fetching special pto:', err);
     }
+  }
   }
 }
 </script>

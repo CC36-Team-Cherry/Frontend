@@ -59,9 +59,15 @@
                         <td
                             v-if="activeTab === 'received'"
                         >{{ request.employeeName }}</td>
-                        <td>{{  request.type }}</td>
-                        <!-- <td>{{  request.type }}</td> -->
-                        
+                        <td
+                            v-if="request.type === 'Month Attendance Request'"
+                        >{{  `${request.type}: ${request.date}` }}</td>
+                        <td
+                            v-if="request.type === 'PTO Request' || request.type === 'Half PTO Request'"
+                        >{{  `${request.type}: ${request.date}` }}</td>
+                        <td
+                            v-if="request.type === 'Special PTO Request'"
+                            >{{  `${request.type}: ${request.date}` }}</td>                        
                         <td
                             v-if="!request.isEditing"
                         >{{  request.memo }}</td>

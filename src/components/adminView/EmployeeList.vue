@@ -207,7 +207,7 @@ const formData = reactive({
   team_id: '',
   supervisor_id: '',
   remaining_pto: 0,
-  special_holidays: '',
+  special_pto: '',
   role: '',
   join_date: '',
   leave_date: '',
@@ -223,7 +223,7 @@ function resetFormData() {
   formData.team_id = '';
   formData.supervisor_id = '';
   formData.remaining_pto = 0;
-  formData.special_holidays = '';
+  formData.special_pto = '';
   formData.role = '';
   formData.join_date = '';
   formData.leave_date = '';
@@ -433,7 +433,6 @@ onClickOutside(dropdown, closeDropdown);
 onMounted(() => {
   handleFetchEmployees();
   handleFetchTeams();
-
   fetchSupervisors();
 });
 </script>
