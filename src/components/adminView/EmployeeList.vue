@@ -120,6 +120,8 @@ import { useAuthStore } from '@/stores/authStore';
 
 const apiUrl = import.meta.env.VITE_API_URL;
 
+axios.defaults.withCredentials = true;
+
 const authStore = useAuthStore();
 
 const searchTerm = ref('');
@@ -132,16 +134,18 @@ let fetchedEmployees = ref([]);
 
 async function handleFetchEmployees(companyId) {
   try {
-    const response = await fetch(`${apiUrl}/accounts/${companyId}`, {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-    });
-    if (response.ok) {
-      const parsedRes = await response.json();
-      fetchedEmployees.value = parsedRes;
-    }
+    // const response = await fetch(`${apiUrl}/accounts/${companyId}`, {
+    //   method: 'GET',
+    //   headers: {
+    //     'Content-Type': 'application/json'
+    //   },
+    // });
+    // if (response.ok) {
+    //   const parsedRes = await response.json();
+    //   fetchedEmployees.value = parsedRes;
+    // }
+    const response = await axios.get(`${apiUrl}/accounts/${companyId}`);
+    fetchedEmployees.value = response.data;
   } catch (err) {
     console.error("Error: ", err);
   }
