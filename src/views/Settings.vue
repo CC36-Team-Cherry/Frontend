@@ -41,7 +41,7 @@
               class="border rounded p-2 w-full"
             >
             <button 
-                v-if="formData.supervisor.id" 
+                v-if="formData.supervisor_id" 
                 @click="clearSupervisor" 
               >
                 ✕
@@ -131,6 +131,7 @@ const formData = reactive({
   is_admin: '',
   is_supervisor: '',
   language_preference: 'en',
+  supervisor_id: '',
 });
 
 async function handleFetchCurrentUserData() {
@@ -169,7 +170,6 @@ const switchLanguage = (lang) => {
  const fetchSupervisors = async () => {
       try {
         const response = await axios.get(`${apiUrl}/supervisors`);
-        console.log(response.data)
         fetchedSupervisors.value = response.data.filter(supervisor => supervisor.id !== authStore.user.id); 
       } catch (err) {
         console.error('Error fetching supervisors:', err);
@@ -190,7 +190,7 @@ const switchLanguage = (lang) => {
 
   // function to select a supervisor from filtered list
   const selectedSupervisor = (supervisor) => {
-    formData.supervisor.id = supervisor.id;
+    filteredSupervisors.value.id = supervisor.id;
     supervisorSearch.value = `${supervisor.first_name} ${supervisor.last_name}`;
     filteredSupervisors.value = [];
   }
@@ -200,9 +200,14 @@ const switchLanguage = (lang) => {
   };
   
   const supervisorPlaceholder = computed(() => {
-    // If a supervisor is selected, show their full name, otherwise default to "Select Supervisor"
-    const supervisor = fetchedSupervisors.value.find(s => s.id === formData.supervisor.id);
-    return supervisor ? `${supervisor.first_name} ${supervisor.last_name}` : "Select Supervisor";
+
+    if (formData.supervisor_id === null) {
+      return "Select Supervisor"
+    } else if (formData.supervisor_id) {
+      // If a supervisor is selected, show their full name, otherwise default to "Select Supervisor"
+      const supervisor = fetchedSupervisors.value.find(s => s.id === formData.supervisor_id);
+      return supervisor ? `${supervisor.first_name} ${supervisor.last_name}` : "Select Supervisor";
+    }
   });
   
   const clearSupervisor = () => {
