@@ -113,8 +113,6 @@
                 {{ supervisor.first_name + " " + supervisor.last_name }}
               </li>
             </ul>
-              <!-- <option value="" disabled>{{ $t("Select Supervisor") }}</option>
-              <option v-for="supervisor in fetchedSupervisors" :key="supervisor.id" :value="supervisor.id">{{ supervisor.first_name + " " + supervisor.last_name }}</option> -->
           </div>
           <div>
             <label class="block mb-1">{{ $t('employeeList.modal.fields.role') }}</label>
@@ -211,7 +209,7 @@ const formData = reactive({
   team_id: '',
   supervisor_id: '',
   remaining_pto: 0,
-  special_holidays: '',
+  special_pto: '',
   role: '',
   join_date: '',
   leave_date: '',
@@ -227,7 +225,7 @@ function resetFormData() {
   formData.team_id = '';
   formData.supervisor_id = '';
   formData.remaining_pto = 0;
-  formData.special_holidays = '';
+  formData.special_pto = '';
   formData.role = '';
   formData.join_date = '';
   formData.leave_date = '';
@@ -235,7 +233,13 @@ function resetFormData() {
   formData.is_admin = false;
 }
 
-const openAddUserModal = () => (isAddUserModalVisible.value = true);
+const openAddUserModal = () => {
+  isAddUserModalVisible.value = true;
+  formData.supervisor_id = null; // Reset supervisor to null when opening the modal for adding a new user
+  supervisorSearch.value = '';  // Reset search term for supervisor
+}
+
+
 const closeAddUserModal = () => {
   isAddUserModalVisible.value = false;
   resetFormData();
@@ -294,10 +298,14 @@ const sendFirebaseEmail = (email) => {
 const openEmployeeDetailsModal = (employee) => {
   selectedEmployee.value = employee;
   isEmployeeDetailsModalVisible.value = true;
+
 };
+
 const closeEmployeeDetailsModal = () => {
   isEmployeeDetailsModalVisible.value = false;
   selectedEmployee.value = null;
+  // fetch supervisors so that changes reflect after exiting modal
+  fetchSupervisors();
 };
 
 const handleUpdate = async (updatedData) => {
@@ -392,17 +400,17 @@ const fetchSupervisors = async () => {
       try {
         const response = await axios.get(`${apiUrl}/supervisors`);
         console.log(response.data)
-        fetchedSupervisors.value = response.data; 
+        fetchedSupervisors.value = response.data.filter(supervisor => supervisor.id !== authStore.user.id);; 
       } catch (err) {
         console.error('Error fetching supervisors:', err);
       }
     }
 
+// filter supervisors in dropdown 
 const filterSupervisors = () => {
     if (!supervisorSearch.value) {
       filteredSupervisors.value = fetchedSupervisors.value;
     } else {
-        console.log(fetchSupervisors.value)
         filteredSupervisors.value = fetchedSupervisors.value.filter((supervisor) => {
         const fullName = (supervisor.first_name + " " + supervisor.last_name).toLowerCase();
         return fullName.includes(supervisorSearch.value.toLowerCase());
@@ -421,13 +429,12 @@ const closeDropdown = () => {
   filteredSupervisors.value = [];  // Close the dropdown by clearing the filtered list
 };
 
-// handle click outside
+// handle click outside of dropdown of supervisors
 onClickOutside(dropdown, closeDropdown);
 
 onMounted(() => {
   handleFetchEmployees();
   handleFetchTeams();
-
   fetchSupervisors();
 });
 </script>

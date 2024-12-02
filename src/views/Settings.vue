@@ -31,10 +31,32 @@
         <input v-else type="text" class="border rounded p-2 w-full bg-gray-100 text-gray-500"
           :value="(fetchedTeams.find(team => team.id === formData.team_id)?.team_name) || 'no team'" disabled />
       </div>
-      <div class="flex flex-col">
-        <label class="font-medium">{{ $t('settings.fields.defaultSupervisor') }}</label>
-        <input type="text" v-model="formData.supervisor" class="border rounded p-2" />
-      </div>
+      <div>
+            <label class="block mb-1">{{ "Supervisor" }}</label>
+            <input 
+              v-model="supervisorSearch" 
+              @input="filterSupervisors"
+              type="text"
+              :placeholder="supervisorPlaceholder"
+              class="border rounded p-2 w-full"
+            >
+            <button 
+                v-if="formData.supervisor.id" 
+                @click="clearSupervisor" 
+              >
+                ✕
+              </button>
+            <ul v-if="filteredSupervisors.length > 0" ref="dropdown" class="border rounded mt-2 max-h-48 overflow-y-auto">
+              <li
+                v-for="supervisor in filteredSupervisors"
+                :key="supervisor.id"
+                @click="selectedSupervisor(supervisor)"
+                class="cursor-pointer hover:bg-gray-100 p-2"
+              >
+                {{ supervisor.first_name + " " + supervisor.last_name }}
+              </li>
+            </ul>
+          </div>
       <div class="flex flex-col">
         <label class="font-medium">{{ $t('settings.fields.role') }}</label>
         <input type="text" v-model="formData.role" class="border rounded p-2"/>
@@ -78,12 +100,17 @@
 </template>
 
 <script setup>
-import { ref, reactive, onMounted } from 'vue';
+import { ref, reactive, onMounted, computed } from 'vue';
 import axios from 'axios';
 import { useI18n } from 'vue-i18n';
 import { useAuthStore } from '@/stores/authStore';
+import { onClickOutside } from '@vueuse/core';
 
 const apiUrl = import.meta.env.VITE_API_URL;
+const fetchedSupervisors = ref([]);
+const supervisorSearch = ref('');
+const filteredSupervisors = ref([]);
+const dropdown = ref(null);
 
 const authStore = useAuthStore();
 
@@ -137,6 +164,55 @@ const switchLanguage = (lang) => {
   locale.value = lang;
 };
 
+ // get all supervisors
+ const fetchSupervisors = async () => {
+      try {
+        const response = await axios.get(`${apiUrl}/supervisors`);
+        console.log(response.data)
+        fetchedSupervisors.value = response.data.filter(supervisor => supervisor.id !== authStore.user.id); 
+      } catch (err) {
+        console.error('Error fetching supervisors:', err);
+      }
+    }
+
+  // filter supervisors in dropdown 
+  const filterSupervisors = () => {
+      if (!supervisorSearch.value) {
+        filteredSupervisors.value = fetchedSupervisors.value;
+      } else {
+          filteredSupervisors.value = fetchedSupervisors.value.filter((supervisor) => {
+          const fullName = (supervisor.first_name + " " + supervisor.last_name).toLowerCase();
+          return fullName.includes(supervisorSearch.value.toLowerCase());
+      });
+    }
+  }
+
+  // function to select a supervisor from filtered list
+  const selectedSupervisor = (supervisor) => {
+    formData.supervisor.id = supervisor.id;
+    supervisorSearch.value = `${supervisor.first_name} ${supervisor.last_name}`;
+    filteredSupervisors.value = [];
+  }
+
+  const closeDropdown = () => {
+    filteredSupervisors.value = [];  // Close the dropdown by clearing the filtered list
+  };
+  
+  const supervisorPlaceholder = computed(() => {
+    // If a supervisor is selected, show their full name, otherwise default to "Select Supervisor"
+    const supervisor = fetchedSupervisors.value.find(s => s.id === formData.supervisor.id);
+    return supervisor ? `${supervisor.first_name} ${supervisor.last_name}` : "Select Supervisor";
+  });
+  
+  const clearSupervisor = () => {
+    formData.supervisor.id = '';  // Reset the supervisor ID
+    supervisorSearch.value = '';   // Clear the input field
+    filteredSupervisors.value = [];  // Clear the filtered supervisors list
+  };
+  
+  // handle click outside of dropdown of supervisors
+  onClickOutside(dropdown, closeDropdown);
+
 const handleSave = async () => {
   try {
     const employeeId = authStore.user.id;
@@ -168,5 +244,6 @@ const handleSave = async () => {
 onMounted(() => {
   handleFetchCurrentUserData();
   handleFetchTeams();
+  fetchSupervisors();
 })
 </script>
