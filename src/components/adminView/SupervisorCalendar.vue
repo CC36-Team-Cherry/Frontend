@@ -1,159 +1,147 @@
 <template>
-  <div v-if="isVisible" class="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-50">
-    <div class="bg-white p-6 rounded shadow-lg max-w-5xl w-full relative">
-      <!-- Close Button -->
-      <button @click="onClose" class="absolute top-4 right-4 text-gray-500 hover:text-gray-800">✕</button>
+  <div class="p-4">
+    <h1 class="text-xl font-bold mb-4">{{ $t('SupervisorCalendar.Title') }}</h1>
 
-      <!-- Title -->
-      <h2 class="text-2xl font-bold mb-6 text-center">
-        {{ $t("attendance.title") }} - {{ employeeName }}
-      </h2>
+    <!-- Dropdown per selezionare gli utenti -->
+    <div>
+      <label for="approvee" class="block mb-2 font-bold">{{ $t('SupervisorCalendar.SelectPlaceholder') }}</label>
+      <select
+        id="approvee"
+        v-model="selectedUser"
+        @change="fetchCalendarData"
+        class="p-2 border rounded w-full"
+      >
+        <option value="" disabled>{{ $t('SupervisorCalendar.SelectPlaceholder') }}</option>
+        <option v-for="user in approvees" :key="user.id" :value="user.id">
+          {{ user.first_name }} {{ user.last_name }}
+        </option>
+      </select>
+      <p v-if="approvees.length === 0" class="text-red-500 mt-2">No approvees found.</p>
+    </div>
 
-      <!-- FullCalendar -->
+    <!-- Calendar -->
+    <div v-if="selectedUser" class="mt-4">
       <div id="calendar" ref="calendar" class="w-full"></div>
     </div>
+    <p v-if="selectedUser && calendarData.length === 0" class="mt-4 text-gray-500">No calendar data for this user.</p>
   </div>
 </template>
 
-<script>
+<script setup>
+import { ref, onMounted, watch, nextTick } from "vue";
 import { Calendar } from "@fullcalendar/core";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import interactionPlugin from "@fullcalendar/interaction";
 import enLocale from "@fullcalendar/core/locales/en-gb";
 import axios from "axios";
-import { useAuthStore } from "@/stores/authStore";
 
+const apiUrl = import.meta.env.VITE_API_URL;
 axios.defaults.withCredentials = true;
 
-export default {
-  props: {
-    isVisible: {
-      type: Boolean,
-      required: true,
-    },
-    accountId: {
-      type: Number,
-      default: null,
-    },
-    employeeName: {
-      type: String,
-      required: true,
-    },
-  },
-  data() {
-    return {
-      calendar: null,
-      events: [],
-    };
-  },
-  methods: {
-    fetchAttendanceData() {
+const approvees = ref([]); // Lista degli utenti approvati
+const selectedUser = ref(null); // Utente selezionato
+const calendarData = ref([]); // Dati del calendario
+const calendarRef = ref(null); // Riferimento all'elemento del calendario
+let calendarInstance = null; // Istanza di FullCalendar
 
-      const authStore = useAuthStore();
-      console.log(authStore.user.id);
-      const idToFetch = this.getUserIdFromAuthStore();
+// Fetch approvees associati al supervisore
+const fetchApprovees = async () => {
+  try {
+    const response = await axios.get(`${apiUrl}/approvals/1`);
+    approvees.value = response.data.approvees || [];
+    console.log("Approvees:", approvees.value);
+  } catch (error) {
+    console.error("Error fetching approvees:", error.response?.data || error.message);
+  }
+};
 
-      if (!idToFetch) {
-        console.error("Account ID is not provided or available in authStore.");
-        return;
-      }
+// Fetch dati del calendario per l'utente selezionato
+const fetchCalendarData = async () => {
+  if (!selectedUser.value) return;
 
-      axios
-        .get(`http://localhost:3000/accounts/${idToFetch}/attendance`)
-        .then((response) => {
-          this.events = response.data.map((record) => ({
-            id: record.id,
-            title: `${record.punch_in.split("T")[1].slice(0, 5)} - ${record.punch_out.split("T")[1].slice(0, 5)}`,
-            start: record.day,
-            backgroundColor: this.getEventColor(record),
-            extendedProps: {
-              punch_in: record.punch_in,
-              punch_out: record.punch_out,
-            },
-          }));
+  try {
+    const response = await axios.get(`${apiUrl}/accounts/${selectedUser.value}/attendance`);
+    calendarData.value = response.data.map((item) => ({
+      id: item.id,
+      title: `${item.punch_in.split("T")[1].slice(0, 5)} - ${item.punch_out.split("T")[1].slice(0, 5)}`,
+      start: item.day,
+      backgroundColor: getEventColor(item),
+      extendedProps: {
+        punch_in: item.punch_in.split("T")[1].slice(0, 5),
+        punch_out: item.punch_out.split("T")[1].slice(0, 5),
+      },
+    }));
 
-          if (this.calendar) {
-            this.calendar.getEvents().forEach((event) => event.remove());
-            this.events.forEach((event) => this.calendar.addEvent(event));
-          }
-        })
-        .catch((error) => {
-          console.error("Error fetching attendance records:", error);
-        });
-    },
-    getEventColor(record) {
-      if (record.absence) return "red";
-      if (record.full_pto) return "orange";
-      if (record.special_pto) return "green";
-      return "blue";
-    },
-    initializeCalendar() {
-     const calendarEl = this.$refs.calendar;
-
-     if (!calendarEl) {
-      console.error("Calendar element is not found or not ready.");
-     return;
+    if (calendarInstance) {
+      calendarInstance.removeAllEvents();
+      calendarInstance.addEventSource(calendarData.value);
     }
+  } catch (error) {
+    console.error("Error fetching calendar data:", error.response?.data || error.message);
+  }
+};
 
-    this.calendar = new Calendar(calendarEl, {
-     plugins: [dayGridPlugin, interactionPlugin],
-     initialView: "dayGridMonth",
-     locale: enLocale,
-     events: this.events,
-     eventContent: (arg) => {
+// Determina il colore dell'evento in base al tipo di dato
+const getEventColor = (data) => {
+  if (data.absence) return "red";
+  if (data.full_pto) return "orange";
+  if (data.special_pto) return "green";
+  return "blue";
+};
+
+// Inizializza il calendario
+const initializeCalendar = async () => {
+  await nextTick(); // Assicura che il DOM sia completamente montato
+
+  const calendarElement = calendarRef.value;
+
+  if (!calendarElement) {
+    console.error("Calendar element not found.");
+    return;
+  }
+
+  calendarInstance = new Calendar(calendarElement, {
+    plugins: [dayGridPlugin, interactionPlugin],
+    initialView: "dayGridMonth",
+    locale: enLocale,
+    events: calendarData.value,
+    eventContent: (arg) => {
       if (arg.event.extendedProps.punch_in && arg.event.extendedProps.punch_out) {
         return {
-          html: `<div style="text-align: center; font-size: 0.9em; color: white; background-color: ${
-            arg.event.backgroundColor
-          }; padding: 5px; border-radius: 4px;">
-            <b>${arg.event.extendedProps.punch_in.split("T")[1].slice(0, 5)} - ${arg.event.extendedProps.punch_out.split("T")[1].slice(0, 5)}</b>
-          </div>`,
+          html: `
+            <div style="text-align: center; font-size: 0.9em; color: white; background-color: ${
+              arg.event.backgroundColor
+            }; padding: 5px; border-radius: 4px;">
+              <b>${arg.event.extendedProps.punch_in} - ${arg.event.extendedProps.punch_out}</b>
+            </div>
+          `,
         };
       }
     },
   });
 
-  this.calendar.render();
-}
-,
-    onClose() {
-      this.$emit("close");
-    },
-  },
-  watch: {
-   isVisible(newVal) {
-    if (newVal) {
-      this.$nextTick(() => {
-        if (!this.calendar) {
-          this.initializeCalendar();
-        }
-        this.fetchAttendanceData();
-      });
-    } else {
-      if (this.calendar) {
-        this.calendar.destroy();
-        this.calendar = null;
-      }
-    }
-   },
-  },
-  mounted() {
-  if (this.isVisible) {
-    this.$nextTick(() => {
-      this.initializeCalendar();
-      this.fetchAttendanceData();
-    });
-   }
-  },
-  beforeUnmount() {
-  if (this.calendar) {
-    console.log("Destroying calendar instance...");
-    this.calendar.destroy();
-    this.calendar = null;
-   }
-  },
+  calendarInstance.render();
 };
+
+
+onMounted(async () => {
+  await fetchApprovees();
+  initializeCalendar();
+});
+
+// Aggiorna il calendario quando i dati cambiano
+watch(calendarData, () => {
+  if (calendarInstance) {
+    calendarInstance.removeAllEvents();
+    calendarInstance.addEventSource(calendarData.value);
+  }
+});
 </script>
+
+
+
+
+
 
 
 
