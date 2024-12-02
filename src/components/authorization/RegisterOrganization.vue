@@ -1,5 +1,6 @@
 <template>
-  <div class="flex justify-center items-center bg-gray-100">
+  <LoopingRhombusesSpinner v-if="isLoading" class="bg-gray-100"/>
+  <div v-else class="flex justify-center items-center bg-gray-100">
     <div class="bg-white p-8 rounded shadow-md w-full max-w-lg">
       <h1 class="text-2xl font-bold mb-6 text-gray-800">{{ $t('register.title') }}</h1>
       <form class="flex flex-col space-y-4">
@@ -117,6 +118,7 @@ import { useAuthStore } from '@/stores/authStore';
 import { createUserWithEmailAndPassword } from 'firebase/auth';
 import { auth } from '../../firebase/firebaseConfig.ts'
 import axios from 'axios';
+import LoopingRhombusesSpinner from '../../modal/Loading.vue';
 
 const { t } = useI18n(); 
 const router = useRouter();
@@ -124,6 +126,7 @@ const router = useRouter();
 const apiUrl = import.meta.env.VITE_API_URL;
 axios.defaults.withCredentials = true;
 const authStore = useAuthStore();
+const isLoading = ref(false);
 
 const formData = ref({
   email: '',
@@ -144,6 +147,7 @@ const goToLogin = () => {
 }
 
 const handleSubmit = async () => {
+  isLoading.value = true;
   try {
     if (
       !formData.value.email ||

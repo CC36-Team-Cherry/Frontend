@@ -1,5 +1,6 @@
 <template>
-    <div>
+    <LoopingRhombusesSpinner v-if="isLoading"/>
+    <div v-else>
         <div class="border-2 flex flex-row justify-evenly">
             <button
                 class="w-full h-8"
@@ -118,11 +119,13 @@
 import { ref, computed, onMounted } from 'vue';
 import axios from 'axios';
 import { useAuthStore } from '@/stores/authStore';
+import LoopingRhombusesSpinner from '../modal/Loading.vue';
 
 const apiUrl = import.meta.env.VITE_API_URL;
 axios.defaults.withCredentials = true;
 const authStore = useAuthStore();
 const activeAccountId = authStore.user.id;
+const isLoading = ref(true);
 
 // Sample data for the approval requests
 const requests = ref({});
@@ -143,12 +146,13 @@ const switchTab = (tab) => {
 
 const getApprovals = async () => {
     try {
+        isLoading.value = true;
         const response = await axios.get(`${apiUrl}/accounts/${activeAccountId}/approvals`);
         
         requests.value.sent = response.data.approvalsSentData;
         requests.value.received = response.data.approvalsReceivedData;
         console.log("stored value in requests: ", requests.value)
-        
+        isLoading.value = false;
     } catch (err) {
         console.error('Error fetching approvals:', err);
     }
