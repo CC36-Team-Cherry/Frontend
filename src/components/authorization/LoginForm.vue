@@ -63,7 +63,6 @@ const router = useRouter();
 
 const handleLogin = async () => {
   await loginFirebase();
-  updateLastLogin();
 };
 
 const getUserFromBackend = async (token: string) => {
@@ -93,6 +92,7 @@ const loginFirebase = async () => {
   const user = credential.user;
   const token = await user.getIdToken();
   await getUserFromBackend(token);
+  updateLastLogin();
   router.push({ path: `/calendar` });
 }
 

@@ -303,8 +303,6 @@ updateChart() {
   }
 },
 
-
-
 fetchAttendanceData(accountId) {
   axios
     .get(`${apiUrl}/accounts/${accountId}/attendance`)
