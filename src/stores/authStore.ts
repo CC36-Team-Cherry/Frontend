@@ -52,6 +52,6 @@ export const useAuthStore = defineStore('auth', {
                             state.currentPage !== AppPageType.REGISTRATION,
   },
   
-  persist: false,
+  persist: true,
 });
 
