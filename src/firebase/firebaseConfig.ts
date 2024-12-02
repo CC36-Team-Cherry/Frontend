@@ -2,13 +2,13 @@ import { initializeApp } from 'firebase/app';
 import { getAuth } from "firebase/auth";
 
 const firebaseConfig = {
-    apiKey: "AIzaSyAIj4AydPrNIpoYrPLJEPYdpBla66-YC7Q",
-    authDomain: "team-cherry.firebaseapp.com",
-    projectId: "team-cherry",
-    storageBucket: "team-cherry.firebasestorage.app",
-    messagingSenderId: "807077609620",
-    appId: "1:807077609620:web:fd9bade00797a5f434f481",
-    measurementId: "G-NT9RHRJ4Y4"
+    apiKey: import.meta.env.FB_API_KEY,
+    authDomain: import.meta.env.FB_AUTH_DOMAIN,
+    projectId: import.meta.env.FB_PROJECT_ID,
+    storageBucket: import.meta.env.FB_STORAGE_BUCKET,
+    messagingSenderId: import.meta.env.FB_MESSAGING_SENDER_ID,
+    appId: import.meta.env.FB_APP_ID,
+    measurementId: import.meta.env.FB_MEASUREMENT_ID
 };
 
 // initialize Firebase
