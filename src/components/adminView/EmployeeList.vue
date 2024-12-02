@@ -1,5 +1,5 @@
 <template>
-  <LoopingRhombusesSpinner v-if="isLoading"/>
+  <LoopingRhombusesSpinner v-if="isLoading" />
   <div v-else class="bg-white shadow p-4 rounded">
     <div class="flex justify-between items-center mb-4">
       <input type="text" :placeholder="$t('employeeList.searchPlaceholder')" v-model="searchTerm"
@@ -45,7 +45,8 @@
                       : 'none'
               }}
             </td>
-            <td v-if="authStore.Privileges?.is_admin || authStore.user.Privileges?.is_supervisor" class="border p-2">{{ employee.last_login ? employee.last_login.split('T')[0] : 'Invite Sent' }}</td>
+            <td v-if="authStore.Privileges?.is_admin || authStore.user.Privileges?.is_supervisor" class="border p-2">{{
+              employee.last_login ? employee.last_login.split('T')[0] : 'Invite Sent' }}</td>
             <td class="border p-2">{{ employee.email }}</td>
             <td v-if="authStore.Privileges?.is_admin || authStore.user.Privileges?.is_supervisor" class="border p-2">
               <button class="bg-green-500 text-white px-2 py-1 rounded" @click.stop="openCalendarModal(employee)">
@@ -130,7 +131,11 @@
     <!-- Employee Details Modal -->
     <EmployeeDetailsModal v-if="selectedEmployee" :employee="selectedEmployee" :teams="fetchedTeams"
       :supervisors="fetchedSupervisors" :isVisible="isEmployeeDetailsModalVisible" @close="closeEmployeeDetailsModal"
-      @save="handleUpdate" @delete="handleDelete" />
+      @save="handleUpdate" @delete="openConfirmModal" />
+    <ConfirmModal :isVisible="isConfirmModalVisible" :confirmFunc="handleDelete" confirmString="Delete"
+      @close="isConfirmModalVisible = false">
+      <p>Are you sure you want to delete?</p>
+    </ConfirmModal>
     <!-- Calendar Modal -->
     <CalendarModal v-if="isCalendarModalVisible" :isVisible="isCalendarModalVisible" :accountId="selectedUser.id"
       :employeeName="`${selectedUser.first_name} ${selectedUser.last_name}`" @close="closeCalendarModal" />
@@ -143,6 +148,7 @@ import axios from 'axios';
 import { auth } from '../../firebase/firebaseConfig.ts';
 import { sendPasswordResetEmail } from 'firebase/auth';
 import Modal from '@/modal/ModalView.vue';
+import ConfirmModal from '@/modal/ConfirmModal.vue';
 import EmployeeDetailsModal from '@/modal/EmployeeDetailsModal.vue';
 import CalendarModal from '@/modal/CalendarModal.vue';
 import { useAuthStore } from '@/stores/authStore';
@@ -159,6 +165,7 @@ const searchTerm = ref('');
 const isAddUserModalVisible = ref(false);
 const isEmployeeDetailsModalVisible = ref(false);
 const isCalendarModalVisible = ref(false);
+const isConfirmModalVisible = ref(false);
 const isLoading = ref(true);
 
 const fetchedEmployees = ref([]);
@@ -214,11 +221,15 @@ const closeAddUserModal = () => {
   resetFormData();
 };
 
+const openConfirmModal = () => {
+  isConfirmModalVisible.value = true;
+}
+
 //adding a new user
 const handleSubmit = async () => {
   const email = formData.email;
   // post new user to backend
-  await addUserBackend(); 
+  await addUserBackend();
   // close the modal
   closeAddUserModal();
   // send email to the new user, delayed by two seconds to allow time for new account to post to Firebase
@@ -316,6 +327,7 @@ const handleDelete = async () => {
     if (response.status === 200) {
       console.log('Account deleted successfully');
       await handleFetchEmployees(authStore.user.company_id);
+      isConfirmModalVisible.value = false;
       closeEmployeeDetailsModal();
     } else {
       console.error('Failed to delete account');
@@ -366,23 +378,23 @@ const filteredEmployees = computed(() => {
 
 // get all supervisors
 const fetchSupervisors = async () => {
-      try {
-        const response = await axios.get(`${apiUrl}/supervisors`);
-        console.log(response.data)
-        fetchedSupervisors.value = response.data.filter(supervisor => supervisor.id !== authStore.user.id);
-      } catch (err) {
-        console.error('Error fetching supervisors:', err);
-      }
-    }
+  try {
+    const response = await axios.get(`${apiUrl}/supervisors`);
+    console.log(response.data)
+    fetchedSupervisors.value = response.data.filter(supervisor => supervisor.id !== authStore.user.id);
+  } catch (err) {
+    console.error('Error fetching supervisors:', err);
+  }
+}
 
 // filter supervisors in dropdown 
 const filterSupervisors = () => {
-    if (!supervisorSearch.value) {
-      filteredSupervisors.value = fetchedSupervisors.value;
-    } else {
-        filteredSupervisors.value = fetchedSupervisors.value.filter((supervisor) => {
-        const fullName = (supervisor.first_name + " " + supervisor.last_name).toLowerCase();
-        return fullName.includes(supervisorSearch.value.toLowerCase());
+  if (!supervisorSearch.value) {
+    filteredSupervisors.value = fetchedSupervisors.value;
+  } else {
+    filteredSupervisors.value = fetchedSupervisors.value.filter((supervisor) => {
+      const fullName = (supervisor.first_name + " " + supervisor.last_name).toLowerCase();
+      return fullName.includes(supervisorSearch.value.toLowerCase());
     });
   }
 }
