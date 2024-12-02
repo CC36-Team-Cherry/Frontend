@@ -48,27 +48,16 @@
             </div>
             <div>
               <label class="font-semibold block">{{ $t('employeeDetails.fields.supervisor') }}</label>
-              <input
-                :disabled="!authStore.user.Privileges.is_admin && !authStore.user.Privileges.is_supervisor"
-                v-model="supervisorSearch"
-                @input="filterSupervisors"
-                type="text"
-                :placeholder="supervisorPlaceholder"
-                class="border rounded p-2 w-ull"
-              >
-              <button 
-                v-if="formData.supervisor_id" 
-                @click="clearSupervisor" 
-              >
+              <input :disabled="!authStore.user.Privileges.is_admin && !authStore.user.Privileges.is_supervisor"
+                v-model="supervisorSearch" @input="filterSupervisors" type="text" :placeholder="supervisorPlaceholder"
+                class="border rounded p-2 w-ull">
+              <button v-if="formData.supervisor_id" @click="clearSupervisor">
                 ✕
               </button>
-              <ul v-if="filteredSupervisors.length > 0" ref="dropdown" class="border rounded mt-2 max-h-48 overflow-y-auto">
-                <li
-                  v-for="supervisor in filteredSupervisors"
-                  :key="supervisor.id"
-                  @click="selectedSupervisor(supervisor)"
-                  class="cursor-pointer hover:bg-gray-100 p-2"
-                >
+              <ul v-if="filteredSupervisors.length > 0" ref="dropdown"
+                class="border rounded mt-2 max-h-48 overflow-y-auto">
+                <li v-for="supervisor in filteredSupervisors" :key="supervisor.id"
+                  @click="selectedSupervisor(supervisor)" class="cursor-pointer hover:bg-gray-100 p-2">
                   {{ supervisor.first_name + " " + supervisor.last_name }}
                 </li>
               </ul>
@@ -188,8 +177,6 @@ const onClose = () => emit('close');
 const onSave = () => emit('save', formData);
 const onDelete = () => emit('delete');
 
-const apiUrl = import.meta.env.VITE_API_URL;
-
 const formData = reactive({
   first_name: '',
   last_name: '',
@@ -209,21 +196,20 @@ const formData = reactive({
   supervisor_id: '',
 });
 
-  const specialPtos = ref([]);
-  const newSpecialPto = ref('');
-  // Track index of special pto being edited
-  const editingSpecialPtoIndex = ref(null);
-  const supervisorSearch = ref('');
-  const filteredSupervisors = ref([]);
-  const dropdown = ref(null);
+const specialPtos = ref([]);
+const newSpecialPto = ref('');
+// Track index of special pto being edited
+const editingSpecialPtoIndex = ref(null);
+const supervisorSearch = ref('');
+const filteredSupervisors = ref([]);
+const dropdown = ref(null);
 
-  const getSpecialPto = async () => {
-    try {
-      const response = await axios.get(`${apiUrl}/accounts/${props.employee.id}/specialPto`);
-      specialPtos.value = response.data;
-    } catch(err) {
-      console.error('Error fetching special pto:', err);
-    }
+const getSpecialPto = async () => {
+  try {
+    const response = await axios.get(`${apiUrl}/accounts/${props.employee.id}/specialPto`);
+    specialPtos.value = response.data;
+  } catch (err) {
+    console.error('Error fetching special pto:', err);
   }
 }
 
@@ -303,15 +289,15 @@ const deleteSpecialPto = async (specialPtoId) => {
   }
 }
 
-  // filter supervisors in dropdown 
-  const filterSupervisors = () => {
-    if (!supervisorSearch.value) {
-      filteredSupervisors.value = props.supervisors;
-    } else {
-        console.log(props.supervisors)
-        filteredSupervisors.value = props.supervisors.filter((supervisor) => {
-        const fullName = (supervisor.first_name + " " + supervisor.last_name).toLowerCase();
-        return fullName.includes(supervisorSearch.value.toLowerCase());
+// filter supervisors in dropdown 
+const filterSupervisors = () => {
+  if (!supervisorSearch.value) {
+    filteredSupervisors.value = props.supervisors;
+  } else {
+    console.log(props.supervisors)
+    filteredSupervisors.value = props.supervisors.filter((supervisor) => {
+      const fullName = (supervisor.first_name + " " + supervisor.last_name).toLowerCase();
+      return fullName.includes(supervisorSearch.value.toLowerCase());
     });
   }
 }
@@ -357,9 +343,9 @@ onMounted(() => {
   formData.is_supervisor = Boolean(props.employee.Privileges.is_supervisor);
   formData.team_id = props.employee.team_id;
   formData.supervisor_id = props.employee.supervisor_id;
-  
-    // Get special pto for selected user
-    getSpecialPto();
+
+  // Get special pto for selected user
+  getSpecialPto();
 
   if (props.employee.leave_date) {
     formData.leave_date = new Date(props.employee.leave_date).toISOString().split('T')[0];
