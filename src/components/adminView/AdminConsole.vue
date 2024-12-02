@@ -1,5 +1,6 @@
 <template>
-    <div class="p-8 bg-gray-50 min-h-screen">
+    <LoopingRhombusesSpinner v-if="isLoading"/>
+    <div v-else class="p-8 bg-gray-50 min-h-screen">
         <h1 class="text-2xl font-bold">{{$t('adminConsole.title')}}</h1>
         <h2 class="text-xl font-bold"> {{ organizationName }}</h2>
             <div class="text-xl text-center my-5">{{$t('adminConsole.fields.teamList')}}</div>
@@ -88,12 +89,14 @@
 import { ref, toRaw, onMounted } from 'vue';
 import { useAuthStore } from '@/stores/authStore';
 import axios from 'axios';
+import LoopingRhombusesSpinner from '../../modal/Loading.vue';
 
 axios.defaults.withCredentials = true;
 
 const apiUrl = import.meta.env.VITE_API_URL;
 const authStore = useAuthStore();
 const activeCompanyId = authStore.user.company_id;
+const isLoading = ref(true);
 
 const formData = ref({
     organizationName: '',
@@ -232,10 +235,16 @@ const saveSettings = async () => {
     }
 };
 
+const handleMounted = async () => {
+    isLoading.value = true;
+    await getTeams();
+    await getOrganizationName();
+    isLoading.value = false;
+}
+
 // Fetch teams when the component is mounted
 onMounted(() => {
-    getTeams();
-    getOrganizationName();
+    handleMounted();
 });
 
 </script>
