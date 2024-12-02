@@ -19,7 +19,9 @@
           <option value="" disabled>Select Type</option>
           <option value="general">{{ $t('calendar.types.general') }}</option>
           <option value="pto">{{ $t('calendar.types.pto') }}</option>
+          <option value="halfpto">{{ $t('calendar.types.halfpto') }}</option>
           <option value="specialPto">{{ $t('calendar.types.specialPto') }}</option>
+          <option value="absence">{{ $t('calendar.types.absence') }}</option>
         </select>
       </div>
       <!-- Start Time -->
@@ -40,6 +42,7 @@
           class="border border-gray-300 rounded p-2 w-full"
         />
       </div>
+      
       <!-- Attendance -->
       <div>
         <label class="block mb-1 font-bold">{{ $t('calendar.attendance') }}</label>
@@ -83,9 +86,11 @@
           </button>
         </div>
       </div>
-
+<!-- Chart Section -->
+<div class="mb-4">
+  <canvas ref="attendanceChart" class="w-full h-64"></canvas>
+</div>
     </div>
-
     <!-- Calendar Section -->
     <div ref="calendar"></div>
   </div>
@@ -101,6 +106,8 @@ import jaLocale from '@fullcalendar/core/locales/ja';
 import axios from 'axios';
 import { useI18n } from 'vue-i18n';
 import { useAuthStore } from '@/stores/authStore';
+import Chart from 'chart.js/auto';
+
 
 const apiUrl = import.meta.env.VITE_API_URL;
 
@@ -117,7 +124,11 @@ export default {
       supervisors: [],
       selectedSupervisorId: '',
       memo: '',
+      attendanceChart: null, 
+      totalHours: 0,         
+      maxHours: 160,         
       selectedEventId: null,
+      holidays: [], 
       locales: {
         'en-US': enLocale,
         'ja-JP': jaLocale,
@@ -132,9 +143,11 @@ export default {
       return;
     }
 
+    this.initializeChart();
     this.fetchSupervisors();
+    this.holidays = this.generateJapaneseHolidays(new Date().getFullYear()); 
 
-    const activeAccountSupervisor = authStore.user.supervisor_id
+    const activeAccountSupervisor = authStore.user.supervisor_id;
     if (activeAccountSupervisor) {
       this.selectedSupervisorId = activeAccountSupervisor;
     }
@@ -148,37 +161,51 @@ export default {
       locale: this.locales[locale.value],
       selectable: true,
       businessHours: {
-       
-        daysOfWeek: [1, 2, 3, 4, 5],
+        daysOfWeek: [1, 2, 3, 4, 5], 
       },
+      events: [...this.holidays, ...this.events], 
+      editable: true,
       select: (selectionInfo) => {
         const startDate = new Date(selectionInfo.startStr);
         const endDate = new Date(selectionInfo.endStr);
         const dates = [];
 
-        
         while (startDate < endDate) {
-          if (startDate.getDay() !== 0 && startDate.getDay() !== 6) {
+          if (
+            startDate.getDay() !== 0 &&
+            startDate.getDay() !== 6 &&
+            !this.isHoliday(startDate)
+          ) {
             dates.push(new Date(startDate));
           }
           startDate.setDate(startDate.getDate() + 1);
         }
 
-        this.selectionRange = dates.map(date => date.toISOString().split('T')[0]).join(', ');
+        this.selectionRange = dates
+          .map((date) => date.toISOString().split('T')[0])
+          .join(', ');
       },
-      events: this.events,
-      editable: true,
       eventClick: (info) => {
         this.handleEventClick(info.event);
       },
       eventContent: (arg) => {
+        if (arg.event.extendedProps.isHoliday) {
+          return {
+            html: `
+              <div style="text-align: center; font-size: 0.9em; color: black; background-color: rgba(255, 0, 0, 0.2); padding: 10px; border-radius: 4px;">
+                <b>${arg.event.title}</b>
+              </div>
+            `,
+          };
+        }
         if (arg.event.extendedProps.startTime && arg.event.extendedProps.endTime) {
           return {
             html: `
-              <div style="text-align: center; font-size: 0.9em; color: white; background-color: ${
+              <div style="text-align: center; font-size: 0.9em; color: black; background-color: ${
                 arg.event.backgroundColor
-              }; padding: 5px; border-radius: 4px;">
+              }; padding: 0px; border-radius: 4px;">
                 <b>${arg.event.extendedProps.startTime} - ${arg.event.extendedProps.endTime}</b>
+                
               </div>
             `,
           };
@@ -198,80 +225,208 @@ export default {
     this.fetchAttendanceData(authStore.user.id);
   },
   methods: {
-    fetchAttendanceData(accountId) {
-      axios
-        .get(`http://localhost:3000/accounts/${accountId}/attendance`)
-        .then((response) => {
-          this.events = response.data.map((record) => ({
-            id: record.id,
-            title: `${record.punch_in.split('T')[1].slice(0, 5)} - ${record.punch_out.split('T')[1].slice(0, 5)}`,
-            start: record.day,
-            backgroundColor: this.getEventColor(record),
-            extendedProps: {
-              startTime: record.punch_in.split('T')[1].slice(0, 5), 
-              endTime: record.punch_out.split('T')[1].slice(0, 5), 
-            },
-          }));
+    initializeChart() {
+     const ctx = this.$refs.attendanceChart?.getContext('2d');
+     if (!ctx) {
+      console.error('Canvas element not found for attendance chart');
+      return;
+    }
 
-          this.calendar.getEvents().forEach((event) => event.remove());
-          this.events.forEach((event) => this.calendar.addEvent(event));
-        })
-        .catch((error) => {
-          console.error('Error fetching attendance records:', error);
-        });
+  this.attendanceChart = new Chart(ctx, {
+    type: 'doughnut',
+    data: {
+      labels: ['Worked Hours', 'Remaining Hours'],
+      datasets: [
+        {
+          data: [this.totalHours, this.maxHours - this.totalHours],
+          backgroundColor: ['#4caf50', '#e0e0e0'],
+        },
+      ],
     },
+    options: {
+      responsive: true,
+      plugins: {
+        legend: {
+          position: 'top',
+        },
+      },
+    },
+  });
+  console.log('Chart initialized successfully');
+},
+
+
+
+updateChart() {
+  if (!this.attendanceChart) {
+    console.error('Attendance chart is not initialized');
+    return;
+  }
+
+  console.log('Updating chart data with totalHours:', this.totalHours, 'and maxHours:', this.maxHours);
+
+  const workedHours = this.totalHours || 0;
+  const remainingHours = this.maxHours - workedHours;
+
+  if (isNaN(workedHours) || isNaN(remainingHours)) {
+    console.error('Invalid chart data:', { workedHours, remainingHours });
+    return;
+  }
+
+  try {
+    this.attendanceChart.data.datasets[0].data = [workedHours, remainingHours];
+    this.attendanceChart.update();
+    console.log('Chart updated successfully with:', { workedHours, remainingHours });
+  } catch (err) {
+    console.error('Error updating chart:', err);
+  }
+},
+
+
+
+fetchAttendanceData(accountId) {
+  axios
+    .get(`${apiUrl}/accounts/${accountId}/attendance`)
+    .then((response) => {
+      console.log("Response data:", response.data); // Debug della risposta
+
+      this.events = response.data.map((record) => ({
+        id: record.id,
+        title: record.punch_in && record.punch_out
+          ? `${record.punch_in.split('T')[1].slice(0, 5)} - ${record.punch_out.split('T')[1].slice(0, 5)}`
+          : 'No Time Logged',
+        start: record.day,
+        backgroundColor: this.getEventColor(record),
+        extendedProps: {
+          startTime: record.punch_in ? record.punch_in.split('T')[1].slice(0, 5) : null,
+          endTime: record.punch_out ? record.punch_out.split('T')[1].slice(0, 5) : null,
+          totalHours: record.total_hours || 0,
+        },
+      }));
+
+      
+      const calculatedTotalHours = this.events.reduce(
+        (sum, event) => sum + (event.extendedProps.totalHours || 0),
+        0
+      );
+
+      console.log("Calculated Total Hours:", calculatedTotalHours);
+
+      if (!isNaN(calculatedTotalHours) && calculatedTotalHours >= 0) {
+        this.totalHours = calculatedTotalHours;
+        console.log("Updated this.totalHours:", this.totalHours); 
+        this.updateChart();
+      } else {
+        console.error("Invalid total hours data:", calculatedTotalHours);
+      }
+
+      
+      this.calendar.getEvents().forEach((event) => event.remove());
+      [...this.holidays, ...this.events].forEach((event) => this.calendar.addEvent(event));
+    })
+    .catch((error) => {
+      console.error("Error fetching attendance records:", error.response?.data || error.message);
+    });
+},
+
     handleEventClick(event) {
+      if (event.extendedProps.isHoliday) return; 
       this.selectedEventId = event.id;
       this.selectionRange = event.start.toISOString().split('T')[0];
       this.startTime = event.extendedProps.startTime || '';
       this.endTime = event.extendedProps.endTime || '';
       this.attendanceType = this.getEventTypeFromColor(event.backgroundColor);
     },
-    logAttendance() {
-      const authStore = useAuthStore();
+  logAttendance() {
+    const authStore = useAuthStore();
+    const days = this.selectionRange.split(', ');
 
+    const attendancePromises = days.map((day) => {
+    const punchIn = `${day}T${this.startTime}:00Z`;
+    const punchOut = `${day}T${this.endTime}:00Z`;
+
+    
+    const [startHour, startMinute] = this.startTime.split(':').map(Number);
+    const [endHour, endMinute] = this.endTime.split(':').map(Number);
+
+    
+    const startTotalMinutes = startHour * 60 + startMinute;
+    const endTotalMinutes = endHour * 60 + endMinute;
+
+    
+    const totalHours = (endTotalMinutes - startTotalMinutes) / 60;
+
+    
+    const attendanceData = {
+      account_id: authStore.user.id,
+      day: `${day}T00:00:00.000Z`,
+      punch_in: punchIn,
+      punch_out: punchOut,
+      absence: this.attendanceType === 'absence',
+      full_pto: this.attendanceType === 'pto',
+      half_pto: this.attendanceType === 'halfpto',
+      special_pto: this.attendanceType === 'specialPto',
+      break_amount: 0,
+      totalHours: isNaN(totalHours) || totalHours < 0 ? 0 : totalHours,
+    };
+
+    console.log('Attendance Data:', attendanceData);
+
+    if (this.selectedEventId) {
       
-      const days = this.selectionRange.split(', ');
+      return axios.put(
+        `${apiUrl}/accounts/${authStore.user.id}/attendance/${this.selectedEventId}`,
+        attendanceData
+      );
+    } else {
+      
+      return axios.post(
+        `${apiUrl}/accounts/${authStore.user.id}/attendance`,
+        attendanceData
+      );
+    }
+  });
 
-      const attendancePromises = days.map((day) => {
-        const punchIn = `${day}T${this.startTime}:00Z`;
-        const punchOut = `${day}T${this.endTime}:00Z`;
-
-        const attendanceData = {
-          account_id: authStore.user.id,
-          day: new Date(`${day}T00:00:00.000Z`).toISOString(),
-          punch_in: punchIn,
-          punch_out: punchOut,
-          absence: this.attendanceType === 'absence',
-          full_pto: this.attendanceType === 'pto',
-          half_pto: this.attendanceType === 'halfPto',
-          special_pto: this.attendanceType === 'specialPto',
-          break_amount: 0,
-          totalHours: 0,
-        };
-
-        if(this.selectedEventId) {
-          return axios.put(`http://localhost:3000/accounts/${authStore.user.id}/attendance/${this.selectedEventId}`,attendanceData)
-        } else {
-         return axios.post(`http://localhost:3000/accounts/${authStore.user.id}/attendance`, attendanceData);
-        }
-      });
-
-      Promise.all(attendancePromises)
-        .then(() => {
-          this.fetchAttendanceData(authStore.user.id);
-          this.clearForm();
-        })
-        .catch((error) => {
-          console.error('Error logging attendance:', error.response?.data || error.message);
-        });
-
+  Promise.all(attendancePromises)
+    .then(() => {
+      
+      this.fetchAttendanceData(authStore.user.id);
+      this.updateChart();
+      this.clearForm();
+    })
+    .catch((error) => {
+      console.error('Error logging attendance:', error.response?.data || error.message);
+    });
+},
+    generateJapaneseHolidays(year) {
+      return [
+        { title: "New Year's Day", start: `${year}-01-01`, isHoliday: true },
+        { title: 'Coming of Age Day', start: `${year}-01-08`, isHoliday: true },
+        { title: 'National Foundation Day', start: `${year}-02-11`, isHoliday: true },
+        { title: "Emperor's Birthday", start: `${year}-02-23`, isHoliday: true },
+        { title: 'Spring Equinox', start: `${year}-03-21`, isHoliday: true },
+        { title: 'Showa Day', start: `${year}-04-29`, isHoliday: true },
+        { title: 'Constitution Memorial Day', start: `${year}-05-03`, isHoliday: true },
+        { title: 'Greenery Day', start: `${year}-05-04`, isHoliday: true },
+        { title: "Children's Day", start: `${year}-05-05`, isHoliday: true },
+        { title: 'Marine Day', start: `${year}-07-15`, isHoliday: true },
+        { title: 'Mountain Day', start: `${year}-08-11`, isHoliday: true },
+        { title: 'Autumn Equinox', start: `${year}-09-23`, isHoliday: true },
+        { title: 'Sports Day', start: `${year}-10-14`, isHoliday: true },
+        { title: 'Culture Day', start: `${year}-11-03`, isHoliday: true },
+        { title: 'Labor Thanksgiving Day', start: `${year}-11-23`, isHoliday: true },
+      ];
+    },
+    isHoliday(date) {
+      const formattedDate = date.toISOString().split('T')[0];
+      return this.holidays.some((holiday) => holiday.start === formattedDate);
     },
     getEventColor(data) {
       if (data.absence) return 'red';
       if (data.full_pto) return 'orange';
       if (data.special_pto) return 'green';
-      return 'blue';
+      if (data.half_pto) return 'yellow';
+      return 'lightblue';
     },
     getEventTypeFromColor(color) {
       switch (color) {
@@ -281,6 +436,8 @@ export default {
           return 'pto';
         case 'green':
           return 'specialPto';
+        case 'yellow':
+          return 'halfpto';
         default:
           return 'general';
       }
@@ -295,43 +452,37 @@ export default {
     async fetchSupervisors() {
       try {
         const response = await axios.get(`${apiUrl}/supervisors`);
-        console.log(response.data)
-        this.supervisors = response.data; // Assume endpoint returns a list of supervisor objects
+        this.supervisors = response.data;
       } catch (err) {
-        console.error('Error fetching supervisors:', error);
+        console.error('Error fetching supervisors:', err);
       }
-    }
-    ,
+    },
     async submitHandler() {
+      const authStore = useAuthStore();
+      const selectedDate = this.selectionRange.split(' - ');
+      const month = selectedDate[0] ? new Date(selectedDate[0]).getMonth() + 1 : new Date().getMonth() + 1;
+      const year = selectedDate[0] ? new Date(selectedDate[0]).getFullYear() : new Date().getFullYear();
 
-        const authStore = useAuthStore();
+      const approvalData = {
+        account_id: authStore.user.id,
+        supervisor_id: this.selectedSupervisorId,
+        month: month,
+        year: year,
+        content: this.memo,
+        status: 'pending',
+      };
 
-        const selectedDate = this.selectionRange.split(" - ");
-        const month = selectedDate[0] ? new Date(selectedDate[0]).getMonth() + 1 : new Date().getMonth() + 1;  // Extracting the month
-        const year = selectedDate[0] ? new Date(selectedDate[0]).getFullYear() : new Date().getFullYear();
-
-        const approvalData = {
-          account_id: authStore.user.id,
-          supervisor_id: this.selectedSupervisorId,
-          month: month,
-          year: year,
-          content: this.memo,
-          status: "pending", 
-        };
-
-        console.log(approvalData);
-
-        try {
-          // console.log(selectedSupervisor);
-          // const selectedSupervisor = selectedSupervisor.value;
-          const response = await axios.post(`${apiUrl}/approvals/monthAttendance`, approvalData);
-          console.log(response.data);
-
-        } catch (err) {
-          console.error('Error submitting approval:', err);
-        }
+      try {
+        const response = await axios.post(
+          `${apiUrl}/approvals/monthAttendance`,
+          approvalData
+        );
+        console.log(response.data);
+      } catch (err) {
+        console.error('Error submitting approval:', err);
       }
+    },
   },
 };
-
 </script>
+

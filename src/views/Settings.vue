@@ -1,136 +1,172 @@
 <template>
-    <div class="p-8 bg-gray-50 min-h-screen">
-      <h1 class="text-2xl font-bold mb-6">{{ $t('settings.title') }}</h1>
-      <div class="grid grid-cols-2 gap-6">
-        <div class="flex flex-col">
-          <label class="font-medium">{{ $t('settings.fields.firstName') }}</label>
-          <input
-            type="text"
-            v-model="formData.firstName"
-            class="border rounded p-2"
-          />
-        </div>
-        <div class="flex flex-col">
-          <label class="font-medium">{{ $t('settings.fields.lastName') }}</label>
-          <input
-            type="text"
-            v-model="formData.lastName"
-            class="border rounded p-2"
-          />
-        </div>
-        <div class="flex flex-col">
-          <label class="font-medium">{{ $t('settings.fields.email') }}</label>
-          <input
-            type="email"
-            v-model="formData.email"
-            class="border rounded p-2"
-          />
-        </div>
-        <div class="flex flex-col">
-          <label class="font-medium">{{ $t('settings.fields.dateOfBirth') }}</label>
-          <input
-            type="date"
-            v-model="formData.dateOfBirth"
-            class="border rounded p-2"
-          />
-        </div>
-        <div class="flex flex-col">
-          <label class="font-medium">{{ $t('settings.fields.team') }}</label>
-          <input
-            type="text"
-            v-model="formData.team"
-            class="border rounded p-2"
-          />
-        </div>
-        <div class="flex flex-col">
-          <label class="font-medium">{{ $t('settings.fields.defaultSupervisor') }}</label>
-          <input
-            type="text"
-            v-model="formData.supervisor"
-            class="border rounded p-2"
-          />
-        </div>
-        <div class="flex flex-col">
-          <label class="font-medium">{{ $t('settings.fields.role') }}</label>
-          <input
-            type="text"
-            v-model="formData.role"
-            class="border rounded p-2"
-          />
-        </div>
-        <div class="flex flex-col">
-          <label class="font-medium">{{ $t('settings.fields.joinDate') }}</label>
-          <input
-            type="date"
-            v-model="formData.joinDate"
-            class="border rounded p-2"
-          />
-        </div>
-        <div class="flex flex-col">
-          <label class="font-medium">{{ $t('settings.fields.type') }}</label>
-          <select v-model="formData.type" class="border rounded p-2">
-            <option value="User">{{ $t('settings.user') }}</option>
-            <option value="Admin">{{ $t('settings.admin') }}</option>
-          </select>
-        </div>
-        <div class="flex flex-col">
-          <label class="font-medium">{{ $t('settings.fields.languagePreference') }}</label>
-          <div class="flex space-x-2 mt-2">
-            <button
-              @click="switchLanguage('en-US')"
-              :class="locale === 'en-US' ? 'bg-blue-500 text-white' : 'bg-gray-300 text-gray-700'"
-              class="py-1 px-3 rounded hover:bg-blue-600 transition duration-200"
-            >
-              {{ $t('language.en') }}
-            </button>
-            <button
-              @click="switchLanguage('ja-JP')"
-              :class="locale === 'ja-JP' ? 'bg-blue-500 text-white' : 'bg-gray-300 text-gray-700'"
-              class="py-1 px-3 rounded hover:bg-blue-600 transition duration-200"
-            >
-              {{ $t('language.jp') }}
-            </button>
-          </div>
-        </div>
+  <div class="p-8 bg-gray-50 min-h-screen">
+    <h1 class="text-2xl font-bold mb-6">{{ $t('settings.title') }}</h1>
+    <div class="grid grid-cols-2 gap-6">
+      <div class="flex flex-col">
+        <label class="font-medium">{{ $t('settings.fields.firstName') }}</label>
+        <input type="text" v-model="formData.first_name" class="border rounded p-2" />
       </div>
-      <div class="mt-8">
-        <button
-          @click="saveSettings"
-          class="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600"
-        >
-          {{ $t('settings.save') }}
-        </button>
+      <div class="flex flex-col">
+        <label class="font-medium">{{ $t('settings.fields.lastName') }}</label>
+        <input type="text" v-model="formData.last_name" class="border rounded p-2" />
+      </div>
+      <div class="flex flex-col">
+        <label class="font-medium">{{ $t('settings.fields.email') }}</label>
+        <input type="email" v-model="formData.email" class="border rounded p-2" />
+      </div>
+      <div class="flex flex-col">
+        <label class="font-medium">{{ $t('settings.fields.dateOfBirth') }}</label>
+        <input type="date" v-model="formData.birthdate.split('T')[0]" class="border rounded p-2" />
+      </div>
+      <div>
+        <label class="block mb-1">{{ $t('settings.fields.team') }}</label>
+        <select v-if="authStore.user.Privileges.is_admin" v-model="formData.team_id" class="border rounded p-2 w-full">
+          <option value="" disabled>{{ $t('employeeDetails.placeholders.selectTeam') }}</option>
+          <option v-for="team in fetchedTeams" :key="team.id" :value="team.id">
+            {{ team.team_name }}
+          </option>
+        </select>
+
+        <!-- Display as a disabled text input if the user is not an admin -->
+        <input v-else type="text" class="border rounded p-2 w-full bg-gray-100 text-gray-500"
+          :value="(fetchedTeams.find(team => team.id === formData.team_id)?.team_name) || 'no team'" disabled />
+      </div>
+      <div class="flex flex-col">
+        <label class="font-medium">{{ $t('settings.fields.defaultSupervisor') }}</label>
+        <input type="text" v-model="formData.supervisor" class="border rounded p-2" />
+      </div>
+      <div class="flex flex-col">
+        <label class="font-medium">{{ $t('settings.fields.role') }}</label>
+        <input type="text" v-model="formData.role" class="border rounded p-2"/>
+      </div>
+      <div class="flex flex-col">
+        <label class="font-medium">{{ $t('settings.fields.joinDate') }} </label>
+        <input type="date" v-model="formData.join_date.split('T')[0]" class="border rounded p-2"  :disabled="!authStore.user.Privileges.is_admin" />
+      </div>
+      <div v-if="authStore.user.Privileges.is_admin" class="flex flex-col">
+        <label class="font-medium">{{ 'Privileges' }}</label>
+        <input type="checkbox" v-model="formData.is_supervisor" />{{ $t('employeeList.modal.userType.supervisor') }}
+        <input type="checkbox" v-model="formData.is_admin" />{{ $t('employeeList.modal.userType.admin') }}
+      </div>
+      <div v-else>
+        <label class="font-medium">{{ 'Privileges' }}</label>
+        <input type="text" class="border rounded p-2 w-full bg-gray-100 text-gray-500" disabled
+          :value="authStore.user.Privileges.is_supervisor ? 'Supervisor' : 'None'" />
+      </div>
+      <div class="flex flex-col">
+        <label class="font-medium">{{ $t('settings.fields.languagePreference') }}</label>
+        <div class="flex space-x-2 mt-2">
+          <button @click="switchLanguage('en-US')"
+            :class="locale === 'en-US' ? 'bg-blue-500 text-white' : 'bg-gray-300 text-gray-700'"
+            class="py-1 px-3 rounded hover:bg-blue-600 transition duration-200">
+            {{ $t('language.en') }}
+          </button>
+          <button @click="switchLanguage('ja-JP')"
+            :class="locale === 'ja-JP' ? 'bg-blue-500 text-white' : 'bg-gray-300 text-gray-700'"
+            class="py-1 px-3 rounded hover:bg-blue-600 transition duration-200">
+            {{ $t('language.jp') }}
+          </button>
+        </div>
       </div>
     </div>
-  </template>
-  
-  <script setup>
-  import { ref } from 'vue';
-  import { useI18n } from 'vue-i18n';
-  
-  const { locale } = useI18n(); 
-  
-  const formData = ref({
-    firstName: '',
-    lastName: '',
-    email: '',
-    dateOfBirth: '',
-    team: '',
-    supervisor: '',
-    role: '',
-    joinDate: '',
-    type: '',
-    languagePreference: 'en',
-  });
-  
-  const switchLanguage = (lang) => {
-    locale.value = lang; 
-  };
-  
-  const saveSettings = () => {
-    console.log('Settings saved:', formData.value);
-    alert('Settings saved successfully!');
-  };
-  </script>
-  
-  
+    <div class="mt-8">
+      <button @click="handleSave" class="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600">
+        {{ $t('settings.save') }}
+      </button>
+    </div>
+  </div>
+</template>
+
+<script setup>
+import { ref, reactive, onMounted } from 'vue';
+import axios from 'axios';
+import { useI18n } from 'vue-i18n';
+import { useAuthStore } from '@/stores/authStore';
+
+const apiUrl = import.meta.env.VITE_API_URL;
+
+const authStore = useAuthStore();
+
+const { locale } = useI18n();
+
+const fetchedTeams = ref([]);
+
+const formData = reactive({
+  first_name: '',
+  last_name: '',
+  email: '',
+  birthdate: '',
+  team_id: '',
+  supervisor: '',
+  role: '',
+  join_date: '',
+  is_admin: '',
+  is_supervisor: '',
+  language_preference: 'en',
+});
+
+async function handleFetchCurrentUserData() {
+  try {
+    const response = await axios.get(`${apiUrl}/accounts/${authStore.user.id}/details`);
+    if (response.status === 200) {
+      await Object.assign(formData, {
+        ...formData,
+        ...response.data,
+      });
+      console.log(formData);
+    } else {
+      console.error('Server error.')
+    }
+  } catch (err) {
+    console.error('Error fetching user data:', err);
+  }
+}
+
+const handleFetchTeams = async () => {
+  try {
+    const response = await axios.get(`${apiUrl}/organizations/${authStore.user.company_id}/teams`);
+    fetchedTeams.value = response.data;
+  } catch (err) {
+    console.error('Error fetching teams:', err);
+  }
+}
+
+const switchLanguage = (lang) => {
+  formData.language_preference = lang.substring(0, 2);
+  authStore.user.language_preference = lang.substring(0, 2);
+  locale.value = lang;
+};
+
+const handleSave = async () => {
+  try {
+    const employeeId = authStore.user.id;
+    const cleanedUpdates = Object.fromEntries(
+      Object.entries(formData).filter(([key, value]) => {
+        // Only include key-value pairs where value is not empty, null, undefined, or whitespace
+        return (
+          value !== "" &&
+          value !== null &&
+          value !== undefined &&
+          (typeof value === "string" ? value.trim() !== "" : true)
+        );
+      })
+    );
+    cleanedUpdates.join_date = new Date(cleanedUpdates.join_date);
+    cleanedUpdates.birthdate = new Date(cleanedUpdates.birthdate);
+    const response = await axios.patch(`${apiUrl}/accounts/${employeeId}`, cleanedUpdates);
+    if (response.status === 200) {
+      console.log("Account updated successfully");
+      handleFetchCurrentUserData();
+    } else {
+      console.error("Failed to update account")
+    }
+  } catch (err) {
+    console.error("Error updating employee: ", err);
+  }
+}
+
+onMounted(() => {
+  handleFetchCurrentUserData();
+  handleFetchTeams();
+})
+</script>
