@@ -6,24 +6,26 @@
       <form @submit.prevent="handleLogin" class="flex flex-col space-y-4">
         <div>
           <label for="username" class="block text-gray-700">
-            {{ $t('login.email') }}:
+
           </label>
           <input
             type="text"
             id="username"
             v-model="email"
+            placeholder="Enter your email address"
             class="w-full p-2 border border-gray-300 rounded"
             required
           />
         </div>
         <div>
           <label for="password" class="block text-gray-700">
-            {{ $t('login.password') }}:
+
           </label>
           <input
             type="password"
             id="password"
             v-model="password"
+            placeholder="Enter your password"
             class="w-full p-2 border border-gray-300 rounded"
             required
           />
@@ -42,7 +44,7 @@
         </button>
         <button
           @click="goToForgotPassword()"
-          class="italic underline"
+          class="italic hover:underline"
         >
         Forgot your password?
         </button>

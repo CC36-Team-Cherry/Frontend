@@ -36,10 +36,10 @@
     "email": "Email",
     "password": "Password",
     "submit": "Login",
-    "register": "Register Organization"
+    "register": "Register new organization"
   },
   "register": {
-    "title": "Register Organization",
+    "title": "Register New Organization",
     "firstName": "First Name",
     "lastName": "Last Name",
     "organizationName": "Organization Name",
