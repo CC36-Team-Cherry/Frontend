@@ -145,8 +145,8 @@
         </button>
       </div>
     </div>
-
-  </template>
+  </div>
+</template>
 
 <script setup>
 import { defineProps, defineEmits, ref, watch, reactive, onMounted, toRaw, computed } from 'vue';
@@ -156,8 +156,6 @@ import { useAuthStore } from '@/stores/authStore';
 
 
 const authStore = useAuthStore();
-
-const apiUrl = import.meta.env.VITE_API_URL;
 
 const props = defineProps({
   employee: {
