@@ -44,7 +44,7 @@
                       : 'none'
               }}
             </td>
-            <td class="border p-2">{{ employee.last_login ? employee.last_login.split('T')[0] : 'Invite Sent' }}</td>
+            <td v-if="authStore.Privileges?.is_admin || authStore.user.Privileges?.is_supervisor" class="border p-2">{{ employee.last_login ? employee.last_login.split('T')[0] : 'Invite Sent' }}</td>
             <td class="border p-2">{{ employee.email }}</td>
             <td v-if="authStore.Privileges?.is_admin || authStore.user.Privileges?.is_supervisor" class="border p-2">
               <button class="bg-green-500 text-white px-2 py-1 rounded" @click.stop="openCalendarModal(employee)">
