@@ -194,11 +194,6 @@ const isAddUserModalVisible = ref(false);
 const isEmployeeDetailsModalVisible = ref(false);
 const isCalendarModalVisible = ref(false);
 
-//get employee list
-let fetchedEmployees = ref([]);
-
-handleFetchEmployees(authStore.user.company_id);
-
 const fetchedEmployees = ref([]);
 const fetchedTeams = ref([]);
 const selectedEmployee = ref(null);
