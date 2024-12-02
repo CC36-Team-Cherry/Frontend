@@ -149,12 +149,14 @@
         </button>
       </div>
     </div>
-  </div>
-</template>
+
+  </template>
 
 <script setup>
-import { defineProps, defineEmits, ref, reactive, onMounted, toRaw } from 'vue';
+import { defineProps, defineEmits, ref, watch, reactive, onMounted, toRaw } from 'vue';
 import axios from 'axios';
+
+const apiUrl = import.meta.env.VITE_API_URL;
 
 const props = defineProps({
   employee: {

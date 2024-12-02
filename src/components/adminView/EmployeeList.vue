@@ -185,12 +185,19 @@ import { onClickOutside } from '@vueuse/core';
 
 const apiUrl = import.meta.env.VITE_API_URL;
 
+axios.defaults.withCredentials = true;
+
 const authStore = useAuthStore();
 
 const searchTerm = ref('');
 const isAddUserModalVisible = ref(false);
 const isEmployeeDetailsModalVisible = ref(false);
 const isCalendarModalVisible = ref(false);
+
+//get employee list
+let fetchedEmployees = ref([]);
+
+handleFetchEmployees(authStore.user.company_id);
 
 const fetchedEmployees = ref([]);
 const fetchedTeams = ref([]);
