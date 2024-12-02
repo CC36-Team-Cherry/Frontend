@@ -1,5 +1,6 @@
 <template>
-  <div class="flex justify-center items-center h-screen bg-gray-100">
+  <LoopingRhombusesSpinner v-if="isLoading" class="bg-gray-100"/>
+  <div v-else class="flex justify-center items-center h-screen bg-gray-100">
     <div class="bg-white p-8 rounded shadow-md w-full max-w-md">
       <h2 class="text-2xl font-bold mb-4">{{ $t('login.title') }}</h2>
       <form @submit.prevent="handleLogin" class="flex flex-col space-y-4">
@@ -52,6 +53,7 @@ import { useAuthStore } from '@/stores/authStore';
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { auth } from '../../firebase/firebaseConfig.ts'
 import axios from "axios";
+import LoopingRhombusesSpinner from '../../modal/Loading.vue';
 
 const apiUrl = import.meta.env.VITE_API_URL;
 axios.defaults.withCredentials = true;
@@ -60,9 +62,12 @@ const email = ref('')
 const password = ref('');
 const authStore = useAuthStore();
 const router = useRouter();
+const isLoading = ref(false);
 
 const handleLogin = async () => {
+  isLoading.value = true;
   await loginFirebase();
+  isLoading.value = false;
 };
 
 const getUserFromBackend = async (token: string) => {
