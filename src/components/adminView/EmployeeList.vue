@@ -369,7 +369,7 @@ const fetchSupervisors = async () => {
       try {
         const response = await axios.get(`${apiUrl}/supervisors`);
         console.log(response.data)
-        fetchedSupervisors.value = response.data.filter(supervisor => supervisor.id !== authStore.user.id);; 
+        fetchedSupervisors.value = response.data.filter(supervisor => supervisor.id !== authStore.user.id);
       } catch (err) {
         console.error('Error fetching supervisors:', err);
       }
