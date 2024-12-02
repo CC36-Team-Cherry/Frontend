@@ -28,7 +28,6 @@
           />
         </div>
         <button
-          @click="handleLogin()"
           type="submit"
           class="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600"
         >
@@ -61,15 +60,14 @@ const password = ref('');
 const authStore = useAuthStore();
 const router = useRouter();
 
-const handleLogin = async () => {
-  await getUserFromBackend();
+const handleLogin = () => {
   loginFirebase();
   updateLastLogin();
 };
 
-const getUserFromBackend = async () => {
+const getUserFromBackend = async (token: string) => {
   try {
-    const backendData = await axios.post(`${apiUrl}/login`, {email: email.value});
+    const backendData = await axios.post(`${apiUrl}/login`, {email: email.value, token: token}, { withCredentials: true });
     // store user data in Pinia
     authStore.login(backendData.data)
   } catch (err) {
@@ -89,21 +87,12 @@ const goToRegister = () => {
   router.push({ path: `/adminorg` });
 }
 
-const loginFirebase = () => {
-  signInWithEmailAndPassword(auth, email.value, password.value)
-    .then((userCredential) => {
-      router.push({ path: `/calendar` });
-    })
-    .catch((error) => {
-      const errorCode = error.code;
-      if (errorCode === 'auth/user-not-found') {
-        console.error('Nessun utente trovato con questa email.');
-      } else if (errorCode === 'auth/wrong-password') {
-        console.error('Password errata.');
-      } else {
-        console.error('Errore di autenticazione:', error.message);
-      }
-    });
-};
+const loginFirebase = async () => {
+  const credential = await signInWithEmailAndPassword(auth, email.value, password.value);
+  const user = credential.user;
+  const token = await user.getIdToken();
+  await getUserFromBackend(token);
+  router.push({ path: `/calendar` });
+}
 
 </script>

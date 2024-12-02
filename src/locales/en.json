@@ -157,7 +157,9 @@
     "types": {
       "general": "General",
       "pto": "PTO",
-      "specialPto": "Special PTO"
+      "specialPto": "Special PTO",
+      "halfPto": "Half PTO",
+      "absence": "Absence"
     },
     "months": [
       "1月",
