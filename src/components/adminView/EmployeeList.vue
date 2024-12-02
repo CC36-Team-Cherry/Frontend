@@ -1,16 +1,10 @@
 <template>
   <div class="bg-white shadow p-4 rounded">
     <div class="flex justify-between items-center mb-4">
-      <input
-        type="text"
-        :placeholder="$t('employeeList.searchPlaceholder')"
-        v-model="searchTerm"
-        class="border rounded p-2 w-1/2"
-      />
-      <button
-        @click="openAddUserModal"
-        class="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600"
-      >
+      <input type="text" :placeholder="$t('employeeList.searchPlaceholder')" v-model="searchTerm"
+        class="border rounded p-2 w-1/2" />
+      <button v-if="authStore.Privileges?.is_admin || authStore.user.Privileges?.is_supervisor"
+        @click="openAddUserModal" class="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600">
         {{ $t('employeeList.addUser') }}
       </button>
     </div>
@@ -23,19 +17,17 @@
           <th class="border p-2">{{ $t('employeeList.tableHeaders.joinDate') }}</th>
           <th class="border p-2">{{ $t('employeeList.tableHeaders.lastDate') }}</th>
           <th class="border p-2">{{ $t('employeeList.tableHeaders.privileges') }}</th>
-          <th class="border p-2">{{ $t('employeeList.tableHeaders.status') }}</th>
+          <th v-if="authStore.Privileges?.is_admin || authStore.user.Privileges?.is_supervisor" class="border p-2">Last
+            Login</th>
           <th class="border p-2">{{ $t('employeeList.tableHeaders.email') }}</th>
-          <th class="border p-2">{{ $t('employeeList.tableHeaders.att') }}</th>
+          <th v-if="authStore.Privileges?.is_admin || authStore.user.Privileges?.is_supervisor" class="border p-2">{{
+            $t('employeeList.tableHeaders.att') }}</th>
         </tr>
       </thead>
       <tbody>
         <template v-if="filteredEmployees.length > 0">
-          <tr
-            v-for="employee in filteredEmployees"
-            :key="employee.id"
-            @click="openEmployeeDetailsModal(employee)"
-            class="cursor-pointer hover:bg-gray-100"
-          >
+          <tr v-for="employee in filteredEmployees" :key="employee.id" @click="openEmployeeDetailsModal(employee)"
+            class="cursor-pointer hover:bg-gray-100">
             <td class="border p-2">{{ employee.first_name + ' ' + employee.last_name }}</td>
             <td class="border p-2">{{ employee.team ? employee.team.team_name : 'no team' }}</td>
             <td class="border p-2">{{ employee.role }}</td>
@@ -46,19 +38,16 @@
                 employee.Privileges.is_admin && employee.Privileges.is_supervisor
                   ? 'Admin,\nSupervisor'
                   : employee.Privileges.is_admin
-                  ? 'Admin'
-                  : employee.Privileges.is_supervisor 
-                  ? 'Supervisor'
-                  : 'none'
+                    ? 'Admin'
+                    : employee.Privileges.is_supervisor
+                      ? 'Supervisor'
+                      : 'none'
               }}
             </td>
-            <td class="border p-2">{{ employee.leave_date ? 'Inactive' : 'Active' }}</td>
+            <td v-if="authStore.Privileges?.is_admin || authStore.user.Privileges?.is_supervisor" class="border p-2">{{ employee.last_login ? employee.last_login.split('T')[0] : 'Invite Sent' }}</td>
             <td class="border p-2">{{ employee.email }}</td>
-            <td class="border p-2">
-              <button
-                class="bg-green-500 text-white px-2 py-1 rounded"
-                @click.stop="openCalendarModal(employee)"
-              >
+            <td v-if="authStore.Privileges?.is_admin || authStore.user.Privileges?.is_supervisor" class="border p-2">
+              <button class="bg-green-500 text-white px-2 py-1 rounded" @click.stop="openCalendarModal(employee)">
                 {{ $t('employeeList.view') }}
               </button>
             </td>
@@ -96,23 +85,17 @@
           </div>
           <div>
             <label class="block mb-1">{{ "Supervisor" }}</label>
-            <input 
-              v-model="supervisorSearch" 
-              @input="filterSupervisors"
-              type="text"
-              placeholder="Select Supervisor"
-              class="border rounded p-2 w-full"
-            >
-            <ul v-if="filteredSupervisors.length > 0" ref="dropdown" class="border rounded mt-2 max-h-48 overflow-y-auto">
-              <li
-                v-for="supervisor in filteredSupervisors"
-                :key="supervisor.id"
-                @click="selectedSupervisor(supervisor)"
-                class="cursor-pointer hover:bg-gray-100 p-2"
-              >
+            <input v-model="supervisorSearch" @input="filterSupervisors" type="text" placeholder="Select Supervisor"
+              class="border rounded p-2 w-full">
+            <ul v-if="filteredSupervisors.length > 0" ref="dropdown"
+              class="border rounded mt-2 max-h-48 overflow-y-auto">
+              <li v-for="supervisor in filteredSupervisors" :key="supervisor.id" @click="selectedSupervisor(supervisor)"
+                class="cursor-pointer hover:bg-gray-100 p-2">
                 {{ supervisor.first_name + " " + supervisor.last_name }}
               </li>
             </ul>
+            <!-- <option value="" disabled>{{ $t("Select Supervisor") }}</option>
+              <option v-for="supervisor in fetchedSupervisors" :key="supervisor.id" :value="supervisor.id">{{ supervisor.first_name + " " + supervisor.last_name }}</option> -->
           </div>
           <div>
             <label class="block mb-1">{{ $t('employeeList.modal.fields.role') }}</label>
@@ -123,14 +106,12 @@
             <input type="date" v-model="formData.join_date" class="border rounded p-2 w-full" />
           </div>
           <div>
-            <input
-              type="checkbox"
-              v-model="formData.is_supervisor"
-            />{{ $t('employeeList.modal.userType.supervisor') }}
-            <input
-              type="checkbox"
-              v-model="formData.is_admin"
-            />{{ $t('employeeList.modal.userType.admin') }}
+            <input type="checkbox" v-model="formData.is_supervisor" />{{ $t('employeeList.modal.userType.supervisor')
+            }}
+            <template v-if="authStore.user.is_admin">
+              <input type="checkbox" v-if="authStore.user.is_admin" v-model="formData.is_admin" />{{
+                $t('employeeList.modal.userType.admin') }}
+            </template>
           </div>
           <div>
             <label class="block mb-1">{{ $t('employeeList.modal.fields.pto') }}</label>
@@ -138,35 +119,20 @@
           </div>
         </div>
         <div class="mt-4">
-          <button
-            @click="handleSubmit()"
-            type="button"
-            class="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600"
-          >
+          <button @click="handleSubmit()" type="button"
+            class="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600">
             {{ $t('employeeList.modal.sendInvitation') }}
           </button>
         </div>
       </form>
     </Modal>
     <!-- Employee Details Modal -->
-    <EmployeeDetailsModal
-      v-if="selectedEmployee"
-      :employee="selectedEmployee"
-      :teams="fetchedTeams"
-      :supervisors="fetchedSupervisors"
-      :isVisible="isEmployeeDetailsModalVisible"
-      @close="closeEmployeeDetailsModal"
-      @save="handleUpdate"
-      @delete="handleDelete"
-    />
+    <EmployeeDetailsModal v-if="selectedEmployee" :employee="selectedEmployee" :teams="fetchedTeams"
+      :supervisors="fetchedSupervisors" :isVisible="isEmployeeDetailsModalVisible" @close="closeEmployeeDetailsModal"
+      @save="handleUpdate" @delete="handleDelete" />
     <!-- Calendar Modal -->
-    <CalendarModal
-      v-if="isCalendarModalVisible"
-      :isVisible="isCalendarModalVisible"
-      :accountId="selectedUser.id"
-      :employeeName="`${selectedUser.first_name} ${selectedUser.last_name}`"
-      @close="closeCalendarModal"
-    />
+    <CalendarModal v-if="isCalendarModalVisible" :isVisible="isCalendarModalVisible" :accountId="selectedUser.id"
+      :employeeName="`${selectedUser.first_name} ${selectedUser.last_name}`" @close="closeCalendarModal" />
   </div>
 </template>
 
@@ -253,7 +219,7 @@ const handleSubmit = async () => {
   // close the modal
   closeAddUserModal();
   // send email to the new user, delayed by two seconds to allow time for new account to post to Firebase
-  await new Promise(resolve => {setTimeout(resolve, 2000)});
+  await new Promise(resolve => { setTimeout(resolve, 2000) });
   sendFirebaseEmail(email);
   // fetch employees from backend
   await handleFetchEmployees(authStore.user.company_id);
@@ -273,26 +239,26 @@ const addUserBackend = async () => {
     team_id: formData.team_id,
   };
   const cleanedData = Object.fromEntries(
-      Object.entries(userData).filter(([key, value]) => {
-        // Only include key-value pairs where value is not empty, null, undefined, or whitespace
-        return (
-          value !== "" &&
-          value !== null &&
-          value !== undefined &&
-          (typeof value === "string" ? value.trim() !== "" : true)
-        );
-      })
-    );
-  await axios.post(`${apiUrl}/accounts`, cleanedData).catch((err) => {console.log(err)});
+    Object.entries(userData).filter(([key, value]) => {
+      // Only include key-value pairs where value is not empty, null, undefined, or whitespace
+      return (
+        value !== "" &&
+        value !== null &&
+        value !== undefined &&
+        (typeof value === "string" ? value.trim() !== "" : true)
+      );
+    })
+  );
+  await axios.post(`${apiUrl}/accounts`, cleanedData).catch((err) => { console.log(err) });
 }
 const sendFirebaseEmail = (email) => {
   sendPasswordResetEmail(auth, email)
-  // .then((res) => {
-  //   console.log("SENT");
-  // })
-  .catch((error) => {
-    console.log(error.code, error.message);
-  });
+    // .then((res) => {
+    //   console.log("SENT");
+    // })
+    .catch((error) => {
+      console.log(error.code, error.message);
+    });
 }
 
 const openEmployeeDetailsModal = (employee) => {
@@ -352,7 +318,7 @@ const handleDelete = async () => {
       console.error('Failed to delete account');
     }
   } catch (err) {
-  console.error("Error deleting employee: ", err);
+    console.error("Error deleting employee: ", err);
   }
 }
 

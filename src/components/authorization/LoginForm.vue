@@ -62,6 +62,7 @@ const router = useRouter();
 
 const handleLogin = () => {
   loginFirebase();
+  updateLastLogin();
 };
 
 const getUserFromBackend = async (token: string) => {
@@ -71,6 +72,14 @@ const getUserFromBackend = async (token: string) => {
     authStore.login(backendData.data)
   } catch (err) {
     console.log(err);
+  }
+}
+
+const updateLastLogin = async () => {
+  try {
+    const response = await axios.patch(`${apiUrl}/accounts/${authStore.user?.id}`, {last_login: new Date()})
+  } catch (err) {
+    console.error('Error updating last_login: ', err);
   }
 }
 
