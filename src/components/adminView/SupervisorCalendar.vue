@@ -86,46 +86,69 @@ export default {
       return "blue";
     },
     initializeCalendar() {
-      const calendarEl = this.$refs.calendar;
+     const calendarEl = this.$refs.calendar;
 
-      this.calendar = new Calendar(calendarEl, {
-        plugins: [dayGridPlugin, interactionPlugin],
-        initialView: "dayGridMonth",
-        locale: enLocale,
-        events: this.events,
-        eventContent: (arg) => {
-          if (arg.event.extendedProps.punch_in && arg.event.extendedProps.punch_out) {
-            return {
-              html: `<div style="text-align: center; font-size: 0.9em; color: white; background-color: ${
-                arg.event.backgroundColor
-              }; padding: 5px; border-radius: 4px;">
-                <b>${arg.event.extendedProps.punch_in.split("T")[1].slice(0, 5)} - ${arg.event.extendedProps.punch_out.split("T")[1].slice(0, 5)}</b>
-              </div>`,
-            };
-          }
-        },
-      });
+     if (!calendarEl) {
+      console.error("Calendar element is not found or not ready.");
+     return;
+    }
 
-      this.calendar.render();
+    this.calendar = new Calendar(calendarEl, {
+     plugins: [dayGridPlugin, interactionPlugin],
+     initialView: "dayGridMonth",
+     locale: enLocale,
+     events: this.events,
+     eventContent: (arg) => {
+      if (arg.event.extendedProps.punch_in && arg.event.extendedProps.punch_out) {
+        return {
+          html: `<div style="text-align: center; font-size: 0.9em; color: white; background-color: ${
+            arg.event.backgroundColor
+          }; padding: 5px; border-radius: 4px;">
+            <b>${arg.event.extendedProps.punch_in.split("T")[1].slice(0, 5)} - ${arg.event.extendedProps.punch_out.split("T")[1].slice(0, 5)}</b>
+          </div>`,
+        };
+      }
     },
+  });
+
+  this.calendar.render();
+}
+,
     onClose() {
       this.$emit("close");
     },
   },
   watch: {
-    isVisible(newVal) {
-      if (newVal) {
+   isVisible(newVal) {
+    if (newVal) {
+      this.$nextTick(() => {
+        if (!this.calendar) {
+          this.initializeCalendar();
+        }
         this.fetchAttendanceData();
+      });
+    } else {
+      if (this.calendar) {
+        this.calendar.destroy();
+        this.calendar = null;
       }
-    },
+    }
+   },
   },
   mounted() {
-    this.initializeCalendar();
+  if (this.isVisible) {
+    this.$nextTick(() => {
+      this.initializeCalendar();
+      this.fetchAttendanceData();
+    });
+   }
   },
   beforeUnmount() {
-    if (this.calendar) {
-      this.calendar.destroy();
-    }
+  if (this.calendar) {
+    console.log("Destroying calendar instance...");
+    this.calendar.destroy();
+    this.calendar = null;
+   }
   },
 };
 </script>
