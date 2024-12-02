@@ -143,8 +143,9 @@ import { onClickOutside } from '@vueuse/core';
 import axios from 'axios';
 import { useAuthStore } from '@/stores/authStore';
 
-
 const authStore = useAuthStore();
+axios.defaults.withCredentials = true;
+
 
 const props = defineProps({
   employee: {
@@ -203,6 +204,9 @@ const editingSpecialPtoIndex = ref(null);
 const supervisorSearch = ref('');
 const filteredSupervisors = ref([]);
 const dropdown = ref(null);
+
+const apiUrl = import.meta.env.VITE_API_URL;
+axios.defaults.withCredentials = true;
 
 const getSpecialPto = async () => {
   try {
