@@ -60,8 +60,8 @@ const password = ref('');
 const authStore = useAuthStore();
 const router = useRouter();
 
-const handleLogin = () => {
-  loginFirebase();
+const handleLogin = async () => {
+  await loginFirebase();
   updateLastLogin();
 };
 
