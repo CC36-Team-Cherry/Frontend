@@ -128,6 +128,7 @@ const router = useRouter();
 // });
 
 const apiUrl = import.meta.env.VITE_API_URL;
+axios.defaults.withCredentials = true;
 const authStore = useAuthStore();
 
 const formData = ref({

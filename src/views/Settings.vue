@@ -107,6 +107,7 @@ import { useAuthStore } from '@/stores/authStore';
 import { onClickOutside } from '@vueuse/core';
 
 const apiUrl = import.meta.env.VITE_API_URL;
+axios.defaults.withCredentials = true;
 const fetchedSupervisors = ref([]);
 const supervisorSearch = ref('');
 const filteredSupervisors = ref([]);

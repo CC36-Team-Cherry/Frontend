@@ -215,7 +215,7 @@ const closeAddUserModal = () => {
 const handleSubmit = async () => {
   const email = formData.email;
   // post new user to backend
-  await addUserBackend();
+  await addUserBackend(); 
   // close the modal
   closeAddUserModal();
   // send email to the new user, delayed by two seconds to allow time for new account to post to Firebase

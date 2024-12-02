@@ -89,6 +89,8 @@ import { ref, toRaw, onMounted } from 'vue';
 import { useAuthStore } from '@/stores/authStore';
 import axios from 'axios';
 
+axios.defaults.withCredentials = true;
+
 const apiUrl = import.meta.env.VITE_API_URL;
 const authStore = useAuthStore();
 const activeCompanyId = authStore.user.company_id;

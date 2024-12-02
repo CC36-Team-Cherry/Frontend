@@ -54,6 +54,7 @@ import { auth } from '../../firebase/firebaseConfig.ts'
 import axios from "axios";
 
 const apiUrl = import.meta.env.VITE_API_URL;
+axios.defaults.withCredentials = true;
 
 const email = ref('')
 const password = ref('');

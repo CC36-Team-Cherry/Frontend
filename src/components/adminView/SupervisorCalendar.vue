@@ -23,6 +23,8 @@ import enLocale from "@fullcalendar/core/locales/en-gb";
 import axios from "axios";
 import { useAuthStore } from "@/stores/authStore";
 
+axios.defaults.withCredentials = true;
+
 export default {
   props: {
     isVisible: {
