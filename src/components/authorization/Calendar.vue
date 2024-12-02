@@ -127,8 +127,8 @@ import { useI18n } from 'vue-i18n';
 import { useAuthStore } from '@/stores/authStore';
 import Chart from 'chart.js/auto';
 
-
 const apiUrl = import.meta.env.VITE_API_URL;
+axios.defaults.withCredentials = true;
 
 export default {
   name: 'FullCalendarComponent',
@@ -302,8 +302,6 @@ updateChart() {
     console.error('Error updating chart:', err);
   }
 },
-
-
 
 fetchAttendanceData(accountId) {
   axios

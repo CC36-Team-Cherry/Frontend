@@ -120,6 +120,7 @@ import axios from 'axios';
 import { useAuthStore } from '@/stores/authStore';
 
 const apiUrl = import.meta.env.VITE_API_URL;
+axios.defaults.withCredentials = true;
 const authStore = useAuthStore();
 const activeAccountId = authStore.user.id;
 

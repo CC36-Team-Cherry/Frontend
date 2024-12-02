@@ -49,6 +49,7 @@
   import axios from "axios";
 
   const apiUrl = import.meta.env.VITE_API_URL;
+  axios.defaults.withCredentials = true;
 
   const newPassword = ref('');
   const confirmNewPassword = ref('');

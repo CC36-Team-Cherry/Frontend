@@ -54,6 +54,7 @@ import { auth } from '../../firebase/firebaseConfig.ts'
 import axios from "axios";
 
 const apiUrl = import.meta.env.VITE_API_URL;
+axios.defaults.withCredentials = true;
 
 const email = ref('')
 const password = ref('');
@@ -62,7 +63,6 @@ const router = useRouter();
 
 const handleLogin = async () => {
   await loginFirebase();
-  updateLastLogin();
 };
 
 const getUserFromBackend = async (token: string) => {
@@ -92,6 +92,7 @@ const loginFirebase = async () => {
   const user = credential.user;
   const token = await user.getIdToken();
   await getUserFromBackend(token);
+  updateLastLogin();
   router.push({ path: `/calendar` });
 }
 
