@@ -8,6 +8,7 @@ import RegisterOrganization from "@/components/authorization/RegisterOrganizatio
 import Calendar from "@/components/authorization/Calendar.vue";
 import EmployeeList from '@/components/adminView/EmployeeList.vue';
 import NewLogin from '@/components/authorization/NewLogin.vue';
+import ForgotPassword from '@/components/authorization/ForgotPassword.vue';
 import Settings from '@/views/Settings.vue'; 
 import AdminConsole from '@/components/adminView/AdminConsole.vue';
 import Approvals from '@/views/Approvals.vue'
@@ -83,11 +84,12 @@ const router = createRouter({
       path: '/newlogin',
       name: 'newlogin',
       component: NewLogin,
-      // meta: {
-      //   requiresAuth: true
-      // }
     },
-
+    {
+      path: '/forgotpassword',
+      name: 'forgotpassword',
+      component: ForgotPassword,
+    },
     //THIS IS FOR TESTING FIREBASE, DELETE THIS LATER
     {
       path: "/playground",

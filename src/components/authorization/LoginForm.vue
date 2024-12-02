@@ -40,6 +40,12 @@
         >
           {{ $t('login.register') }}
         </button>
+        <button
+          @click="goToForgotPassword()"
+          class="italic underline"
+        >
+        Forgot your password?
+        </button>
       </form>
     </div>
   </div>
@@ -90,6 +96,10 @@ const updateLastLogin = async () => {
 
 const goToRegister = () => {
   router.push({ path: `/adminorg` });
+}
+
+const goToForgotPassword = () => {
+  router.push({ path: `/forgotpassword` })
 }
 
 const loginFirebase = async () => {
