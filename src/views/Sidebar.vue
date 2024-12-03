@@ -30,7 +30,7 @@
         </button>
       </router-link>
       <button
-        @click="handleLogout()"
+        @click="handleLogout"
         class="bg-red-500 text-white p-2 rounded w-full max-w-[120px] text-center"
       >
         {{ $t('Logout') }}
@@ -41,29 +41,16 @@
 
 <script setup>
 import { useRouter } from 'vue-router'
-import { getAuth, signOut } from "firebase/auth";
 import { useAuthStore } from "@/stores/authStore";
 import axios from "axios";
+import { useLogout } from "@/utils/useLogout";
+
+const { handleLogout } = useLogout();
 
 const apiUrl = import.meta.env.VITE_API_URL;
 axios.defaults.withCredentials = true;
 const authStore = useAuthStore();
 const router = useRouter();
-
-export const handleLogout = async () => {
-  logoutFirebase();
-  clearCookie();
-  router.push({ path: `/login` });
-}
-
-const logoutFirebase = async () => {
-  signOut(getAuth())
-  authStore.logout();
-};
-
-const clearCookie = async () => {
-  await axios.post(`${apiUrl}/logout`, {}, { withCredentials: true });
-}
 </script>
 
   

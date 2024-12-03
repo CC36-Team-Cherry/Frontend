@@ -58,7 +58,9 @@ import { useAuthStore } from '@/stores/authStore';
 import axios from 'axios';
 import LoopingRhombusesSpinner from '../../modal/Loading.vue';
 import ConfirmModal from '@/modal/ConfirmModal.vue';
-import { handleLogout } from '@/views/Sidebar.vue';
+import { useLogout } from "@/utils/useLogout";
+
+const { handleLogout } = useLogout();
 
 axios.defaults.withCredentials = true;
 
