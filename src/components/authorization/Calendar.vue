@@ -105,7 +105,6 @@
   </div>
 </template>
 
-
 <script>
 import { Calendar } from '@fullcalendar/core';
 import interactionPlugin from '@fullcalendar/interaction';
@@ -116,11 +115,15 @@ import axios from 'axios';
 import { useI18n } from 'vue-i18n';
 import { useAuthStore } from '@/stores/authStore';
 import Chart from 'chart.js/auto';
+import { ref } from 'vue';
 
 const apiUrl = import.meta.env.VITE_API_URL;
 axios.defaults.withCredentials = true;
 
+const totalHours = ref(0);
+
 export default {
+  
   name: 'FullCalendarComponent',
   data() {
     return {
@@ -133,8 +136,7 @@ export default {
       supervisors: [],
       selectedSupervisorId: '',
       memo: '',
-      attendanceChart: null, 
-      totalHours: 0,         
+      attendanceChart: null,          
       maxHours: 160,         
       selectedEventId: null,
       holidays: [], 
@@ -147,94 +149,101 @@ export default {
     };
   },
   mounted() {
-    const authStore = useAuthStore();
-    this.getSpecialPto();
+  const authStore = useAuthStore();
+  this.getSpecialPto();
 
-    if (!authStore.user || !authStore.user.id) {
-      console.error("User ID is not defined in authStore");
-      return;
-    }
+  if (!authStore.user || !authStore.user.id) {
+    console.error("User ID is not defined in authStore");
+    return;
+  }
 
-    this.initializeChart();
-    this.fetchSupervisors();
-    this.holidays = this.generateJapaneseHolidays(new Date().getFullYear()); 
+  this.initializeChart();
+  this.fetchSupervisors();
+  this.holidays = this.generateJapaneseHolidays(new Date().getFullYear()); 
 
-    const activeAccountSupervisor = authStore.user.supervisor_id;
-    if (activeAccountSupervisor) {
-      this.selectedSupervisorId = activeAccountSupervisor;
-    }
+  const activeAccountSupervisor = authStore.user.supervisor_id;
+  if (activeAccountSupervisor) {
+    this.selectedSupervisorId = activeAccountSupervisor;
+  }
 
-    const calendarEl = this.$refs.calendar;
-    const { locale } = useI18n();
+  const calendarEl = this.$refs.calendar;
+  const { locale } = useI18n();
 
-    this.calendar = new Calendar(calendarEl, {
-      plugins: [interactionPlugin, dayGridPlugin],
-      initialView: 'dayGridMonth',
-      locale: this.locales[locale.value],
-      selectable: true,
-      businessHours: {
-        daysOfWeek: [1, 2, 3, 4, 5], 
-      },
-      events: [...this.holidays, ...this.events], 
-      editable: true,
-      select: (selectionInfo) => {
-        const startDate = new Date(selectionInfo.startStr);
-        const endDate = new Date(selectionInfo.endStr);
-        const dates = [];
+  // Inizializzazione del calendario
+  this.calendar = new Calendar(calendarEl, {
+    plugins: [interactionPlugin, dayGridPlugin],
+    initialView: 'dayGridMonth',
+    locale: this.locales[locale.value],
+    selectable: true,
+    businessHours: {
+      daysOfWeek: [1, 2, 3, 4, 5], 
+    },
+    events: [...this.holidays, ...this.events], 
+    editable: true,
+    select: (selectionInfo) => {
+      const startDate = new Date(selectionInfo.startStr);
+      const endDate = new Date(selectionInfo.endStr);
+      const dates = [];
 
-        while (startDate < endDate) {
-          if (
-            startDate.getDay() !== 0 &&
-            startDate.getDay() !== 6 &&
-            !this.isHoliday(startDate)
-          ) {
-            dates.push(new Date(startDate));
-          }
-          startDate.setDate(startDate.getDate() + 1);
+      while (startDate < endDate) {
+        if (
+          startDate.getDay() !== 0 &&
+          startDate.getDay() !== 6 &&
+          !this.isHoliday(startDate)
+        ) {
+          dates.push(new Date(startDate));
         }
-
-        this.selectionRange = dates
-          .map((date) => date.toISOString().split('T')[0])
-          .join(', ');
-      },
-      eventClick: (info) => {
-        this.handleEventClick(info.event);
-      },
-      eventContent: (arg) => {
-        if (arg.event.extendedProps.isHoliday) {
-          return {
-            html: `
-              <div style="text-align: center; font-size: 0.9em; color: black; background-color: rgba(255, 0, 0, 0.2); padding: 10px; border-radius: 4px;">
-                <b>${arg.event.title}</b>
-              </div>
-            `,
-          };
-        }
-        if (arg.event.extendedProps.startTime && arg.event.extendedProps.endTime) {
-          return {
-            html: `
-              <div style="text-align: center; font-size: 0.9em; color: black; background-color: ${
-                arg.event.backgroundColor
-              }; padding: 0px; border-radius: 4px;">
-                <b>${arg.event.extendedProps.startTime} - ${arg.event.extendedProps.endTime}</b>
-                
-              </div>
-            `,
-          };
-        }
-      },
-    });
-
-    this.calendar.render();
-
-    this.$watch(
-      () => locale.value,
-      (newLocale) => {
-        this.calendar.setOption('locale', this.locales[newLocale]);
+        startDate.setDate(startDate.getDate() + 1);
       }
-    );
 
-    this.fetchAttendanceData(authStore.user.id);
+      this.selectionRange = dates
+        .map((date) => date.toISOString().split('T')[0])
+        .join(', ');
+    },
+    eventClick: (info) => {
+      this.handleEventClick(info.event);
+    },
+    eventContent: (arg) => {
+      if (arg.event.extendedProps.isHoliday) {
+        return {
+          html: `
+            <div style="text-align: center; font-size: 0.9em; color: black; background-color: rgba(255, 0, 0, 0.2); padding: 10px; border-radius: 4px;">
+              <b>${arg.event.title}</b>
+            </div>
+          `,
+        };
+      }
+      if (arg.event.extendedProps.startTime && arg.event.extendedProps.endTime) {
+        return {
+          html: `
+            <div style="text-align: center; font-size: 0.9em; color: black; background-color: ${
+              arg.event.backgroundColor
+            }; padding: 0px; border-radius: 4px;">
+              <b>${arg.event.extendedProps.startTime} - ${arg.event.extendedProps.endTime}</b>
+            </div>
+          `,
+        };
+      }
+    },
+    datesSet: (info) => {
+      // Gestisci il cambio di mese
+      console.log('Month changed:', info.start); 
+      this.handleMonthChange(info.start); // Funzione per gestire il cambio mese
+    },
+  });
+
+  console.log(this.calendar);
+  this.calendar.render();
+
+  // Watch per il cambiamento di totalHours
+  this.$watch(
+    () => totalHours.value,
+    (newTotalHour) => {
+      if (newTotalHour !== null) this.updateChart();
+    }
+  );
+
+  this.fetchAttendanceData(authStore.user.id);
   },
   watch: {
     // Watch for changes in the attendanceType
@@ -252,6 +261,50 @@ export default {
     }
   },
   methods: {
+      // Gestisce il cambio del mese nel calendario
+  handleMonthChange(startDate) {
+  console.log('Handling month change:', startDate);
+
+  // Estrai anno e mese dalla data
+  const year = startDate.getFullYear();
+  const month = startDate.getMonth() + 1;
+
+  // Calcola maxHours per il nuovo mese
+  this.maxHours = this.calculateMaxHours(year, month);
+  console.log('Updated maxHours:', this.maxHours);
+
+  // Resetta totalHours
+  totalHours.value = 0;
+
+  // Fetch dei nuovi dati
+  const authStore = useAuthStore();
+  this.fetchAttendanceData(authStore.user.id);
+},
+
+  // Calcola il massimo delle ore lavorative in base ai giorni del mese
+  calculateMaxHours(year, month) {
+    const daysInMonth = new Date(year, month, 0).getDate(); // Numero di giorni nel mese
+    let workingDays = 0;
+
+    for (let day = 1; day <= daysInMonth; day++) {
+      const date = new Date(year, month , day); // Mese è 0-based
+      const isWeekend = date.getDay() === 0 || date.getDay() === 6; // Sabato o Domenica
+      const isHoliday = this.isHoliday(date); // Verifica se è una festività
+
+      if (!isWeekend && !isHoliday) {
+        workingDays++;
+      }
+    }
+
+    return workingDays * 8; // Supponendo 8 ore lavorative al giorno
+  },
+
+  // Controlla se una data è una festività
+  isHoliday(date) {
+    const formattedDate = date.toISOString().split('T')[0]; // Formatta come YYYY-MM-DD
+    return this.holidays.some((holiday) => holiday.start === formattedDate);
+  },
+    
     initializeChart() {
      const ctx = this.$refs.attendanceChart?.getContext('2d');
      if (!ctx) {
@@ -262,11 +315,11 @@ export default {
   this.attendanceChart = new Chart(ctx, {
     type: 'doughnut',
     data: {
-      labels: ['Worked Hours', 'Remaining Hours'],
+      labels: ['Worked Hours', 'Remaining Hours', 'Overworked'],
       datasets: [
         {
-          data: [this.totalHours, this.maxHours - this.totalHours],
-          backgroundColor: ['#4caf50', '#e0e0e0'],
+          data: [totalHours.value, this.maxHours, this.extraHours], // Dati iniziali
+          backgroundColor: ['#4caf50', '#e0e0e0', '#1b5e20'], // Verde chiaro, grigio, verde scuro
         },
       ],
     },
@@ -288,69 +341,117 @@ updateChart() {
     return;
   }
 
-  console.log('Updating chart data with totalHours:', this.totalHours, 'and maxHours:', this.maxHours);
-
-  const workedHours = this.totalHours || 0;
-  const remainingHours = this.maxHours - workedHours;
-
-  if (isNaN(workedHours) || isNaN(remainingHours)) {
-    console.error('Invalid chart data:', { workedHours, remainingHours });
-    return;
-  }
+  const workedHours = totalHours.value;
+  const extraHours = workedHours > this.maxHours ? workedHours - this.maxHours : 0; // Ore extra
+  const remainingHours = Math.max(this.maxHours - workedHours, 0); // Ore rimanenti
 
   try {
-    this.attendanceChart.data.datasets[0].data = [workedHours, remainingHours];
+    // Imposta i dati nel grafico
+    this.attendanceChart.data.datasets[0].data = [
+      workedHours - extraHours, // Ore lavorate
+      remainingHours,           // Ore rimanenti
+      extraHours,               // Ore extra
+    ];
+
+    // Cambia i colori per riflettere i dati correttamente
+    this.attendanceChart.data.datasets[0].backgroundColor = [
+      '#4caf50', // Verde chiaro: Ore lavorate
+      '#e0e0e0', // Grigio: Ore rimanenti
+      '#1b5e20', // Verde scuro: Ore extra
+    ];
+
+    // Aggiorna il grafico
     this.attendanceChart.update();
-    console.log('Chart updated successfully with:', { workedHours, remainingHours });
+
+    console.log('Chart updated successfully with:', {
+      workedHours,
+      remainingHours,
+      extraHours,
+    });
   } catch (err) {
     console.error('Error updating chart:', err);
   }
 },
 
-fetchAttendanceData(accountId) {
-  axios
-    .get(`${apiUrl}/accounts/${accountId}/attendance`)
-    .then((response) => {
-      console.log("Response data:", response.data); // Debug della risposta
 
-      this.events = response.data.map((record) => ({
+
+async fetchAttendanceData(accountId) {
+  try {
+    const response = await axios.get(`${apiUrl}/accounts/${accountId}/attendance`);
+
+    console.log("Response data:", response.data); 
+
+    
+    const currentDate = this.calendar.getDate(); 
+    const currentMonth = currentDate.getMonth() + 1; 
+    const currentYear = currentDate.getFullYear();
+
+    
+    const filteredAttendance = response.data.filter((record) => {
+      const recordDate = new Date(record.day);
+      return (
+        recordDate.getMonth() + 1 === currentMonth &&
+        recordDate.getFullYear() === currentYear
+      );
+    });
+
+    console.log("Filtered Attendance:", filteredAttendance);
+
+    
+    this.events = filteredAttendance.map((record) => {
+      const startTime = record.punch_in ? record.punch_in.split('T')[1].slice(0, 5) : null;
+      const endTime = record.punch_out ? record.punch_out.split('T')[1].slice(0, 5) : null;
+
+      let totalHours = 0;
+      if (startTime && endTime) {
+        const [startHour, startMinute] = startTime.split(':').map(Number);
+        const [endHour, endMinute] = endTime.split(':').map(Number);
+
+
+        totalHours = (endHour * 60 + endMinute - (startHour * 60 + startMinute)) / 60;
+
+        
+        if (totalHours < 0) {
+          totalHours = 0;
+        }
+      }
+
+      return {
         id: record.id,
-        title: record.punch_in && record.punch_out
-          ? `${record.punch_in.split('T')[1].slice(0, 5)} - ${record.punch_out.split('T')[1].slice(0, 5)}`
-          : 'No Time Logged',
+        title: startTime && endTime ? `${startTime} - ${endTime}` : 'No Time Logged',
         start: record.day,
         backgroundColor: this.getEventColor(record),
         extendedProps: {
-          startTime: record.punch_in ? record.punch_in.split('T')[1].slice(0, 5) : null,
-          endTime: record.punch_out ? record.punch_out.split('T')[1].slice(0, 5) : null,
-          totalHours: record.total_hours || 0,
+          startTime,
+          endTime,
+          totalHours,
         },
-      }));
-
-      
-      const calculatedTotalHours = this.events.reduce(
-        (sum, event) => sum + (event.extendedProps.totalHours || 0),
-        0
-      );
-
-      console.log("Calculated Total Hours:", calculatedTotalHours);
-
-      if (!isNaN(calculatedTotalHours) && calculatedTotalHours >= 0) {
-        this.totalHours = calculatedTotalHours;
-        console.log("Updated this.totalHours:", this.totalHours); 
-        this.updateChart();
-      } else {
-        console.error("Invalid total hours data:", calculatedTotalHours);
-      }
-
-      
-      this.calendar.getEvents().forEach((event) => event.remove());
-      [...this.holidays, ...this.events].forEach((event) => this.calendar.addEvent(event));
-    })
-    .catch((error) => {
-      console.error("Error fetching attendance records:", error.response?.data || error.message);
+      };
     });
-},
+
+    
+    const calculatedTotalHours = this.events.reduce(
+      (sum, event) => sum + (event.extendedProps?.totalHours || 0),
+      0
+    );
+
+    console.log("Calculated Total Hours:", calculatedTotalHours);
+
+    if (!isNaN(calculatedTotalHours) && calculatedTotalHours >= 0) {
+      totalHours.value = calculatedTotalHours; 
+      console.log("Updated totalHours:", totalHours.value);
+    } else {
+      console.error("Invalid total hours data:", calculatedTotalHours);
+    }
+
+    
+    this.calendar.getEvents().forEach((event) => event.remove());
+    [...this.holidays, ...this.events].forEach((event) => this.calendar.addEvent(event));
+  } catch (error) {
+    console.error("Error fetching attendance records:", error.response?.data || error.message);
+  }
+}
+,
 
     handleEventClick(event) {
       if (event.extendedProps.isHoliday) return; 
@@ -392,6 +493,7 @@ fetchAttendanceData(accountId) {
     };
 
     console.log('Attendance Data:', attendanceData);
+    console.log(totalHours);
 
     if (this.selectedEventId) {
       
@@ -610,6 +712,7 @@ fetchAttendanceData(accountId) {
       console.error('Error fetching special pto:', err);
     }
   }
-  }
-}
+ }
+};
+
 </script>
