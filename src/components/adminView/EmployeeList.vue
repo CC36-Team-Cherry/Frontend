@@ -151,17 +151,21 @@
           </div>
           <div>
             <label class="block mb-1">{{ "Supervisor" }}</label>
-            <input v-model="supervisorSearch" @input="filterSupervisors" type="text" placeholder="Select Supervisor"
+            <input v-model="supervisorSearch" @input="filterSupervisors" @focus="showDropdown = true" type="text" placeholder="Select Supervisor"
               class="border rounded p-2 w-full">
-            <ul v-if="filteredSupervisors.length > 0" ref="dropdown"
+            <button
+              v-if="formData.supervisor_id"
+              @click="clearSupervisor"
+            >
+              x
+            </button>
+            <ul v-if="showDropdown && filteredSupervisors.length > 0" ref="dropdown"
               class="border rounded mt-2 max-h-48 overflow-y-auto">
               <li v-for="supervisor in filteredSupervisors" :key="supervisor.id" @click="selectedSupervisor(supervisor)"
                 class="cursor-pointer hover:bg-gray-100 p-2">
                 {{ supervisor.first_name + " " + supervisor.last_name }}
               </li>
             </ul>
-            <!-- <option value="" disabled>{{ $t("Select Supervisor") }}</option>
-              <option v-for="supervisor in fetchedSupervisors" :key="supervisor.id" :value="supervisor.id">{{ supervisor.first_name + " " + supervisor.last_name }}</option> -->
           </div>
           <div>
             <label class="block mb-1">{{ $t('employeeList.modal.fields.role') }}</label>
@@ -236,6 +240,7 @@ const fetchedSupervisors = ref([]);
 const supervisorSearch = ref('');
 const filteredSupervisors = ref([]);
 const dropdown = ref(null);
+const showDropdown = ref(false);
 
 const path = mdiSortAscending;
 
@@ -461,10 +466,21 @@ const selectedSupervisor = (supervisor) => {
   formData.supervisor_id = supervisor.id;
   supervisorSearch.value = `${supervisor.first_name} ${supervisor.last_name}`;
   filteredSupervisors.value = [];
+  showDropdown.value = false;
 }
+
+const clearSupervisor = () => {
+  formData.supervisor_id = '';  // Reset the supervisor ID
+  supervisorSearch.value = '';   // Clear the input field
+  filteredSupervisors.value = [];  // Clear the filtered supervisors list
+  showDropdown.value = false;
+  filterSupervisors();
+};
 
 const closeDropdown = () => {
   filteredSupervisors.value = [];  // Close the dropdown by clearing the filtered list
+  showDropdown.value = false;
+  filterSupervisors();
 };
 
 // handle click outside of dropdown of supervisors
@@ -661,6 +677,9 @@ const handleFetchAll = async () => {
 }
 
 onMounted(() => {
-  handleFetchAll();
+  handleFetchEmployees();
+  handleFetchTeams();
+  fetchSupervisors();
+  filterSupervisors();
 });
 </script>

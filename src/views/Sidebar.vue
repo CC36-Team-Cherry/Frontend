@@ -7,9 +7,17 @@
       <router-link to="/calendar" class="block p-2 hover:bg-gray-200 rounded">
         {{ $t('Sidebar.Calendar') }}
       </router-link>
-      <router-link to="/approvals" class="block p-2 hover:bg-gray-200 rounded">
-        {{ $t('Sidebar.Approvals') }}
-      </router-link>
+      <div class="flex flex-row items-center">
+        <router-link to="/approvals" class="block p-2 hover:bg-gray-200 rounded">
+          {{ $t('Sidebar.Approvals') }}
+        </router-link>
+        <span
+            v-if="pendingApprovalsCount > 0"
+            class="bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center"
+          >
+            {{ pendingApprovalsCount }}
+        </span>
+      </div>
       <router-link to="/employee" class="block p-2 hover:bg-gray-200 rounded">
         {{ $t('Sidebar.EmployeeList') }}
       </router-link>
@@ -40,6 +48,7 @@
 </template>
 
 <script setup>
+import { computed, ref } from 'vue';
 import { useRouter } from 'vue-router'
 import { getAuth, signOut } from "firebase/auth";
 import { useAuthStore } from "@/stores/authStore";
@@ -49,6 +58,10 @@ const apiUrl = import.meta.env.VITE_API_URL;
 axios.defaults.withCredentials = true;
 const authStore = useAuthStore();
 const router = useRouter();
+const requests = ref({
+  sent: [],
+  received: []
+});
 
 const handleLogout = async () => {
   logoutFirebase();
@@ -64,6 +77,18 @@ const logoutFirebase = async () => {
 const clearCookie = async () => {
   await axios.post(`${apiUrl}/logout`, {}, { withCredentials: true });
 }
+
+const pendingApprovalsCount = computed(() => {
+  const sentApprovals = authStore.approvals.sent || [];
+  const receivedApprovals = authStore.approvals.received || [];
+
+  const pendingSent = sentApprovals.filter(approval => approval.status === 'Pending').length;
+  const pendingReceived = receivedApprovals.filter(approval => approval.status === 'Pending').length;
+
+  console.log(authStore.approvals)
+  return pendingSent + pendingReceived;
+});
+
 </script>
 
   

@@ -49,12 +49,12 @@
             <div>
               <label class="font-semibold block">{{ $t('employeeDetails.fields.supervisor') }}</label>
               <input :disabled="!authStore.user.Privileges.is_admin && !authStore.user.Privileges.is_supervisor"
-                v-model="supervisorSearch" @input="filterSupervisors" type="text" :placeholder="supervisorPlaceholder"
+                v-model="supervisorSearch" @input="filterSupervisors" @focus="showDropdown = true" type="text" :placeholder="supervisorPlaceholder"
                 class="border rounded p-2 w-ull">
               <button v-if="formData.supervisor_id" @click="clearSupervisor">
                 ✕
               </button>
-              <ul v-if="filteredSupervisors.length > 0" ref="dropdown"
+              <ul v-if="showDropdown && filteredSupervisors.length > 0" ref="dropdown"
                 class="border rounded mt-2 max-h-48 overflow-y-auto">
                 <li v-for="supervisor in filteredSupervisors" :key="supervisor.id"
                   @click="selectedSupervisor(supervisor)" class="cursor-pointer hover:bg-gray-100 p-2">
@@ -204,6 +204,7 @@ const editingSpecialPtoIndex = ref(null);
 const supervisorSearch = ref('');
 const filteredSupervisors = ref([]);
 const dropdown = ref(null);
+const showDropdown = ref(false);
 
 const apiUrl = import.meta.env.VITE_API_URL;
 axios.defaults.withCredentials = true;
@@ -298,7 +299,6 @@ const filterSupervisors = () => {
   if (!supervisorSearch.value) {
     filteredSupervisors.value = props.supervisors;
   } else {
-    console.log(props.supervisors)
     filteredSupervisors.value = props.supervisors.filter((supervisor) => {
       const fullName = (supervisor.first_name + " " + supervisor.last_name).toLowerCase();
       return fullName.includes(supervisorSearch.value.toLowerCase());
@@ -311,10 +311,13 @@ const selectedSupervisor = (supervisor) => {
   formData.supervisor_id = supervisor.id;
   supervisorSearch.value = `${supervisor.first_name} ${supervisor.last_name}`;
   filteredSupervisors.value = [];
+  showDropdown.value = false;
 }
 
 const closeDropdown = () => {
   filteredSupervisors.value = [];  // Close the dropdown by clearing the filtered list
+  showDropdown.value = false;
+  filterSupervisors();
 };
 
 const supervisorPlaceholder = computed(() => {
@@ -327,6 +330,8 @@ const clearSupervisor = () => {
   formData.supervisor_id = '';  // Reset the supervisor ID
   supervisorSearch.value = '';   // Clear the input field
   filteredSupervisors.value = [];  // Clear the filtered supervisors list
+  showDropdown.value = false;
+  filterSupervisors();
 };
 
 // handle click outside of dropdown of supervisors
@@ -357,6 +362,7 @@ onMounted(() => {
 
   // Get special pto for selected user
   getSpecialPto();
+  filterSupervisors();
 
   // if (props.employee.birthdate) {
   //   formData.dateOfBirth = props.employee.birthdate.split('T')[0];
