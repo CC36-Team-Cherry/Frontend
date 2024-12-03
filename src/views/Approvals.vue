@@ -158,7 +158,6 @@ const getApprovals = async () => {
         requests.received = response.data.approvalsReceivedData;
         isLoading.value = false;
         authStore.setApprovals(response.data.approvalsSentData, response.data.approvalsReceivedData);
-        console.log("requests auth value", requests)
     } catch (err) {
         console.error('Error fetching approvals:', err);
     }
@@ -182,7 +181,6 @@ const statusClick = async (approvalsId, statusChange, requestType) => {
             tabRequests[requestIndex].status = statusChange; // Update the status in the local state
         }
 
-        console.log(requestType)
         const response = await axios.patch(`${apiUrl}/approvals/${requestType}/${approvalsId}`, 
             {
                 // Send status change string
@@ -205,9 +203,6 @@ const remindClick = (request) => {
 const saveRemind = async (request) => {
 
     const newMessage = request.newMessage;
-    console.log(request)
-    console.log(newMessage)
-
 
     try {
         const response = await axios.patch(`${apiUrl}/approvals/${request.type}/${request.id}/remind`, {
@@ -240,7 +235,6 @@ const seeAttendanceClick = async () => {
     }
 }
 
-// TODO: Set up delete approval to delete depending on type of request
 const deleteClick = async (approvalsId, requestType) => {
     try {
         // Optimistic rendering
@@ -259,7 +253,6 @@ const deleteClick = async (approvalsId, requestType) => {
 // Fetch approvals when the component is mounted
 onMounted(() => {
     getApprovals();
-    console.log(requests)
 });
 
 </script>

@@ -252,10 +252,10 @@ const handleSave = async () => {
   }
 }
 
-onMounted(() => {
-  handleFetchCurrentUserData();
-  handleFetchTeams();
-  fetchSupervisors();
+onMounted(async () => {
+  await handleFetchCurrentUserData();
+  await handleFetchTeams();
+  await fetchSupervisors();
   filterSupervisors();
 })
 </script>
