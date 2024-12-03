@@ -94,7 +94,7 @@
           <tr v-for="employee in displayedEmployees" :key="employee.id" @click="openEmployeeDetailsModal(employee)"
             class="cursor-pointer hover:bg-gray-100">
             <td class="border p-2">{{ employee.first_name + ' ' + employee.last_name }}</td>
-            <td class="border p-2">{{ employee.team ? employee.team.team_name : 'no team' }}</td>
+            <td class="border p-2">{{ employee.team ? employee.team.team_name : 'NA' }}</td>
             <td class="border p-2">{{ employee.role }}</td>
             <td class="border p-2">{{ employee.join_date.split('T')[0] }}</td>
             <td class="border p-2">{{ employee.leave_date ? employee.leave_date.split('T')[0] : 'NA' }}</td>
@@ -147,6 +147,7 @@
             <select v-model="formData.team_id" class="border rounded p-2 w-full">
               <option value="" disabled>{{ $t('employeeDetails.placeholders.selectTeam') }}</option>
               <option v-for="team in fetchedTeams" :key="team.id" :value="team.id">{{ team.team_name }}</option>
+              <option :value="null">No team</option>
             </select>
           </div>
           <div>
