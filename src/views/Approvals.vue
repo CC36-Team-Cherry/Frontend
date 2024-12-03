@@ -125,14 +125,19 @@ const authStore = useAuthStore();
 const activeAccountId = authStore.user.id;
 
 // Sample data for the approval requests
-const requests = ref({});
+// const requests = ref({});
+const requests = authStore.approvals
 
 // Reactive state to store current tab
 const activeTab = ref('sent');
 
 // Compute (like use effects) the list of requets based on active tab
 const filteredRequests = computed(() => {
-    return requests.value[activeTab.value] || [];
+        // Ensure requests and the current tab have valid data
+        if (requests && requests[activeTab.value]) {
+        return requests[activeTab.value];
+    }
+    return [];  // Return an empty array if data is not available
 })
 
 // helper function to switch tabs
@@ -145,10 +150,11 @@ const getApprovals = async () => {
     try {
         const response = await axios.get(`${apiUrl}/accounts/${activeAccountId}/approvals`);
         
-        requests.value.sent = response.data.approvalsSentData;
-        requests.value.received = response.data.approvalsReceivedData;
-        console.log("stored value in requests: ", requests.value)
-        
+        requests.sent = response.data.approvalsSentData;
+        requests.received = response.data.approvalsReceivedData;
+
+        authStore.setApprovals(response.data.approvalsSentData, response.data.approvalsReceivedData);
+        console.log("requests auth value", requests)
     } catch (err) {
         console.error('Error fetching approvals:', err);
     }
@@ -160,7 +166,7 @@ const statusClick = async (approvalsId, statusChange, requestType) => {
     try {
 
         // Get the requests for the current active tab
-        const tabRequests = requests.value[activeTab.value]; // Get the current active tab's requests
+        const tabRequests = requests[activeTab.value]; // Get the current active tab's requests
 
         // Find the index of the request that matches the ID and type
         const requestIndex = tabRequests.findIndex(request => 
@@ -234,10 +240,10 @@ const seeAttendanceClick = async () => {
 const deleteClick = async (approvalsId, requestType) => {
     try {
         // Optimistic rendering
-        const tabRequests = requests.value[activeTab.value]; // Get the requests for the active tab
+        const tabRequests = requests[activeTab.value]; // Get the requests for the active tab
         console.log(tabRequests)
 
-        requests.value[activeTab.value] = tabRequests.filter(request => !(request.id === approvalsId && request.attendanceType === requestType))
+        requests[activeTab.value] = tabRequests.filter(request => !(request.id === approvalsId && request.attendanceType === requestType))
 
         const response = await axios.delete(`${apiUrl}/approvals/${requestType}/${approvalsId}`); 
 
@@ -249,6 +255,7 @@ const deleteClick = async (approvalsId, requestType) => {
 // Fetch approvals when the component is mounted
 onMounted(() => {
     getApprovals();
+    console.log(requests)
 });
 
 </script>

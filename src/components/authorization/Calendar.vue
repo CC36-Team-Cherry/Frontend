@@ -25,7 +25,7 @@
             <option 
               v-for="specialPto in specialPtos" 
               :key="specialPto.id" 
-              :value="specialPto.type"
+              :value="specialPto.attendanceType"
             >
               {{ specialPto.type }}
             </option>
@@ -236,6 +236,21 @@ export default {
 
     this.fetchAttendanceData(authStore.user.id);
   },
+  watch: {
+    // Watch for changes in the attendanceType
+    attendanceType(newType) {
+      if (newType === 'Special PTO') {
+        // Find the corresponding special PTO from the list and set the selectedSpecialPtoType
+        const selectedPto = this.specialPtos.find(p => p.attendanceType === this.attendanceType);
+        if (selectedPto) {
+          this.selectedSpecialPtoType = selectedPto.type;
+        }
+      } else {
+        // If not a specialPto, clear the selectedSpecialPtoType
+        this.selectedSpecialPtoType = '';
+      }
+    }
+  },
   methods: {
     initializeChart() {
      const ctx = this.$refs.attendanceChart?.getContext('2d');
@@ -360,10 +375,8 @@ fetchAttendanceData(accountId) {
     
     const startTotalMinutes = startHour * 60 + startMinute;
     const endTotalMinutes = endHour * 60 + endMinute;
-
     
     const totalHours = (endTotalMinutes - startTotalMinutes) / 60;
-
     
     const attendanceData = {
       account_id: authStore.user.id,
@@ -470,6 +483,9 @@ fetchAttendanceData(accountId) {
 
       const authStore = useAuthStore();
 
+      console.log("specialPtos", this.specialPtos)
+      console.log("selectedSpecialPtoType: ", this.selectedSpecialPtoType)
+
       switch (this.attendanceType) {
 
         case "general":
@@ -497,7 +513,6 @@ fetchAttendanceData(accountId) {
         case "pto":
 
           const selectedPtoDates = this.selectionRange.split(', ');
-          console.log(selectedPtoDates);
 
           // const ptoDay = new Date(this.selectionRange).toISOString();
           // console.log(ptoDay)
@@ -551,7 +566,7 @@ fetchAttendanceData(accountId) {
 
         break;
 
-        case "specialPto":
+        case "Special PTO":
           const specialPtoDay = new Date(this.selectionRange).toISOString();
           
           const specialPtoApproval = {
@@ -575,6 +590,9 @@ fetchAttendanceData(accountId) {
         default:
           console.log("Unkown attendance type");
       }    
+
+      await authStore.fetchPendingApprovals();
+
     },
     async getSpecialPto() {
 
@@ -582,7 +600,11 @@ fetchAttendanceData(accountId) {
 
     try {
       const response = await axios.get(`${apiUrl}/accounts/${authStore.user.id}/specialPto`);
-      this.specialPtos = response.data;
+      this.specialPtos = response.data.map(specialPto => ({
+        ...specialPto,
+        attendanceType: "Special PTO"
+      }));
+
       console.log(this.specialPtos)
     } catch(err) {
       console.error('Error fetching special pto:', err);
