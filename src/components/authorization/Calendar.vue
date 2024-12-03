@@ -655,11 +655,6 @@ async fetchAttendanceData(accountId) {
         return year === currentYear && month === nextMonth;
       });
 
-      console.log("approval requests: ", requests)
-      console.log(nextMonth);
-      console.log(currentYear);
-      console.log(existingRequest);
-
       if (existingRequest) {
         // If an approval request already exists, show a message and prevent submission
         alert('A request for this month has already been submitted for approval.');
