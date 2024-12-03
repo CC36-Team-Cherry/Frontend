@@ -50,7 +50,7 @@ axios.defaults.withCredentials = true;
 const authStore = useAuthStore();
 const router = useRouter();
 
-const handleLogout = async () => {
+export const handleLogout = async () => {
   logoutFirebase();
   clearCookie();
   router.push({ path: `/login` });

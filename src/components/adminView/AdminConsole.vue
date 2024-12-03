@@ -58,6 +58,7 @@ import { useAuthStore } from '@/stores/authStore';
 import axios from 'axios';
 import LoopingRhombusesSpinner from '../../modal/Loading.vue';
 import ConfirmModal from '@/modal/ConfirmModal.vue';
+import { handleLogout } from '@/views/Sidebar.vue';
 
 axios.defaults.withCredentials = true;
 
@@ -186,7 +187,7 @@ const deleteOrg = async () => {
         if (authStore.user.company_id) {
             await axios.delete(`${apiUrl}/organizations/${authStore.user.company_id}`);
             isConfirmModalVisible.value = false;
-            router.push({ path: `/login` });
+            handleLogout();
         } else {
             console.error('Company id not defined in authStore');
         }
