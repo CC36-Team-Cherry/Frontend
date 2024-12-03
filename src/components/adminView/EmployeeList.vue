@@ -110,8 +110,8 @@
           <div>
             <input type="checkbox" v-model="formData.is_supervisor" />{{ $t('employeeList.modal.userType.supervisor')
             }}
-            <template v-if="authStore.user.is_admin">
-              <input type="checkbox" v-if="authStore.user.is_admin" v-model="formData.is_admin" />{{
+            <template v-if="authStore.user.Privileges.is_admin">
+              <input type="checkbox" v-model="formData.is_admin" />{{
                 $t('employeeList.modal.userType.admin') }}
             </template>
           </div>
