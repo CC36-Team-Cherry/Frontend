@@ -7,9 +7,17 @@
       <router-link to="/calendar" class="block p-2 hover:bg-gray-200 rounded">
         {{ $t('Sidebar.Calendar') }}
       </router-link>
-      <router-link to="/approvals" class="block p-2 hover:bg-gray-200 rounded">
-        {{ $t('Sidebar.Approvals') }}
-      </router-link>
+      <div class="flex flex-row items-center">
+        <router-link to="/approvals" class="block p-2 hover:bg-gray-200 rounded">
+          {{ $t('Sidebar.Approvals') }}
+        </router-link>
+        <span
+            v-if="pendingApprovalsCount > 0"
+            class="bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center"
+          >
+            {{ pendingApprovalsCount }}
+        </span>
+      </div>
       <router-link to="/employee" class="block p-2 hover:bg-gray-200 rounded">
         {{ $t('Sidebar.EmployeeList') }}
       </router-link>
@@ -40,6 +48,7 @@
 </template>
 
 <script setup>
+import { computed, ref } from 'vue';
 import { useRouter } from 'vue-router'
 import { useAuthStore } from "@/stores/authStore";
 import axios from "axios";
