@@ -1,5 +1,6 @@
 <template>
-  <div class="bg-white shadow p-4 rounded">
+  <LoopingRhombusesSpinner v-if="isLoading" />
+  <div v-else class="bg-white shadow p-4 rounded">
     <div class="flex justify-between items-center mb-4">
       <input type="text" :placeholder="$t('employeeList.searchPlaceholder')" v-model="searchTerm"
         class="border rounded p-2 w-1/2" />
@@ -11,28 +12,92 @@
     <table class="w-full border-collapse border border-gray-300">
       <thead class="bg-gray-200">
         <tr>
-          <th class="border p-2">{{ $t('employeeList.tableHeaders.name') }}</th>
-          <th class="border p-2">{{ $t('employeeList.tableHeaders.team') }}</th>
-          <th class="border p-2">{{ $t('employeeList.tableHeaders.role') }}</th>
-          <th class="border p-2">{{ $t('employeeList.tableHeaders.joinDate') }}</th>
-          <th class="border p-2">{{ $t('employeeList.tableHeaders.lastDate') }}</th>
-          <th class="border p-2">{{ $t('employeeList.tableHeaders.privileges') }}</th>
-          <th v-if="authStore.Privileges?.is_admin || authStore.user.Privileges?.is_supervisor" class="border p-2">Last
-            Login</th>
-          <th class="border p-2">{{ $t('employeeList.tableHeaders.email') }}</th>
+          <th class="border p-2 text-left">
+            <div class="inline-flex items-center space-x-2">
+              <span>{{ $t('employeeList.tableHeaders.name') }}</span>
+              <svg-icon v-if="!isNameSorted" :path="path" type="mdi" class="cursor-pointer w-5 h-5 min-w-5"
+                @click="handleNameSort"></svg-icon>
+              <svg-icon v-if="isNameSorted" :path="path" type="mdi"
+                class="cursor-pointer w-5 h-5 min-w-5 bg-gray-400 rounded" @click="resetSort"></svg-icon>
+            </div>
+          </th>
+          <th class="border p-2 text-left">
+            <div class="inline-flex items-center space-x-2">
+              <span>{{ $t('employeeList.tableHeaders.team') }}</span>
+              <svg-icon v-if="!isTeamSorted" :path="path" type="mdi" class="cursor-pointer w-5 h-5 min-w-5"
+                @click="handleTeamSort"></svg-icon>
+              <svg-icon v-if="isTeamSorted" :path="path" type="mdi"
+                class="cursor-pointer w-5 h-5 min-w-5 bg-gray-400 rounded" @click="resetSort"></svg-icon>
+            </div>
+          </th>
+          <th class="border p-2 text-left">
+            <div class="inline-flex items-center space-x-2">
+              <span>{{ $t('employeeList.tableHeaders.role') }}</span>
+              <svg-icon v-if="!isRoleSorted" :path="path" type="mdi" class="cursor-pointer w-5 h-5 min-w-5"
+                @click="handleRoleSort"></svg-icon>
+              <svg-icon v-if="isRoleSorted" :path="path" type="mdi"
+                class="cursor-pointer w-5 h-5 min-w-5 bg-gray-400 rounded" @click="resetSort"></svg-icon>
+            </div>
+          </th>
+          <th class="border p-2 text-left">
+            <div class="inline-flex items-center space-x-2">
+              <span>{{ $t('employeeList.tableHeaders.joinDate') }}</span>
+              <svg-icon v-if="!isJoinDateSorted" :path="path" type="mdi" class="cursor-pointer w-5 h-5 min-w-5"
+                @click="handleJoinDateSort"></svg-icon>
+              <svg-icon v-if="isJoinDateSorted" :path="path" type="mdi"
+                class="cursor-pointer w-5 h-5 min-w-5 bg-gray-400 rounded" @click="resetSort"></svg-icon>
+            </div>
+          </th>
+          <th class="border p-2 text-left">
+            <div class="inline-flex items-center space-x-2">
+              <span>{{ $t('employeeList.tableHeaders.lastDate') }}</span>
+              <svg-icon v-if="!isLastDateSorted" :path="path" type="mdi" class="cursor-pointer w-5 h-5 min-w-5"
+                @click="handleLastDateSort"></svg-icon>
+              <svg-icon v-if="isLastDateSorted" :path="path" type="mdi"
+                class="cursor-pointer w-5 h-5 min-w-5 bg-gray-400 rounded" @click="resetSort"></svg-icon>
+            </div>
+          </th>
+          <th class="border p-2 text-left">
+            <div class="inline-flex items-center space-x-2">
+              <span>{{ $t('employeeList.tableHeaders.privileges') }}</span>
+              <svg-icon v-if="!isPrivSorted" :path="path" type="mdi" class="cursor-pointer w-5 h-5 min-w-5"
+                @click="handlePrivilegesSort"></svg-icon>
+              <svg-icon v-if="isPrivSorted" :path="path" type="mdi"
+                class="cursor-pointer w-5 h-5 min-w-5 bg-gray-400 rounded" @click="resetSort"></svg-icon>
+            </div>
+          </th>
+          <th v-if="authStore.Privileges?.is_admin || authStore.user.Privileges?.is_supervisor"
+            class="border p-2 text-left">
+            <div class="inline-flex items-center space-x-2">
+              <span>Last Login</span>
+              <svg-icon v-if="!isLastLoginSorted" :path="path" type="mdi" class="cursor-pointer w-5 h-5 min-w-5"
+                @click="handleLastLoginSort"></svg-icon>
+              <svg-icon v-if="isLastLoginSorted" :path="path" type="mdi"
+                class="cursor-pointer w-5 h-5 min-w-5 bg-gray-400 rounded" @click="resetSort"></svg-icon>
+            </div>
+          </th>
+          <th class="border p-2 text-left">
+            <div class="inline-flex items-center space-x-2">
+              <span>{{ $t('employeeList.tableHeaders.email') }}</span>
+              <svg-icon v-if="!isEmailSorted" :path="path" type="mdi" class="cursor-pointer w-5 h-5 min-w-5"
+                @click="handleEmailSort"></svg-icon>
+              <svg-icon v-if="isEmailSorted" :path="path" type="mdi"
+                class="cursor-pointer w-5 h-5 min-w-5 bg-gray-400 rounded" @click="resetSort"></svg-icon>
+            </div>
+          </th>
           <th v-if="authStore.Privileges?.is_admin || authStore.user.Privileges?.is_supervisor" class="border p-2">{{
             $t('employeeList.tableHeaders.att') }}</th>
         </tr>
       </thead>
       <tbody>
-        <template v-if="filteredEmployees.length > 0">
-          <tr v-for="employee in filteredEmployees" :key="employee.id" @click="openEmployeeDetailsModal(employee)"
+        <template v-if="displayedEmployees.length > 0">
+          <tr v-for="employee in displayedEmployees" :key="employee.id" @click="openEmployeeDetailsModal(employee)"
             class="cursor-pointer hover:bg-gray-100">
             <td class="border p-2">{{ employee.first_name + ' ' + employee.last_name }}</td>
             <td class="border p-2">{{ employee.team ? employee.team.team_name : 'no team' }}</td>
             <td class="border p-2">{{ employee.role }}</td>
             <td class="border p-2">{{ employee.join_date.split('T')[0] }}</td>
-            <td class="border p-2">{{ employee.leave_date || 'NA' }}</td>
+            <td class="border p-2">{{ employee.leave_date ? employee.leave_date.split('T')[0] : 'NA' }}</td>
             <td class="border p-2">
               {{
                 employee.Privileges.is_admin && employee.Privileges.is_supervisor
@@ -44,7 +109,8 @@
                       : 'none'
               }}
             </td>
-            <td v-if="authStore.Privileges?.is_admin || authStore.user.Privileges?.is_supervisor" class="border p-2">{{ employee.last_login ? employee.last_login.split('T')[0] : 'Invite Sent' }}</td>
+            <td v-if="authStore.Privileges?.is_admin || authStore.user.Privileges?.is_supervisor" class="border p-2">{{
+              employee.last_login ? employee.last_login.split('T')[0] : 'Invite Sent' }}</td>
             <td class="border p-2">{{ employee.email }}</td>
             <td v-if="authStore.Privileges?.is_admin || authStore.user.Privileges?.is_supervisor" class="border p-2">
               <button class="bg-green-500 text-white px-2 py-1 rounded" @click.stop="openCalendarModal(employee)">
@@ -85,17 +151,21 @@
           </div>
           <div>
             <label class="block mb-1">{{ "Supervisor" }}</label>
-            <input v-model="supervisorSearch" @input="filterSupervisors" type="text" placeholder="Select Supervisor"
+            <input v-model="supervisorSearch" @input="filterSupervisors" @focus="showDropdown = true" type="text" placeholder="Select Supervisor"
               class="border rounded p-2 w-full">
-            <ul v-if="filteredSupervisors.length > 0" ref="dropdown"
+            <button
+              v-if="formData.supervisor_id"
+              @click="clearSupervisor"
+            >
+              x
+            </button>
+            <ul v-if="showDropdown && filteredSupervisors.length > 0" ref="dropdown"
               class="border rounded mt-2 max-h-48 overflow-y-auto">
               <li v-for="supervisor in filteredSupervisors" :key="supervisor.id" @click="selectedSupervisor(supervisor)"
                 class="cursor-pointer hover:bg-gray-100 p-2">
                 {{ supervisor.first_name + " " + supervisor.last_name }}
               </li>
             </ul>
-            <!-- <option value="" disabled>{{ $t("Select Supervisor") }}</option>
-              <option v-for="supervisor in fetchedSupervisors" :key="supervisor.id" :value="supervisor.id">{{ supervisor.first_name + " " + supervisor.last_name }}</option> -->
           </div>
           <div>
             <label class="block mb-1">{{ $t('employeeList.modal.fields.role') }}</label>
@@ -108,8 +178,8 @@
           <div>
             <input type="checkbox" v-model="formData.is_supervisor" />{{ $t('employeeList.modal.userType.supervisor')
             }}
-            <template v-if="authStore.user.is_admin">
-              <input type="checkbox" v-if="authStore.user.is_admin" v-model="formData.is_admin" />{{
+            <template v-if="authStore.user.Privileges.is_admin">
+              <input type="checkbox" v-model="formData.is_admin" />{{
                 $t('employeeList.modal.userType.admin') }}
             </template>
           </div>
@@ -129,7 +199,11 @@
     <!-- Employee Details Modal -->
     <EmployeeDetailsModal v-if="selectedEmployee" :employee="selectedEmployee" :teams="fetchedTeams"
       :supervisors="fetchedSupervisors" :isVisible="isEmployeeDetailsModalVisible" @close="closeEmployeeDetailsModal"
-      @save="handleUpdate" @delete="handleDelete" />
+      @save="handleUpdate" @delete="openConfirmModal" />
+    <ConfirmModal :isVisible="isConfirmModalVisible" :confirmFunc="handleDelete" confirmString="Delete"
+      @close="isConfirmModalVisible = false">
+      <p>Are you sure you want to delete?</p>
+    </ConfirmModal>
     <!-- Calendar Modal -->
     <CalendarModal v-if="isCalendarModalVisible" :isVisible="isCalendarModalVisible" :accountId="selectedUser.id"
       :employeeName="`${selectedUser.first_name} ${selectedUser.last_name}`" @close="closeCalendarModal" />
@@ -142,10 +216,14 @@ import axios from 'axios';
 import { auth } from '../../firebase/firebaseConfig.ts';
 import { sendPasswordResetEmail } from 'firebase/auth';
 import Modal from '@/modal/ModalView.vue';
+import ConfirmModal from '@/modal/ConfirmModal.vue';
 import EmployeeDetailsModal from '@/modal/EmployeeDetailsModal.vue';
 import CalendarModal from '@/modal/CalendarModal.vue';
 import { useAuthStore } from '@/stores/authStore';
 import { onClickOutside } from '@vueuse/core';
+import SvgIcon from '@jamescoyle/vue-icon';
+import { mdiSortAscending } from '@mdi/js';
+import LoopingRhombusesSpinner from '../../modal/Loading.vue';
 
 const apiUrl = import.meta.env.VITE_API_URL;
 
@@ -157,6 +235,8 @@ const searchTerm = ref('');
 const isAddUserModalVisible = ref(false);
 const isEmployeeDetailsModalVisible = ref(false);
 const isCalendarModalVisible = ref(false);
+const isConfirmModalVisible = ref(false);
+const isLoading = ref(true);
 
 const fetchedEmployees = ref([]);
 const fetchedTeams = ref([]);
@@ -166,6 +246,9 @@ const fetchedSupervisors = ref([]);
 const supervisorSearch = ref('');
 const filteredSupervisors = ref([]);
 const dropdown = ref(null);
+const showDropdown = ref(false);
+
+const path = mdiSortAscending;
 
 const formData = reactive({
   first_name: '',
@@ -211,11 +294,15 @@ const closeAddUserModal = () => {
   resetFormData();
 };
 
+const openConfirmModal = () => {
+  isConfirmModalVisible.value = true;
+}
+
 //adding a new user
 const handleSubmit = async () => {
   const email = formData.email;
   // post new user to backend
-  await addUserBackend(); 
+  await addUserBackend();
   // close the modal
   closeAddUserModal();
   // send email to the new user, delayed by two seconds to allow time for new account to post to Firebase
@@ -313,6 +400,7 @@ const handleDelete = async () => {
     if (response.status === 200) {
       console.log('Account deleted successfully');
       await handleFetchEmployees(authStore.user.company_id);
+      isConfirmModalVisible.value = false;
       closeEmployeeDetailsModal();
     } else {
       console.error('Failed to delete account');
@@ -363,23 +451,23 @@ const filteredEmployees = computed(() => {
 
 // get all supervisors
 const fetchSupervisors = async () => {
-      try {
-        const response = await axios.get(`${apiUrl}/supervisors`);
-        console.log(response.data)
-        fetchedSupervisors.value = response.data.filter(supervisor => supervisor.id !== authStore.user.id);; 
-      } catch (err) {
-        console.error('Error fetching supervisors:', err);
-      }
-    }
+  try {
+    const response = await axios.get(`${apiUrl}/supervisors`);
+    console.log(response.data)
+    fetchedSupervisors.value = response.data;
+  } catch (err) {
+    console.error('Error fetching supervisors:', err);
+  }
+}
 
 // filter supervisors in dropdown 
 const filterSupervisors = () => {
-    if (!supervisorSearch.value) {
-      filteredSupervisors.value = fetchedSupervisors.value;
-    } else {
-        filteredSupervisors.value = fetchedSupervisors.value.filter((supervisor) => {
-        const fullName = (supervisor.first_name + " " + supervisor.last_name).toLowerCase();
-        return fullName.includes(supervisorSearch.value.toLowerCase());
+  if (!supervisorSearch.value) {
+    filteredSupervisors.value = fetchedSupervisors.value;
+  } else {
+    filteredSupervisors.value = fetchedSupervisors.value.filter((supervisor) => {
+      const fullName = (supervisor.first_name + " " + supervisor.last_name).toLowerCase();
+      return fullName.includes(supervisorSearch.value.toLowerCase());
     });
   }
 }
@@ -389,18 +477,218 @@ const selectedSupervisor = (supervisor) => {
   formData.supervisor_id = supervisor.id;
   supervisorSearch.value = `${supervisor.first_name} ${supervisor.last_name}`;
   filteredSupervisors.value = [];
+  showDropdown.value = false;
 }
+
+const clearSupervisor = () => {
+  formData.supervisor_id = '';  // Reset the supervisor ID
+  supervisorSearch.value = '';   // Clear the input field
+  filteredSupervisors.value = [];  // Clear the filtered supervisors list
+  showDropdown.value = false;
+  filterSupervisors();
+};
 
 const closeDropdown = () => {
   filteredSupervisors.value = [];  // Close the dropdown by clearing the filtered list
+  showDropdown.value = false;
+  filterSupervisors();
 };
 
 // handle click outside of dropdown of supervisors
 onClickOutside(dropdown, closeDropdown);
 
+const displayedEmployees = computed(() => {
+  return isSorted.value ? sortedEmployees.value : filteredEmployees.value;
+});
+
+//sorting functions
+const isSorted = ref(false);
+const isNameSorted = ref(false);
+const isTeamSorted = ref(false);
+const isRoleSorted = ref(false);
+const isJoinDateSorted = ref(false);
+const isLastDateSorted = ref(false);
+const isPrivSorted = ref(false);
+const isLastLoginSorted = ref(false);
+const isEmailSorted = ref(false);
+const sortedEmployees = ref([]);
+
+function handleNameSort() {
+  isTeamSorted.value = false;
+  isRoleSorted.value = false;
+  isJoinDateSorted.value = false;
+  isLastDateSorted.value = false;
+  isPrivSorted.value = false;
+  isLastLoginSorted.value = false;
+  isEmailSorted.value = false;
+
+  sortedEmployees.value = [...filteredEmployees.value].sort((a, b) => {
+    return a.first_name.localeCompare(b.first_name);
+  });
+
+  isNameSorted.value = true;
+  isSorted.value = true;
+}
+
+function handleTeamSort() {
+  isNameSorted.value = false;
+  isRoleSorted.value = false;
+  isJoinDateSorted.value = false;
+  isLastDateSorted.value = false;
+  isPrivSorted.value = false;
+  isLastLoginSorted.value = false;
+  isEmailSorted.value = false;
+
+  sortedEmployees.value = [...filteredEmployees.value].sort((a, b) => {
+    return a.team_id - b.team_id;
+  });
+
+  isTeamSorted.value = true;
+  isSorted.value = true;
+}
+
+function handleRoleSort() {
+  isNameSorted.value = false;
+  isTeamSorted.value = false;
+  isJoinDateSorted.value = false;
+  isLastDateSorted.value = false;
+  isPrivSorted.value = false;
+  isLastLoginSorted.value = false;
+  isEmailSorted.value = false;
+
+  sortedEmployees.value = [...filteredEmployees.value].sort((a, b) => {
+    return a.role.localeCompare(b.role);
+  });
+
+  isSorted.value = true;
+  isRoleSorted.value = true;
+}
+
+function handleJoinDateSort() {
+  isNameSorted.value = false;
+  isTeamSorted.value = false;
+  isRoleSorted.value = false;
+  isLastDateSorted.value = false;
+  isPrivSorted.value = false;
+  isLastLoginSorted.value = false;
+  isEmailSorted.value = false;
+
+  sortedEmployees.value = [...filteredEmployees.value].sort((a, b) => {
+    return new Date(b.join_date) - new Date(a.join_date);
+  });
+
+  isSorted.value = true;
+  isJoinDateSorted.value = true;
+}
+
+function handleLastDateSort() {
+  isNameSorted.value = false;
+  isTeamSorted.value = false;
+  isRoleSorted.value = false;
+  isJoinDateSorted.value = false;
+  isPrivSorted.value = false;
+  isLastLoginSorted.value = false;
+  isEmailSorted.value = false;
+
+  sortedEmployees.value = [...filteredEmployees.value].sort((a, b) => {
+    const dateA = a.leave_date ? new Date(a.leave_date) : new Date(0);
+    const dateB = b.leave_date ? new Date(b.leave_date) : new Date(0);
+    return dateB - dateA;
+  });
+
+  isSorted.value = true;
+  isLastDateSorted.value = true;
+}
+
+function handlePrivilegesSort() {
+  isNameSorted.value = false;
+  isTeamSorted.value = false;
+  isRoleSorted.value = false;
+  isJoinDateSorted.value = false;
+  isLastDateSorted.value = false;
+  isLastLoginSorted.value = false;
+  isEmailSorted.value = false;
+
+  const admin = [];
+  const supervisor = [];
+  const user = [];
+  for (let employee of filteredEmployees.value) {
+    if (employee.Privileges.is_admin) {
+      admin.push(employee);
+    } else if (employee.Privileges.is_supervisor) {
+      supervisor.push(employee);
+    } else {
+      user.push(employee);
+    }
+  }
+  sortedEmployees.value = [...admin, ...supervisor, ...user];
+
+  isSorted.value = true;
+  isPrivSorted.value = true;
+}
+
+function handleLastLoginSort() {
+  isNameSorted.value = false;
+  isTeamSorted.value = false;
+  isRoleSorted.value = false;
+  isJoinDateSorted.value = false;
+  isLastDateSorted.value = false;
+  isPrivSorted.value = false;
+  isEmailSorted.value = false;
+
+  sortedEmployees.value = [...filteredEmployees.value].sort((a, b) => {
+    const dateA = a.last_login ? new Date(a.last_login) : new Date(0);
+    const dateB = b.last_login ? new Date(b.last_login) : new Date(0);
+
+    if (!a.last_login && b.last_login) return -1;
+    if (a.last_login && !b.last_login) return 1;
+
+    return dateB - dateA
+  });
+
+  isSorted.value = true;
+  isLastLoginSorted.value = true;
+}
+
+function handleEmailSort() {
+  isNameSorted.value = false;
+  isTeamSorted.value = false;
+  isRoleSorted.value = false;
+  isJoinDateSorted.value = false;
+  isLastDateSorted.value = false;
+  isPrivSorted.value = false;
+  isLastLoginSorted.value = false;
+
+  sortedEmployees.value = [...filteredEmployees.value].sort((a, b) => {
+    return a.email.localeCompare(b.email);
+  });
+
+  isSorted.value = true;
+  isEmailSorted.value = true;
+}
+
+function resetSort() {
+  isSorted.value = false;
+  isNameSorted.value = false;
+  isTeamSorted.value = false;
+  isRoleSorted.value = false;
+  isJoinDateSorted.value = false;
+  isLastDateSorted.value = false;
+  isPrivSorted.value = false;
+  isLastLoginSorted.value = false;
+  isEmailSorted.value = false;
+}
+
+const handleFetchAll = async () => {
+  isLoading.value = true;
+  await handleFetchEmployees();
+  await handleFetchTeams();
+  await fetchSupervisors();
+  isLoading.value = false;
+}
+
 onMounted(() => {
-  handleFetchEmployees();
-  handleFetchTeams();
-  fetchSupervisors();
+  handleFetchAll();
+  filterSupervisors();
 });
 </script>

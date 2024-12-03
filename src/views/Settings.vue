@@ -36,17 +36,18 @@
             <input 
               v-model="supervisorSearch" 
               @input="filterSupervisors"
+              @focus="showDropdown = true"
               type="text"
               :placeholder="supervisorPlaceholder"
               class="border rounded p-2 w-full"
             >
             <button 
-                v-if="formData.supervisor.id" 
+                v-if="formData.supervisor_id" 
                 @click="clearSupervisor" 
               >
                 ✕
               </button>
-            <ul v-if="filteredSupervisors.length > 0" ref="dropdown" class="border rounded mt-2 max-h-48 overflow-y-auto">
+            <ul v-if="showDropdown && filteredSupervisors.length > 0" ref="dropdown" class="border rounded mt-2 max-h-48 overflow-y-auto">
               <li
                 v-for="supervisor in filteredSupervisors"
                 :key="supervisor.id"
@@ -112,6 +113,7 @@ const fetchedSupervisors = ref([]);
 const supervisorSearch = ref('');
 const filteredSupervisors = ref([]);
 const dropdown = ref(null);
+const showDropdown = ref(false);
 
 const authStore = useAuthStore();
 
@@ -131,6 +133,7 @@ const formData = reactive({
   is_admin: '',
   is_supervisor: '',
   language_preference: 'en',
+  supervisor_id: '',
 });
 
 async function handleFetchCurrentUserData() {
@@ -169,7 +172,6 @@ const switchLanguage = (lang) => {
  const fetchSupervisors = async () => {
       try {
         const response = await axios.get(`${apiUrl}/supervisors`);
-        console.log(response.data)
         fetchedSupervisors.value = response.data.filter(supervisor => supervisor.id !== authStore.user.id); 
       } catch (err) {
         console.error('Error fetching supervisors:', err);
@@ -190,25 +192,31 @@ const switchLanguage = (lang) => {
 
   // function to select a supervisor from filtered list
   const selectedSupervisor = (supervisor) => {
-    formData.supervisor.id = supervisor.id;
+    formData.supervisor_id = supervisor.id;
     supervisorSearch.value = `${supervisor.first_name} ${supervisor.last_name}`;
     filteredSupervisors.value = [];
+    showDropdown.value = false;
   }
 
   const closeDropdown = () => {
     filteredSupervisors.value = [];  // Close the dropdown by clearing the filtered list
+    showDropdown.value = false;
+    filterSupervisors();
   };
   
   const supervisorPlaceholder = computed(() => {
-    // If a supervisor is selected, show their full name, otherwise default to "Select Supervisor"
-    const supervisor = fetchedSupervisors.value.find(s => s.id === formData.supervisor.id);
-    return supervisor ? `${supervisor.first_name} ${supervisor.last_name}` : "Select Supervisor";
-  });
+      // If a supervisor is selected, show their full name, otherwise default to "Select Supervisor"
+      const supervisor = fetchedSupervisors.value.find(s => s.id === formData.supervisor_id);
+      return supervisor ? `${supervisor.first_name} ${supervisor.last_name}` : "Select Supervisor";
+    }
+  );
   
   const clearSupervisor = () => {
-    formData.supervisor.id = '';  // Reset the supervisor ID
+    formData.supervisor_id = '';  // Reset the supervisor ID
     supervisorSearch.value = '';   // Clear the input field
     filteredSupervisors.value = [];  // Clear the filtered supervisors list
+    showDropdown.value = false;
+    filterSupervisors();
   };
   
   // handle click outside of dropdown of supervisors
@@ -230,6 +238,8 @@ const handleSave = async () => {
     );
     cleanedUpdates.join_date = new Date(cleanedUpdates.join_date);
     cleanedUpdates.birthdate = new Date(cleanedUpdates.birthdate);
+    console.log("cleanedupdates", cleanedUpdates);
+    authStore.user.supervisor_id = cleanedUpdates.supervisor_id;
     const response = await axios.patch(`${apiUrl}/accounts/${employeeId}`, cleanedUpdates);
     if (response.status === 200) {
       console.log("Account updated successfully");
@@ -242,9 +252,10 @@ const handleSave = async () => {
   }
 }
 
-onMounted(() => {
-  handleFetchCurrentUserData();
-  handleFetchTeams();
-  fetchSupervisors();
+onMounted(async () => {
+  await handleFetchCurrentUserData();
+  await handleFetchTeams();
+  await fetchSupervisors();
+  filterSupervisors();
 })
 </script>

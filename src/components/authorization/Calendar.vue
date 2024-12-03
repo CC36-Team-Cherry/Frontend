@@ -25,22 +25,12 @@
             <option 
               v-for="specialPto in specialPtos" 
               :key="specialPto.id" 
-              :value="'specialPto_' + specialPto.id"
+              :value="specialPto.attendanceType"
             >
               {{ specialPto.type }}
             </option>
           </optgroup>
           <option value="absence">{{ $t('calendar.types.absence') }}</option>
-        </select>
-      </div>
-      <!-- Special PTO Dropdown (only shown when 'specialPto' is selected) -->
-      <div v-if="attendanceType === 'specialPto'">
-        <label class="block mb-1 font-bold">{{ $t('calendar.specialPtoType') }}</label>
-        <select v-model="selectedSpecialPtoId" class="border border-gray-300 rounded p-2 w-full">
-          <option value="" disabled>Select Special PTO</option>
-          <option v-for="specialPto in specialPtos" :key="specialPto.id" :value="specialPto.id">
-            {{ specialPto.name }}
-          </option>
         </select>
       </div>
       <!-- Start Time -->
@@ -67,8 +57,12 @@
         <label class="block mb-1 font-bold">{{ $t('calendar.attendance') }}</label>
         <button
           @click="logAttendance"
-          class="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600 w-full"
-        >
+          :disabled="isPtoSelected"
+          :class="{
+            'bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600 w-full' : !isPtoSelected,
+            'bg-gray-300 text-gray-500 py-2 px-4 rounded w-full cursor-not-allowed' : isPtoSelected
+            }"
+          >
           {{ selectedEventId ? $t('calendar.updateAttendance') : $t('calendar.logAttendance') }}
         </button>
       </div>
@@ -142,6 +136,7 @@ const apiUrl = import.meta.env.VITE_API_URL;
 axios.defaults.withCredentials = true;
 
 const totalHours = ref(0);
+const selectedMonth = ref(null);
 
 export default {
   
@@ -166,11 +161,19 @@ export default {
         'ja-JP': jaLocale,
       },
       specialPtos: [],
+      selectedSpecialPtoType: '',
     };
   },
+  computed: {
+    isPtoSelected() {
+      return this.attendanceType === 'pto' || this.attendanceType === 'halfpto' || this.attendanceType === 'Special PTO'
+    }
+  },
+
   mounted() {
   const authStore = useAuthStore();
   this.getSpecialPto();
+
 
   if (!authStore.user || !authStore.user.id) {
     console.error("User ID is not defined in authStore");
@@ -180,6 +183,7 @@ export default {
   this.initializeChart();
   this.fetchSupervisors();
   this.holidays = this.generateJapaneseHolidays(new Date().getFullYear()); 
+  
 
   const activeAccountSupervisor = authStore.user.supervisor_id;
   if (activeAccountSupervisor) {
@@ -249,7 +253,8 @@ export default {
     datesSet: (info) => {
       
       console.log('Month changed:', info.start); 
-      this.handleMonthChange(info.start); 
+      this.handleMonthChange(info.start); // Funzione per gestire il cambio mese
+      selectedMonth.value = info.start;
     },
   });
 
@@ -273,10 +278,34 @@ export default {
   );
 
   this.fetchAttendanceData(authStore.user.id);
-}
-,
-methods: {
- 
+  },
+  watch: {
+    // Watch for changes in the attendanceType
+    attendanceType(newType) {
+      if (newType === 'Special PTO') {
+        // Find the corresponding special PTO from the list and set the selectedSpecialPtoType
+        const selectedPto = this.specialPtos.find(p => p.attendanceType === this.attendanceType);
+        if (selectedPto) {
+          this.selectedSpecialPtoType = selectedPto.type;
+        }
+      } else {
+        // If not a specialPto, clear the selectedSpecialPtoType
+        this.selectedSpecialPtoType = '';
+      }
+    },
+    startTime(newStartTime) {
+      if (this.attendanceType === 'halfpto' && newStartTime) {
+        this.setEndTimeFourHoursAhead();
+      }
+    },
+    endTime(newEndTime) {
+      if (this.attendanceType === 'halfpto' && newEndTime) {
+        this.setStartTimeFourHoursBefore();
+      }
+    }
+  },
+  methods: {
+     
   handleMonthChange(startDate) {
   console.log('Handling month change:', startDate);
 
@@ -293,7 +322,44 @@ methods: {
  
   const authStore = useAuthStore();
   this.fetchAttendanceData(authStore.user.id);
+},
+setEndTimeFourHoursAhead() {
 
+  if (!this.startTime) return;
+
+  // Parse the startTime into hours and minutes
+  const [startHour, startMinute] = this.startTime.split(':').map(Number);
+    
+  // Add 4 hours to the start time
+  let endHour = startHour + 4;
+  let endMinute = startMinute;
+  
+  // Handle overflow if the hour exceeds 24 (e.g., 23:30 + 4 hours becomes 03:30 next day)
+  if (endHour >= 24) {
+    endHour -= 24; // Wrap around to the next day
+  }
+
+  // Format end time in "HH:MM" format
+  this.endTime = `${String(endHour).padStart(2, '0')}:${String(endMinute).padStart(2, '0')}`;
+
+},  
+setStartTimeFourHoursBefore() {
+    if (!this.endTime) return;
+
+    // Parse the endTime into hours and minutes
+    const [endHour, endMinute] = this.endTime.split(':').map(Number);
+    
+    // Subtract 4 hours from the end time
+    let startHour = endHour - 4;
+    let startMinute = endMinute;
+
+    // Handle underflow if the hour is less than 0 (e.g., 03:00 - 4 hours becomes 23:00 the previous day)
+    if (startHour < 0) {
+      startHour += 24; // Wrap around to the previous day
+    }
+
+    // Format start time in "HH:MM" format
+    this.startTime = `${String(startHour).padStart(2, '0')}:${String(startMinute).padStart(2, '0')}`;
 },
 
   
@@ -320,12 +386,12 @@ methods: {
     return this.holidays.some((holiday) => holiday.start === formattedDate);
   },
     
-  initializeChart() {
-  const ctx = this.$refs.attendanceChart?.getContext('2d');
-  if (!ctx) {
-    console.error('Canvas element not found for attendance chart');
-    return;
-  }
+    initializeChart() {
+     const ctx = this.$refs.attendanceChart?.getContext('2d');
+     if (!ctx) {
+      console.error('Canvas element not found for attendance chart');
+      return;
+    }
 
   this.attendanceChart = new Chart(ctx, {
     type: 'doughnut',
@@ -349,7 +415,6 @@ methods: {
   });
   console.log('Chart initialized successfully');
 },
-
 
 updateChart() {
   if (!this.attendanceChart) {
@@ -396,7 +461,6 @@ async fetchAttendanceData(accountId) {
     const response = await axios.get(`${apiUrl}/accounts/${accountId}/attendance`);
 
     console.log("Response data:", response.data); 
-
     
     const currentDate = this.calendar.getDate(); 
     const currentMonth = currentDate.getMonth() + 1; 
@@ -410,9 +474,6 @@ async fetchAttendanceData(accountId) {
         recordDate.getFullYear() === currentYear
       );
     });
-
-    console.log("Filtered Attendance:", filteredAttendance);
-
     
     this.events = filteredAttendance.map((record) => {
       const startTime = record.punch_in ? record.punch_in.split('T')[1].slice(0, 5) : null;
@@ -492,10 +553,8 @@ async fetchAttendanceData(accountId) {
     
     const startTotalMinutes = startHour * 60 + startMinute;
     const endTotalMinutes = endHour * 60 + endMinute;
-
     
     const totalHours = (endTotalMinutes - startTotalMinutes) / 60;
-
     
     const attendanceData = {
       account_id: authStore.user.id,
@@ -591,9 +650,10 @@ async fetchAttendanceData(accountId) {
       this.selectedEventId = null;
     },
     async fetchSupervisors() {
+      const authStore = useAuthStore();
       try {
         const response = await axios.get(`${apiUrl}/supervisors`);
-        this.supervisors = response.data;
+        this.supervisors = response.data.filter(supervisor => supervisor.id !== authStore.user.id);;
       } catch (err) {
         console.error('Error fetching supervisors:', err);
       }
@@ -601,24 +661,41 @@ async fetchAttendanceData(accountId) {
     async submitHandler() {
 
       const authStore = useAuthStore();
+      const requests = authStore.approvals;
+
+      const selectedDate = new Date(selectedMonth.value);
+      const currentMonth = (selectedDate.getMonth() + 1);
+      const currentYear = selectedDate.getFullYear();
+      const nextMonth = currentMonth === 12 ? 12 : currentMonth + 1;
+
+      // Check if a request already exists for the selected month and year
+      const existingRequest = requests.sent.find(request => {
+        const [month, year] = request.date.split(' / ').map(Number);  // Split date into month and year
+        return year === currentYear && month === nextMonth;
+      });
+
+      console.log("approval requests: ", requests)
+      console.log(nextMonth);
+      console.log(currentYear);
+      console.log(existingRequest);
+
+      if (existingRequest) {
+        // If an approval request already exists, show a message and prevent submission
+        alert('A request for this month has already been submitted for approval.');
+        return; // Exit the function without submitting the new request
+      }
 
       switch (this.attendanceType) {
-        case "specialPto":
-        console.log(this.attendanceType);
-        break;
 
-        case "general":
-          const selectedDate = this.selectionRange.split(' - ');
-          const month = selectedDate[0] ? new Date(selectedDate[0]).getMonth() + 1 : new Date().getMonth() + 1;
-          const year = selectedDate[0] ? new Date(selectedDate[0]).getFullYear() : new Date().getFullYear();
+        case "general":    
 
           const generalApproval = {
             account_id: authStore.user.id,
             supervisor_id: this.selectedSupervisorId,
-            month: month,
-            year: year,
+            month: nextMonth,
+            year: currentYear,
             content: this.memo,
-            status: 'pending',
+            status: 'Pending',
           };
 
           try {
@@ -630,21 +707,30 @@ async fetchAttendanceData(accountId) {
         break;
 
         case "pto":
-          const ptoDay = new Date(this.selectionRange).toISOString();
-          console.log(ptoDay)
 
-          const ptoApproval = {
-            account_id: authStore.user.id,
-            supervisor_id: this.selectedSupervisorId,
-            content: this.memo,
-            status: 'pending',
-            day: ptoDay, 
-            all_day: true,
-          }
+          const selectedPtoDates = this.selectionRange.split(', ');
+
+          // const ptoDay = new Date(this.selectionRange).toISOString();
+          // console.log(ptoDay)
 
           try {
-            const response = await axios.post(`${apiUrl}/approvals/pto`, ptoApproval);
-            console.log(response.data);
+
+            for (let day of selectedPtoDates) {
+              const ptoApproval = {
+              account_id: authStore.user.id,
+              supervisor_id: this.selectedSupervisorId,
+              content: this.memo,
+              status: 'Pending',
+              day: new Date(day).toISOString(), 
+              all_day: true,
+              }
+
+              console.log("FE send ptoApproval: ", ptoApproval);
+              
+              const response = await axios.post(`${apiUrl}/approvals/pto`, ptoApproval);
+              console.log("BE receive sent pto Approval: ", response);
+            }
+
           } catch (err) {
             console.error('Error submitting pto approval: ', err)
           }
@@ -660,7 +746,7 @@ async fetchAttendanceData(accountId) {
             account_id: authStore.user.id,
             supervisor_id: this.selectedSupervisorId,
             content: this.memo,
-            status: 'pending',
+            status: 'Pending',
             day: halfPtoDay, 
             all_day: false,
             hour_start: halfPtoStartTime,
@@ -676,13 +762,39 @@ async fetchAttendanceData(accountId) {
 
         break;
 
-        case "specialPto":
-          // add special pto single select from type dropdown
+        case "Special PTO":
+          const specialPtoDay = new Date(this.selectionRange).toISOString();
+          
+          const specialPtoApproval = {
+            account_id: authStore.user.id,
+            supervisor_id: this.selectedSupervisorId,
+            content: this.memo,
+            status: 'Pending',
+            day: specialPtoDay, 
+            type: this.selectedSpecialPtoType,
+          }
+          
+          console.log(specialPtoApproval);
+          
+          try {
+            await axios.post(`${apiUrl}/approvals/specialPto`, specialPtoApproval);
+          } catch (err) {
+            console.error('Error submitting pto approval: ', err)
+          }
         break
 
         default:
           console.log("Unkown attendance type");
       }    
+      
+      try {
+        const response = await axios.get(`${apiUrl}/accounts/${authStore.user.id}/approvals`);
+        requests.sent = response.data.approvalsSentData;
+        requests.received = response.data.approvalsReceivedData;
+        authStore.setApprovals(response.data.approvalsSentData, response.data.approvalsReceivedData);
+      } catch (err) {
+        console.error('Error fetching approvals:', err);
+      }
     },
     async getSpecialPto() {
 
@@ -690,8 +802,10 @@ async fetchAttendanceData(accountId) {
 
     try {
       const response = await axios.get(`${apiUrl}/accounts/${authStore.user.id}/specialPto`);
-      this.specialPtos = response.data;
-      console.log(this.specialPtos)
+      this.specialPtos = response.data.map(specialPto => ({
+        ...specialPto,
+        attendanceType: "Special PTO"
+      }));
     } catch(err) {
       console.error('Error fetching special pto:', err);
     }
@@ -700,7 +814,3 @@ async fetchAttendanceData(accountId) {
 };
 
 </script>
-
-
-
-

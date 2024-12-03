@@ -1,5 +1,6 @@
 <template>
-  <div class="flex justify-center items-center bg-gray-100">
+  <LoopingRhombusesSpinner v-if="isLoading" class="bg-gray-100"/>
+  <div v-else class="flex justify-center items-center bg-gray-100">
     <div class="bg-white p-8 rounded shadow-md w-full max-w-lg">
       <h1 class="text-2xl font-bold mb-6 text-gray-800">{{ $t('register.title') }}</h1>
       <form class="flex flex-col space-y-4">
@@ -110,26 +111,22 @@
 </template>
 
 <script setup lang="ts">
-import { ref, toRaw, reactive } from 'vue';
+import { ref, toRaw } from 'vue';
 import { useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n';
 import { useAuthStore } from '@/stores/authStore';
 import { createUserWithEmailAndPassword } from 'firebase/auth';
 import { auth } from '../../firebase/firebaseConfig.ts'
 import axios from 'axios';
+import LoopingRhombusesSpinner from '../../modal/Loading.vue';
 
 const { t } = useI18n(); 
 const router = useRouter();
 
-// TODO: add active account state to track log in after registration, or set from login and update when register
-// export const activeAccount = reactive({
-//   id: , 
-//   organizationId: ,
-// });
-
 const apiUrl = import.meta.env.VITE_API_URL;
 axios.defaults.withCredentials = true;
 const authStore = useAuthStore();
+const isLoading = ref(false);
 
 const formData = ref({
   email: '',
@@ -150,8 +147,8 @@ const goToLogin = () => {
 }
 
 const handleSubmit = async () => {
+  isLoading.value = true;
   try {
-
     if (
       !formData.value.email ||
       !formData.value.password ||
@@ -165,80 +162,34 @@ const handleSubmit = async () => {
     alert(t('register.errorFillAllFields')); 
     return;
   }
-
     // create Firebase user with form data and fetch post to add to backend
-    createUserFirebase();
-
-    console.log('Frontend - Registration completed:', formData.value);
+    await createUserFirebase();
+    router.push({ path: `/employee` });
     alert(t('register.success'));
 
 } catch(err) {
     console.error(err);
   }
-  
-  /*authStore.setOrganization({
-    name: formData.value.organizationName,
-    details: formData.value.organizationDetails,
-  });*/
-
 };
 
-const createUserFirebase = () => {
+const createUserFirebase = async () => {
   const email = formData.value.email;
   const password = formData.value.password;
-  const companyName = formData.value.company_name;
 
-  createUserWithEmailAndPassword(auth, email, password)
-  .then((userCredential) => {
-    // Signed up 
-    //TODO: save whatever info we need in the pinia store as a state
-    const user = userCredential.user;
-    console.log(user.uid);
+  //create the new user in Firebase
+  const credential = await createUserWithEmailAndPassword(auth, email, password);
+  const user = credential.user;
 
-    formData.value.auth_key = user.uid;
-    const newAccount = toRaw(formData.value);
+  //generate the token to send to backend for cookie creation
+  const token = await user.getIdToken();
 
-    axios.post(`${apiUrl}/registration`, {
-      newAccount
-    },
-    {
-      withCredentials: true,
-    })    
-    .then((response) => {
-      const registeredAdmin = response.data;
+  //create the new user in backend database
+  const newAccount = toRaw(formData.value);
+  await axios.post(`${apiUrl}/registration`, {newAccount});
 
-      console.log("frontend registration", registeredAdmin);
-
-      authStore.login({
-        id: registeredAdmin.id,
-        first_name: registeredAdmin.first_name, 
-        last_name: registeredAdmin.last_name, 
-        email: registeredAdmin.email, 
-        company_id: registeredAdmin.company_id, 
-        team_id: 0, 
-        team_name: "", 
-        role: registeredAdmin.role, 
-        join_date: registeredAdmin.join_date, 
-        pto: 0,
-        Privileges: {
-          is_admin: true,
-          is_supervisor: false,
-        },
-        company: {
-          name: companyName,
-        }
-        });
-      }).then(() => {
-        // User will be logged in automatically if account is successfully created
-        router.push({ path: `/employee` });
-        console.log("logged in user", authStore.user)
-      })
-  })
-  .catch((error) => {
-    const errorCode = error.code;
-    const errorMessage = error.message;
-    console.log(errorCode, errorMessage);
-  });
+  //receive cookie from backend and save user info in Pinia
+  const backendData = await axios.post(`${apiUrl}/login`, {email: email, token: token});
+  authStore.login(backendData.data);
 };
 
 </script>
