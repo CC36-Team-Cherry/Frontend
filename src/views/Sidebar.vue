@@ -84,8 +84,6 @@ const pendingApprovalsCount = computed(() => {
 
   const pendingSent = sentApprovals.filter(approval => approval.status === 'Pending').length;
   const pendingReceived = receivedApprovals.filter(approval => approval.status === 'Pending').length;
-
-  console.log(authStore.approvals)
   return pendingSent + pendingReceived;
 });
 

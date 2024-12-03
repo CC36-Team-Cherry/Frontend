@@ -48,10 +48,18 @@
             </div>
             <div>
               <label class="font-semibold block">{{ $t('employeeDetails.fields.supervisor') }}</label>
-              <input :disabled="!authStore.user.Privileges.is_admin && !authStore.user.Privileges.is_supervisor"
-                v-model="supervisorSearch" @input="filterSupervisors" @focus="showDropdown = true" type="text" :placeholder="supervisorPlaceholder"
+              <input 
+                :disabled="!authStore.user.Privileges.is_admin && !authStore.user.Privileges.is_supervisor"
+                v-model="supervisorSearch" 
+                @input="filterSupervisors" 
+                @focus="showDropdown = true" 
+                type="text" 
+                :placeholder="supervisorPlaceholder"
                 class="border rounded p-2 w-ull">
-              <button v-if="formData.supervisor_id" @click="clearSupervisor">
+              <button 
+                v-if="formData.supervisor_id" 
+                @click="clearSupervisor"
+              >
                 ✕
               </button>
               <ul v-if="showDropdown && filteredSupervisors.length > 0" ref="dropdown"
@@ -222,7 +230,6 @@ const getSpecialPto = async () => {
 const addSpecialPto = async () => {
   try {
     // const newSpecialPto = newSpecialPto.value;
-    console.log(newSpecialPto.value)
     const response = await axios.post(`${apiUrl}/accounts/${props.employee.id}/specialPto`,
       { content: newSpecialPto.value }
     );

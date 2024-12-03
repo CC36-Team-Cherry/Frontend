@@ -443,7 +443,7 @@ const fetchSupervisors = async () => {
   try {
     const response = await axios.get(`${apiUrl}/supervisors`);
     console.log(response.data)
-    fetchedSupervisors.value = response.data.filter(supervisor => supervisor.id !== authStore.user.id);;
+    fetchedSupervisors.value = response.data;
   } catch (err) {
     console.error('Error fetching supervisors:', err);
   }
@@ -677,9 +677,7 @@ const handleFetchAll = async () => {
 }
 
 onMounted(() => {
-  handleFetchEmployees();
-  handleFetchTeams();
-  fetchSupervisors();
+  handleFetchAll();
   filterSupervisors();
 });
 </script>
