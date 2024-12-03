@@ -1,5 +1,6 @@
 <template>
-    <div>
+    <LoopingRhombusesSpinner v-if="isLoading"/>
+    <div v-else>
         <div class="border-2 flex flex-row justify-evenly">
             <button
                 class="w-full h-8"
@@ -60,14 +61,14 @@
                             v-if="activeTab === 'received'"
                         >{{ request.employeeName }}</td>
                         <td
-                            v-if="request.type === 'Month Attendance Request'"
-                        >{{  `${request.type}: ${request.date}` }}</td>
+                            v-if="request.attendanceType === 'Month Attendance Request'"
+                        >{{  `${request.attendanceType}: ${request.date}` }}</td>
                         <td
-                            v-if="request.type === 'PTO Request' || request.type === 'Half PTO Request'"
-                        >{{  `${request.type}: ${request.date}` }}</td>
+                            v-if="request.attendanceType === 'PTO Request' || request.attendanceType === 'Half PTO Request'"
+                        >{{  `${request.attendanceType}: ${request.date}` }}</td>
                         <td
-                            v-if="request.type === 'Special PTO Request'"
-                            >{{  `${request.type}: ${request.date}` }}</td>                        
+                            v-if="request.attendanceType === 'Special PTO Request'"
+                            >{{  `${request.attendanceType}: ${request.type} for ${request.date}` }}</td>                        
                         <td
                             v-if="!request.isEditing"
                         >{{  request.memo }}</td>
@@ -84,12 +85,12 @@
                             <button
                                 v-if="activeTab==='received'"
                                 class="border-2"
-                                @click="statusClick(request.id, 'Approved', request.type)"
+                                @click="statusClick(request.id, 'Approved', request.attendanceType)"
                             >Approve</button>
                             <button
                                 v-if="activeTab==='received'"
                                 class="border-2"
-                                @click="statusClick(request.id, 'Denied', request.type)"
+                                @click="statusClick(request.id, 'Denied', request.attendanceType)"
                             >Deny</button>
                             <button
                                 v-if="activeTab==='received'"
@@ -103,7 +104,7 @@
                             >Remind</button>
                             <button
                                 class="border-2"
-                                @click="deleteClick(request.id, request.type)"
+                                @click="deleteClick(request.id, request.attendanceType)"
                             >Delete</button>
                         </td>
                         <td>{{  request.updated_at }}</td>
@@ -118,11 +119,13 @@
 import { ref, computed, onMounted } from 'vue';
 import axios from 'axios';
 import { useAuthStore } from '@/stores/authStore';
+import LoopingRhombusesSpinner from '../modal/Loading.vue';
 
 const apiUrl = import.meta.env.VITE_API_URL;
 axios.defaults.withCredentials = true;
 const authStore = useAuthStore();
 const activeAccountId = authStore.user.id;
+const isLoading = ref(true);
 
 // Sample data for the approval requests
 const requests = ref({});
@@ -143,19 +146,19 @@ const switchTab = (tab) => {
 
 const getApprovals = async () => {
     try {
+        isLoading.value = true;
         const response = await axios.get(`${apiUrl}/accounts/${activeAccountId}/approvals`);
         
         requests.value.sent = response.data.approvalsSentData;
         requests.value.received = response.data.approvalsReceivedData;
         console.log("stored value in requests: ", requests.value)
-        
+        isLoading.value = false;
     } catch (err) {
         console.error('Error fetching approvals:', err);
     }
 }
 
 // Button click to change status to approved or denied
-// TODO: Change status depending on type of approval selected
 // TODO: Set reactive state to change status immediately on click without refresh
 const statusClick = async (approvalsId, statusChange, requestType) => {
     try {
@@ -165,7 +168,7 @@ const statusClick = async (approvalsId, statusChange, requestType) => {
 
         // Find the index of the request that matches the ID and type
         const requestIndex = tabRequests.findIndex(request => 
-            request.id === approvalsId && request.type === requestType
+            request.id === approvalsId && request.attendanceType === requestType
         );
 
         if (requestIndex !== -1) {
@@ -173,6 +176,7 @@ const statusClick = async (approvalsId, statusChange, requestType) => {
             tabRequests[requestIndex].status = statusChange; // Update the status in the local state
         }
 
+        console.log(requestType)
         const response = await axios.patch(`${apiUrl}/approvals/${requestType}/${approvalsId}`, 
             {
                 // Send status change string
@@ -233,21 +237,13 @@ const seeAttendanceClick = async () => {
 // TODO: Set up delete approval to delete depending on type of request
 const deleteClick = async (approvalsId, requestType) => {
     try {
-    
-        const response = await axios.delete(`${apiUrl}/approvals/${requestType}/${approvalsId}`); 
-
-        // If the deletion is successful on the server, proceed to remove the request from the local state
+        // Optimistic rendering
         const tabRequests = requests.value[activeTab.value]; // Get the requests for the active tab
+        console.log(tabRequests)
 
-        // Find the index of the request that matches both the id and the type
-        const requestIndex = tabRequests.findIndex(request => 
-            request.id === approvalsId && request.type === requestType
-        );
+        requests.value[activeTab.value] = tabRequests.filter(request => !(request.id === approvalsId && request.attendanceType === requestType))
 
-        if (requestIndex !== -1) {
-            // Remove the request from the array in the local state
-            tabRequests.splice(requestIndex, 1);
-        }
+        const response = await axios.delete(`${apiUrl}/approvals/${requestType}/${approvalsId}`); 
 
     } catch (err) {
         console.error('Error deleting approval:', err)

@@ -25,22 +25,12 @@
             <option 
               v-for="specialPto in specialPtos" 
               :key="specialPto.id" 
-              :value="'specialPto_' + specialPto.id"
+              :value="specialPto.type"
             >
               {{ specialPto.type }}
             </option>
           </optgroup>
           <option value="absence">{{ $t('calendar.types.absence') }}</option>
-        </select>
-      </div>
-      <!-- Special PTO Dropdown (only shown when 'specialPto' is selected) -->
-      <div v-if="attendanceType === 'specialPto'">
-        <label class="block mb-1 font-bold">{{ $t('calendar.specialPtoType') }}</label>
-        <select v-model="selectedSpecialPtoId" class="border border-gray-300 rounded p-2 w-full">
-          <option value="" disabled>Select Special PTO</option>
-          <option v-for="specialPto in specialPtos" :key="specialPto.id" :value="specialPto.id">
-            {{ specialPto.name }}
-          </option>
         </select>
       </div>
       <!-- Start Time -->
@@ -155,6 +145,7 @@ export default {
         'ja-JP': jaLocale,
       },
       specialPtos: [],
+      selectedSpecialPtoType: '',
     };
   },
   mounted() {
@@ -337,7 +328,6 @@ methods: {
   });
   console.log('Chart initialized successfully');
 },
-
 
 updateChart() {
   if (!this.attendanceChart) {
@@ -579,9 +569,10 @@ async fetchAttendanceData(accountId) {
       this.selectedEventId = null;
     },
     async fetchSupervisors() {
+      const authStore = useAuthStore();
       try {
         const response = await axios.get(`${apiUrl}/supervisors`);
-        this.supervisors = response.data;
+        this.supervisors = response.data.filter(supervisor => supervisor.id !== authStore.user.id);;
       } catch (err) {
         console.error('Error fetching supervisors:', err);
       }
@@ -591,9 +582,6 @@ async fetchAttendanceData(accountId) {
       const authStore = useAuthStore();
 
       switch (this.attendanceType) {
-        case "specialPto":
-        console.log(this.attendanceType);
-        break;
 
         case "general":
           const selectedDate = this.selectionRange.split(' - ');
@@ -618,21 +606,31 @@ async fetchAttendanceData(accountId) {
         break;
 
         case "pto":
-          const ptoDay = new Date(this.selectionRange).toISOString();
-          console.log(ptoDay)
 
-          const ptoApproval = {
-            account_id: authStore.user.id,
-            supervisor_id: this.selectedSupervisorId,
-            content: this.memo,
-            status: 'pending',
-            day: ptoDay, 
-            all_day: true,
-          }
+          const selectedPtoDates = this.selectionRange.split(', ');
+          console.log(selectedPtoDates);
+
+          // const ptoDay = new Date(this.selectionRange).toISOString();
+          // console.log(ptoDay)
 
           try {
-            const response = await axios.post(`${apiUrl}/approvals/pto`, ptoApproval);
-            console.log(response.data);
+
+            for (let day of selectedPtoDates) {
+              const ptoApproval = {
+              account_id: authStore.user.id,
+              supervisor_id: this.selectedSupervisorId,
+              content: this.memo,
+              status: 'Pending',
+              day: new Date(day).toISOString(), 
+              all_day: true,
+              }
+
+              console.log("FE send ptoApproval: ", ptoApproval);
+              
+              const response = await axios.post(`${apiUrl}/approvals/pto`, ptoApproval);
+              console.log("BE receive sent pto Approval: ", response);
+            }
+
           } catch (err) {
             console.error('Error submitting pto approval: ', err)
           }
@@ -648,7 +646,7 @@ async fetchAttendanceData(accountId) {
             account_id: authStore.user.id,
             supervisor_id: this.selectedSupervisorId,
             content: this.memo,
-            status: 'pending',
+            status: 'Pending',
             day: halfPtoDay, 
             all_day: false,
             hour_start: halfPtoStartTime,
@@ -665,7 +663,24 @@ async fetchAttendanceData(accountId) {
         break;
 
         case "specialPto":
-          // add special pto single select from type dropdown
+          const specialPtoDay = new Date(this.selectionRange).toISOString();
+          
+          const specialPtoApproval = {
+            account_id: authStore.user.id,
+            supervisor_id: this.selectedSupervisorId,
+            content: this.memo,
+            status: 'Pending',
+            day: specialPtoDay, 
+            type: this.selectedSpecialPtoType,
+          }
+          
+          console.log(specialPtoApproval);
+          
+          try {
+            await axios.post(`${apiUrl}/approvals/specialPto`, specialPtoApproval);
+          } catch (err) {
+            console.error('Error submitting pto approval: ', err)
+          }
         break
 
         default:
@@ -688,7 +703,3 @@ async fetchAttendanceData(accountId) {
 };
 
 </script>
-
-
-
-
