@@ -1,4 +1,6 @@
 <template>
+  <LoopingRhombusesSpinner v-if="isLoading" class="bg-gray-100"/>
+  <div v-else>
     <div class="flex justify-center items-center h-screen bg-gray-100">
       <div class="bg-white p-8 rounded shadow-md w-full max-w-md">
         <h2 class="text-2xl font-bold mb-4">{{ $t('login.title') }}</h2>
@@ -37,6 +39,7 @@
         </form>
       </div>
     </div>
+    </div>
   </template>
   
   
@@ -47,9 +50,11 @@
   import { verifyPasswordResetCode, confirmPasswordReset, signInWithEmailAndPassword } from "firebase/auth";
   import { auth } from '../../firebase/firebaseConfig.ts'
   import axios from "axios";
+  import LoopingRhombusesSpinner from '../../modal/Loading.vue';
 
   const apiUrl = import.meta.env.VITE_API_URL;
   axios.defaults.withCredentials = true;
+  const isLoading = ref(false);
 
   const newPassword = ref('');
   const confirmNewPassword = ref('');
@@ -59,13 +64,13 @@
   let accountEmail = '';
 
   const handleResetPassword = () => {
+    isLoading.value = true;
     const actionCode = getParameterByName('oobCode');
     verifyPasswordResetCode(auth, actionCode)
     .then((email) => {
       accountEmail = email;
       confirmPasswordReset(auth, actionCode, newPassword.value)
       .then((res) => {
-        getUserFromBackend()
         loginFirebase();
       })
       .catch((error) => {
@@ -89,9 +94,9 @@
     }
   }
 
-  const getUserFromBackend = async () => {
+  const getUserFromBackend = async (token: string) => {
   try {
-    const backendData = await axios.post(`${apiUrl}/login`, {email: accountEmail});
+    const backendData = await axios.post(`${apiUrl}/login`, {email: accountEmail, token: token});
     // store user data in Pinia
     authStore.login(backendData.data)
   } catch (err) {
@@ -99,21 +104,22 @@
   }
 }
 
-  // const validatePasswords = () => {
-  //   if (newPassword.value !== confirmNewPassword.value) {
-  //     return false
-  //   }
-  // }
+  const updateLastLogin = async () => {
+  try {
+    const response = await axios.patch(`${apiUrl}/accounts/${authStore.user?.id}`, {last_login: new Date()})
+  } catch (err) {
+    console.error('Error updating last_login: ', err);
+  }
+}
   
-  const loginFirebase = () => {
-    signInWithEmailAndPassword(auth, accountEmail, newPassword.value)
-    .then((userCredential) => {
-      // Signed in 
-      router.push({ path: `/calendar` });
-    })
-    .catch((error) => {
-      console.log(error.code, error.message);
-    });
+  const loginFirebase = async () => {
+    const credential = await signInWithEmailAndPassword(auth, accountEmail, newPassword.value);
+    const user = credential.user;
+    const token = await user.getIdToken();
+    await getUserFromBackend(token);
+    updateLastLogin();
+    router.push({ path: `/calendar` });
+    isLoading.value = false;
   }
   
   </script>

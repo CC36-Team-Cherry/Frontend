@@ -1,5 +1,6 @@
 <template>
-  <div class="bg-white shadow p-4 rounded">
+  <LoopingRhombusesSpinner v-if="isLoading"/>
+  <div v-else class="bg-white shadow p-4 rounded">
     <div class="flex justify-between items-center mb-4">
       <input type="text" :placeholder="$t('employeeList.searchPlaceholder')" v-model="searchTerm"
         class="border rounded p-2 w-1/2" />
@@ -150,6 +151,7 @@ import EmployeeDetailsModal from '@/modal/EmployeeDetailsModal.vue';
 import CalendarModal from '@/modal/CalendarModal.vue';
 import { useAuthStore } from '@/stores/authStore';
 import { onClickOutside } from '@vueuse/core';
+import LoopingRhombusesSpinner from '../../modal/Loading.vue';
 
 const apiUrl = import.meta.env.VITE_API_URL;
 
@@ -161,6 +163,7 @@ const searchTerm = ref('');
 const isAddUserModalVisible = ref(false);
 const isEmployeeDetailsModalVisible = ref(false);
 const isCalendarModalVisible = ref(false);
+const isLoading = ref(true);
 
 const fetchedEmployees = ref([]);
 const fetchedTeams = ref([]);
@@ -371,7 +374,7 @@ const fetchSupervisors = async () => {
       try {
         const response = await axios.get(`${apiUrl}/supervisors`);
         console.log(response.data)
-        fetchedSupervisors.value = response.data; 
+        fetchedSupervisors.value = response.data.filter(supervisor => supervisor.id !== authStore.user.id);
       } catch (err) {
         console.error('Error fetching supervisors:', err);
       }
@@ -413,6 +416,14 @@ const closeDropdown = () => {
 
 // handle click outside of dropdown of supervisors
 onClickOutside(dropdown, closeDropdown);
+
+const handleFetchAll = async () => {
+  isLoading.value = true;
+  await handleFetchEmployees();
+  await handleFetchTeams();
+  await fetchSupervisors();
+  isLoading.value = false;
+}
 
 onMounted(() => {
   handleFetchEmployees();
