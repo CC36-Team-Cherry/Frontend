@@ -1,113 +1,152 @@
 <template>
   <div class="p-4 bg-gray-100 h-full">
     <!-- Header Section -->
-    <div class="grid grid-cols-6 gap-4 mb-4">
-      <!-- Selection -->
-      <div>
-        <label class="block mb-1 font-bold">{{ $t('calendar.selection') }}</label>
-        <input
-          type="text"
-          placeholder="YYYY-MM-DD - YYYY-MM-DD"
-          v-model="selectionRange"
-          class="border border-gray-300 rounded p-2 w-full"
-        />
-      </div>
-      <!-- Type -->
-      <div>
-        <label class="block mb-1 font-bold">{{ $t('calendar.type') }}</label>
-        <select v-model="attendanceType" class="border border-gray-300 rounded p-2 w-full">
-          <option value="" disabled>Select Type</option>
-          <option value="general">{{ $t('calendar.types.general') }}</option>
-          <option value="pto">{{ $t('calendar.types.pto') }}</option>
-          <option value="halfpto">{{ $t('calendar.types.halfPto') }}</option>
-          <!-- Special PTO options dynamically inserted -->
-          <optgroup v-if="specialPtos.length > 0" label="Special PTO">
-            <option 
-              v-for="specialPto in specialPtos" 
-              :key="specialPto.id" 
-              :value="specialPto.attendanceType"
-            >
-              {{ specialPto.type }}
-            </option>
-          </optgroup>
-          <option value="absence">{{ $t('calendar.types.absence') }}</option>
-        </select>
-      </div>
-      <!-- Start Time -->
-      <div>
-        <label class="block mb-1 font-bold">{{ $t('calendar.startTime') }}</label>
-        <input
-          type="time"
-          v-model="startTime"
-          class="border border-gray-300 rounded p-2 w-full"
-        />
-      </div>
-      <!-- End Time -->
-      <div>
-        <label class="block mb-1 font-bold">{{ $t('calendar.endTime') }}</label>
-        <input
-          type="time"
-          v-model="endTime"
-          class="border border-gray-300 rounded p-2 w-full"
-        />
-      </div>
-      
-      <!-- Attendance -->
-      <div>
-        <label class="block mb-1 font-bold">{{ $t('calendar.attendance') }}</label>
-        <button
-          @click="logAttendance"
-          :disabled="isPtoSelected"
-          :class="{
-            'bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600 w-full' : !isPtoSelected,
-            'bg-gray-300 text-gray-500 py-2 px-4 rounded w-full cursor-not-allowed' : isPtoSelected
-            }"
-          >
-          {{ selectedEventId ? $t('calendar.updateAttendance') : $t('calendar.logAttendance') }}
-        </button>
-      </div>
-      <div>
-        <div>
-          <label class="block mb-1 font-bold">{{ "Supervisor" }}</label>
-            <select 
-              v-model="selectedSupervisorId" 
-              class="border border-gray-300 rounded p-2 w-full"
-            >
-              <option value="" disabled>Select Supervisor</option>
-              <!-- Loop through supervisors to create the dropdown -->
-              <option 
-                v-for="supervisor in supervisors" 
-                :key="supervisor.id" 
-                :value="supervisor.id">
-                {{ supervisor.first_name + supervisor.last_name }}
-              </option>
+    <div class="grid grid-cols-1 md:grid-cols-12 gap-4 mb-4">
+      <!-- Left column for form inputs and chart -->
+      <div class="md:col-span-8">
+        <div class="grid grid-cols-1 gap-4 mb-4">
+          <!-- Selection -->
+          <div>
+            <label class="block mb-1 font-bold text-xs">{{ $t('calendar.selection') }}</label>
+            <input
+              type="text"
+              placeholder="YYYY-MM-DD - YYYY-MM-DD"
+              v-model="selectionRange"
+              class="border border-gray-300 rounded p-1 text-xs w-full"
+            />
+          </div>
+
+          <!-- Type -->
+          <div>
+            <label class="block mb-1 font-bold text-xs">{{ $t('calendar.type') }}</label>
+            <select v-model="attendanceType" class="border border-gray-300 rounded p-1 text-xs w-full">
+              <option value="" disabled>Select Type</option>
+              <option value="general">{{ $t('calendar.types.general') }}</option>
+              <option value="pto">{{ $t('calendar.types.pto') }}</option>
+              <option value="halfpto">{{ $t('calendar.types.halfPto') }}</option>
+              <optgroup v-if="specialPtos.length > 0" label="Special PTO">
+                <option 
+                  v-for="specialPto in specialPtos" 
+                  :key="specialPto.id" 
+                  :value="specialPto.attendanceType"
+                >
+                  {{ specialPto.type }}
+                </option>
+              </optgroup>
+              <option value="absence">{{ $t('calendar.types.absence') }}</option>
             </select>
-        </div>
-        <input
-          v-model="memo"
-          type="text"
-          placeholder="Optional Memo"
-          class="border-2"
-        />
-        <div>
-          <label class="block mb-1 font-bold">{{ Submit }}</label>
-          <button
-            @click="submitHandler"
-            class="bg-green-500 text-white py-2 px-4 rounded hover:bg-green-600 w-full"
-          >
-            {{ "Submit" }}
-          </button>
+          </div>
+
+          <!-- Start Time -->
+          <div>
+            <label class="block mb-1 font-bold text-xs">{{ $t('calendar.startTime') }}</label>
+            <input
+              type="time"
+              v-model="startTime"
+              class="border border-gray-300 rounded p-1 text-xs w-full"
+            />
+          </div>
+
+          <!-- End Time -->
+          <div>
+            <label class="block mb-1 font-bold text-xs">{{ $t('calendar.endTime') }}</label>
+            <input
+              type="time"
+              v-model="endTime"
+              class="border border-gray-300 rounded p-1 text-xs w-full"
+            />
+          </div>
+
+          <!-- Attendance -->
+          <div>
+            <label class="block mb-1 font-bold text-xs">{{ $t('calendar.attendance') }}</label>
+            <button
+              @click="logAttendance"
+              :disabled="isPtoSelected"
+              :class="{
+                'bg-blue-500 text-white py-1 px-3 rounded hover:bg-blue-600 w-full text-xs' : !isPtoSelected,
+                'bg-gray-300 text-gray-500 py-1 px-3 rounded w-full cursor-not-allowed text-xs' : isPtoSelected
+                }"
+              >
+              {{ selectedEventId ? $t('calendar.updateAttendance') : $t('calendar.logAttendance') }}
+            </button>
+          </div>
+
+          <!-- Supervisor and Memo -->
+          <div>
+            <div>
+              <label class="block mb-1 font-bold text-xs">{{ "Supervisor" }}</label>
+              <select 
+                v-model="selectedSupervisorId" 
+                class="border border-gray-300 rounded p-1 text-xs w-full"
+              >
+                <option value="" disabled>Select Supervisor</option>
+                <option 
+                  v-for="supervisor in supervisors" 
+                  :key="supervisor.id" 
+                  :value="supervisor.id">
+                  {{ supervisor.first_name + supervisor.last_name }}
+                </option>
+              </select>
+            </div>
+            <input
+              v-model="memo"
+              type="text"
+              placeholder="Optional Memo"
+              class="border-2 text-xs p-1 w-full"
+            />
+            <div>
+              <label class="block mb-1 font-bold text-xs">{{ "Submit" }}</label>
+              <button
+                @click="submitHandler"
+                class="bg-green-500 text-white py-1 px-3 rounded hover:bg-green-600 w-full text-xs"
+              >
+                {{ "Submit" }}
+              </button>
+            </div>
+          </div>
         </div>
       </div>
-<!-- Chart Section -->
-<div class="mb-4">
-  <canvas ref="attendanceChart" class="w-full h-64"></canvas>
-</div>
+
+      <!-- Right column for PTO card and chart -->
+      <div class="md:col-span-4 flex flex-col gap-4">
+        <!-- PTO Card Section (above the calendar) -->
+        <div class="relative flex flex-col bg-white shadow-sm border border-slate-200 rounded-lg w-full p-3">
+          <div class="mx-3 mb-0 border-b border-slate-200 pt-2 pb-1 px-1">
+            <span class="text-xs text-slate-600 font-medium">
+              PTO
+            </span>
+          </div>
+          <div class="p-2">
+            <p class="text-slate-600 leading-normal text-xs font-light">
+              Informazioni aggiuntive sul PTO o altro contenuto.
+            </p>
+          </div>
+        </div>
+
+        <!-- Chart Section (moved above the calendar) -->
+        <div class="mb-2 ml-20">
+          <!-- Aggiungi una classe per la chart -->
+          <canvas ref="attendanceChart" class="custom-chart-height w-full"></canvas>
+        </div>
+      </div>
     </div>
+
     <!-- Calendar Section -->
-    <div ref="calendar"></div>
+    <div class="mt-4 md:col-span-12 bg-white shadow-sm border border-slate-200 rounded-lg p-2">
+      <div ref="calendar"></div>
+    </div>
   </div>
 </template>
+
+<style scoped>
+  /* Imposta altezza più piccola per la chart */
+  .custom-chart-height {
+    height: 250px !important; /* Altezza definitiva per la chart */
+  }
+</style>
+
+
 
 <script>
 import { Calendar } from '@fullcalendar/core';
@@ -188,6 +227,7 @@ export default {
     initialView: 'dayGridMonth',
     locale: this.locales[locale.value],
     selectable: true,
+    //showNonCurrentDates: false,
     businessHours: {
       daysOfWeek: [1, 2, 3, 4, 5], 
     },
@@ -239,7 +279,7 @@ export default {
       }
     },
     datesSet: (info) => {
-      // Gestisci il cambio di mese
+      
       console.log('Month changed:', info.start); 
       this.handleMonthChange(info.start); // Funzione per gestire il cambio mese
       selectedMonth.value = info.start;
@@ -249,7 +289,15 @@ export default {
   console.log(this.calendar);
   this.calendar.render();
 
-  // Watch per il cambiamento di totalHours
+  
+  this.$watch(
+    () => locale.value,
+    async (newLocale) => {
+      this.calendar.setOption('locale', this.locales[newLocale]);
+    }
+  );
+
+  
   this.$watch(
     () => totalHours.value,
     (newTotalHour) => {
@@ -285,22 +333,21 @@ export default {
     }
   },
   methods: {
-      // Gestisce il cambio del mese nel calendario
+     
   handleMonthChange(startDate) {
   console.log('Handling month change:', startDate);
 
-  // Estrai anno e mese dalla data
+
   const year = startDate.getFullYear();
   const month = startDate.getMonth() + 1;
 
-  // Calcola maxHours per il nuovo mese
   this.maxHours = this.calculateMaxHours(year, month);
   console.log('Updated maxHours:', this.maxHours);
 
-  // Resetta totalHours
+  
   totalHours.value = 0;
 
-  // Fetch dei nuovi dati
+ 
   const authStore = useAuthStore();
   this.fetchAttendanceData(authStore.user.id);
 },
@@ -343,27 +390,27 @@ setStartTimeFourHoursBefore() {
     this.startTime = `${String(startHour).padStart(2, '0')}:${String(startMinute).padStart(2, '0')}`;
 },
 
-  // Calcola il massimo delle ore lavorative in base ai giorni del mese
+  
   calculateMaxHours(year, month) {
-    const daysInMonth = new Date(year, month, 0).getDate(); // Numero di giorni nel mese
+    const daysInMonth = new Date(year, month, 0).getDate(); 
     let workingDays = 0;
 
     for (let day = 1; day <= daysInMonth; day++) {
-      const date = new Date(year, month , day); // Mese è 0-based
-      const isWeekend = date.getDay() === 0 || date.getDay() === 6; // Sabato o Domenica
-      const isHoliday = this.isHoliday(date); // Verifica se è una festività
+      const date = new Date(year, month , day); 
+      const isWeekend = date.getDay() === 0 || date.getDay() === 6;
+      const isHoliday = this.isHoliday(date); 
 
       if (!isWeekend && !isHoliday) {
         workingDays++;
       }
     }
 
-    return workingDays * 8; // Supponendo 8 ore lavorative al giorno
+    return workingDays * 8;
   },
 
-  // Controlla se una data è una festività
+  
   isHoliday(date) {
-    const formattedDate = date.toISOString().split('T')[0]; // Formatta come YYYY-MM-DD
+    const formattedDate = date.toISOString().split('T')[0]; 
     return this.holidays.some((holiday) => holiday.start === formattedDate);
   },
     
@@ -380,8 +427,8 @@ setStartTimeFourHoursBefore() {
       labels: ['Worked Hours', 'Remaining Hours', 'Overworked'],
       datasets: [
         {
-          data: [totalHours.value, this.maxHours, this.extraHours], // Dati iniziali
-          backgroundColor: ['#4caf50', '#e0e0e0', '#1b5e20'], // Verde chiaro, grigio, verde scuro
+          data: [totalHours.value, this.maxHours, this.extraHours], 
+          backgroundColor: ['#4caf50', '#e0e0e0', '#1b5e20'], 
         },
       ],
     },
@@ -404,25 +451,25 @@ updateChart() {
   }
 
   const workedHours = totalHours.value;
-  const extraHours = workedHours > this.maxHours ? workedHours - this.maxHours : 0; // Ore extra
-  const remainingHours = Math.max(this.maxHours - workedHours, 0); // Ore rimanenti
+  const extraHours = workedHours > this.maxHours ? workedHours - this.maxHours : 0; 
+  const remainingHours = Math.max(this.maxHours - workedHours, 0); 
 
   try {
-    // Imposta i dati nel grafico
+    
     this.attendanceChart.data.datasets[0].data = [
-      workedHours - extraHours, // Ore lavorate
-      remainingHours,           // Ore rimanenti
-      extraHours,               // Ore extra
+      workedHours - extraHours, 
+      remainingHours,           
+      extraHours,               
     ];
 
-    // Cambia i colori per riflettere i dati correttamente
+    
     this.attendanceChart.data.datasets[0].backgroundColor = [
-      '#4caf50', // Verde chiaro: Ore lavorate
-      '#e0e0e0', // Grigio: Ore rimanenti
-      '#1b5e20', // Verde scuro: Ore extra
+      '#4caf50', 
+      '#e0e0e0', 
+      '#1b5e20', 
     ];
 
-    // Aggiorna il grafico
+    
     this.attendanceChart.update();
 
     console.log('Chart updated successfully with:', {
