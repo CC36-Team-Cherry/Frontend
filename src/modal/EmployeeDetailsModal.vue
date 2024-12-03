@@ -43,6 +43,7 @@
                 v-model="formData.team_id" class="border rounded p-2 w-full">
                 <option value="" disabled>{{ $t('employeeDetails.placeholders.selectTeam') }}</option>
                 <option v-for="team in teams" :key="team.id" :value="team.id">{{ team.team_name }}</option>
+                <option :value="null">No team</option>
               </select>
               <input v-else disabled :value="selectedTeamName" class="border w-full rounded px-2 py-1" />
             </div>
