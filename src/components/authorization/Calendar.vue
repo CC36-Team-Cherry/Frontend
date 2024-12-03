@@ -64,8 +64,8 @@
               @click="logAttendance"
               :disabled="isPtoSelected"
               :class="{
-                'bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600 w-full text-xs' : !isPtoSelected,
-                'bg-gray-300 text-gray-500 py-2 px-4 rounded w-full cursor-not-allowed text-xs' : isPtoSelected
+                'bg-blue-500 text-white py-1 px-3 rounded hover:bg-blue-600 w-full text-xs' : !isPtoSelected,
+                'bg-gray-300 text-gray-500 py-1 px-3 rounded w-full cursor-not-allowed text-xs' : isPtoSelected
                 }"
               >
               {{ selectedEventId ? $t('calendar.updateAttendance') : $t('calendar.logAttendance') }}
@@ -99,7 +99,7 @@
               <label class="block mb-1 font-bold text-xs">{{ "Submit" }}</label>
               <button
                 @click="submitHandler"
-                class="bg-green-500 text-white py-2 px-4 rounded hover:bg-green-600 w-full text-xs"
+                class="bg-green-500 text-white py-1 px-3 rounded hover:bg-green-600 w-full text-xs"
               >
                 {{ "Submit" }}
               </button>
@@ -112,21 +112,22 @@
       <div class="md:col-span-4 flex flex-col gap-4">
         <!-- PTO Card Section (above the calendar) -->
         <div class="relative flex flex-col bg-white shadow-sm border border-slate-200 rounded-lg w-full p-3">
-          <div class="mx-3 mb-0 border-b border-slate-200 pt-3 pb-2 px-1">
+          <div class="mx-3 mb-0 border-b border-slate-200 pt-2 pb-1 px-1">
             <span class="text-xs text-slate-600 font-medium">
-              PTO Remaining
+              PTO
             </span>
           </div>
           <div class="p-2">
             <p class="text-slate-600 leading-normal text-xs font-light">
-              Number of PTO remaining
+              Informazioni aggiuntive sul PTO o altro contenuto.
             </p>
           </div>
         </div>
 
         <!-- Chart Section (moved above the calendar) -->
-        <div class="mb-4 ml-20">
-          <canvas ref="attendanceChart" class="w-full"  style="height: 300px;"></canvas>
+        <div class="mb-2 ml-20">
+          <!-- Aggiungi una classe per la chart -->
+          <canvas ref="attendanceChart" class="custom-chart-height w-full"></canvas>
         </div>
       </div>
     </div>
@@ -139,10 +140,12 @@
 </template>
 
 <style scoped>
+  /* Imposta altezza più piccola per la chart */
   .custom-chart-height {
-    height: 40px; /* Imposta un'altezza più piccola per la chart */
+    height: 250px !important; /* Altezza definitiva per la chart */
   }
 </style>
+
 
 
 <script>
