@@ -1,8 +1,6 @@
 <template>
   <div class="p-4">
     <h1 class="text-xl font-bold mb-4">{{ $t('SupervisorCalendar.Title') }}</h1>
-
-    <!-- Dropdown per selezionare gli utenti -->
     <div>
       <label for="approvee" class="block mb-2 font-bold">{{ $t('SupervisorCalendar.SelectPlaceholder') }}</label>
       <select
@@ -11,77 +9,80 @@
         @change="fetchCalendarData"
         class="p-2 border rounded w-full"
       >
-        <option value="" disabled>{{ $t('SupervisorCalendar.SelectPlaceholder') }}</option>
+        <option value="" disabled>Select Approvee</option>
         <option v-for="user in approvees" :key="user.id" :value="user.id">
           {{ user.first_name }} {{ user.last_name }}
         </option>
       </select>
-      <p v-if="approvees.length === 0" class="text-red-500 mt-2">No approvees found.</p>
+      <p v-if="approvees.length === 0" class="text-red-500">No approvees found.</p>
     </div>
-
-    <!-- Calendar -->
-    <div v-if="selectedUser" class="mt-4">
-      <div id="calendar" ref="calendar" class="w-full"></div>
+    <div v-if="approvees.length > 0" class="mt-4">
+      <div id="calendar"></div>
     </div>
-    <p v-if="selectedUser && calendarData.length === 0" class="mt-4 text-gray-500">No calendar data for this user.</p>
+    <p v-else-if="selectedUser" class="mt-4 text-gray-500">No calendar data for this user.</p>
   </div>
 </template>
 
+
 <script setup>
-import { ref, onMounted, watch, nextTick } from "vue";
+import { ref, onMounted, watch } from "vue";
 import { Calendar } from "@fullcalendar/core";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import interactionPlugin from "@fullcalendar/interaction";
 import enLocale from "@fullcalendar/core/locales/en-gb";
-import axios from "axios";
+import axios from 'axios';
+import { useAuthStore } from "@/stores/authStore";
+
+const authStore = useAuthStore();
+const userId = authStore.user.id;
 
 const apiUrl = import.meta.env.VITE_API_URL;
 axios.defaults.withCredentials = true;
 
-const approvees = ref([]); // Lista degli utenti approvati
-const selectedUser = ref(null); // Utente selezionato
-const calendarData = ref([]); // Dati del calendario
-const calendarRef = ref(null); // Riferimento all'elemento del calendario
-let calendarInstance = null; // Istanza di FullCalendar
-
-// Fetch approvees associati al supervisore
+const approvees = ref([]); // List of approvees
+const selectedUser = ref(null); // Currently selected user
+const calendarData = ref([]); // Calendar events
+let calendarInstance = null; // FullCalendar instance
+// Fetch approvees associated with the supervisor
 const fetchApprovees = async () => {
   try {
-    const response = await axios.get(`${apiUrl}/approvals/1`);
-    approvees.value = response.data.approvees || [];
-    console.log("Approvees:", approvees.value);
+    const response = await fetch(`${apiUrl}/approvals/${userId}`);
+    if (!response.ok) throw new Error("Failed to fetch approvees");
+    const data = await response.json();
+    console.log("Fetched approvees data: ", data);
+    approvees.value = data.approvees || [];
   } catch (error) {
-    console.error("Error fetching approvees:", error.response?.data || error.message);
+    console.error("Error fetching approvees:", error);
   }
 };
-
-// Fetch dati del calendario per l'utente selezionato
+// Fetch calendar data for the selected user
 const fetchCalendarData = async () => {
   if (!selectedUser.value) return;
-
   try {
-    const response = await axios.get(`${apiUrl}/accounts/${selectedUser.value}/attendance`);
-    calendarData.value = response.data.map((item) => ({
+    const response = await fetch(`http://localhost:3000/accounts/${selectedUser.value}/attendance/`);
+    if (!response.ok) throw new Error("Failed to fetch calendar data");
+    const data = await response.json();
+    // Format events
+    calendarData.value = data.map((item) => ({
       id: item.id,
-      title: `${item.punch_in.split("T")[1].slice(0, 5)} - ${item.punch_out.split("T")[1].slice(0, 5)}`,
+      title: `${item.punch_in.split('T')[1].slice(0, 5)} - ${item.punch_out.split('T')[1].slice(0, 5)}`,
       start: item.day,
       backgroundColor: getEventColor(item),
       extendedProps: {
-        punch_in: item.punch_in.split("T")[1].slice(0, 5),
-        punch_out: item.punch_out.split("T")[1].slice(0, 5),
+        punch_in: item.punch_in.split('T')[1].slice(0, 5),
+        punch_out: item.punch_out.split('T')[1].slice(0, 5),
       },
     }));
-
     if (calendarInstance) {
       calendarInstance.removeAllEvents();
       calendarInstance.addEventSource(calendarData.value);
     }
   } catch (error) {
-    console.error("Error fetching calendar data:", error.response?.data || error.message);
+    console.error("Error fetching calendar data:", error);
   }
 };
 
-// Determina il colore dell'evento in base al tipo di dato
+// Get event color based on event type
 const getEventColor = (data) => {
   if (data.absence) return "red";
   if (data.full_pto) return "orange";
@@ -89,47 +90,39 @@ const getEventColor = (data) => {
   return "blue";
 };
 
-// Inizializza il calendario
-const initializeCalendar = async () => {
-  await nextTick(); // Assicura che il DOM sia completamente montato
-
-  const calendarElement = calendarRef.value;
-
-  if (!calendarElement) {
-    console.error("Calendar element not found.");
-    return;
-  }
-
-  calendarInstance = new Calendar(calendarElement, {
-    plugins: [dayGridPlugin, interactionPlugin],
-    initialView: "dayGridMonth",
-    locale: enLocale,
-    events: calendarData.value,
-    eventContent: (arg) => {
-      if (arg.event.extendedProps.punch_in && arg.event.extendedProps.punch_out) {
-        return {
-          html: `
-            <div style="text-align: center; font-size: 0.9em; color: white; background-color: ${
-              arg.event.backgroundColor
-            }; padding: 5px; border-radius: 4px;">
-              <b>${arg.event.extendedProps.punch_in} - ${arg.event.extendedProps.punch_out}</b>
-            </div>
-          `,
-        };
-      }
-    },
+onMounted(() => {
+  fetchApprovees().then(() => {
+    const calendarElement = document.getElementById("calendar");
+    if(!calendarElement) {
+     console.error("L'elemento calendar non è stato trovato nel DOM");
+    }
+    if (calendarElement) {
+      calendarInstance = new Calendar(calendarElement, {
+        plugins: [dayGridPlugin, interactionPlugin],
+        initialView: "dayGridMonth",
+        locale: enLocale,
+        events: calendarData.value,
+        eventContent: (arg) => {
+          if (arg.event.extendedProps.punch_in && arg.event.extendedProps.punch_out) {
+            return {
+              html: `
+                <div style="text-align: center; font-size: 0.9em; color: white; background-color: ${
+                  arg.event.backgroundColor
+                }; padding: 5px; border-radius: 4px;">
+                  <b>${arg.event.extendedProps.punch_in} - ${arg.event.extendedProps.punch_out}</b>
+                </div>
+              `,
+            };
+          }
+        },
+      });
+      calendarInstance.render();
+    } else {
+      console.error("Calendar element not found. Ensure #calendar exists in the DOM.");
+    }
   });
-
-  calendarInstance.render();
-};
-
-
-onMounted(async () => {
-  await fetchApprovees();
-  initializeCalendar();
 });
-
-// Aggiorna il calendario quando i dati cambiano
+// Watch for calendar data changes and update the calendar
 watch(calendarData, () => {
   if (calendarInstance) {
     calendarInstance.removeAllEvents();
@@ -137,7 +130,6 @@ watch(calendarData, () => {
   }
 });
 </script>
-
 
 
 
