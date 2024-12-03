@@ -105,6 +105,11 @@ const loginFirebase = async () => {
   const token = await user.getIdToken();
   await getUserFromBackend(token);
   updateLastLogin();
+  if(authStore.user.language_preference === 'en') {
+    locale.value = 'en-US';
+  } else if (authStore.user.language_preference === 'ja') {
+    locale.value = 'ja-JP';
+  }
   router.push({ path: `/calendar` });
 }
 
