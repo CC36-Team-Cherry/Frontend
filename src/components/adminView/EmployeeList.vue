@@ -1,5 +1,5 @@
 <template>
-  <LoopingRhombusesSpinner v-if="isLoading"/>
+  <LoopingRhombusesSpinner v-if="isLoading" />
   <div v-else class="bg-white shadow p-4 rounded">
     <div class="flex justify-between items-center mb-4">
       <input type="text" :placeholder="$t('employeeList.searchPlaceholder')" v-model="searchTerm"
@@ -178,8 +178,8 @@
           <div>
             <input type="checkbox" v-model="formData.is_supervisor" />{{ $t('employeeList.modal.userType.supervisor')
             }}
-            <template v-if="authStore.user.is_admin">
-              <input type="checkbox" v-if="authStore.user.is_admin" v-model="formData.is_admin" />{{
+            <template v-if="authStore.user.Privileges.is_admin">
+              <input type="checkbox" v-model="formData.is_admin" />{{
                 $t('employeeList.modal.userType.admin') }}
             </template>
           </div>
@@ -199,7 +199,11 @@
     <!-- Employee Details Modal -->
     <EmployeeDetailsModal v-if="selectedEmployee" :employee="selectedEmployee" :teams="fetchedTeams"
       :supervisors="fetchedSupervisors" :isVisible="isEmployeeDetailsModalVisible" @close="closeEmployeeDetailsModal"
-      @save="handleUpdate" @delete="handleDelete" />
+      @save="handleUpdate" @delete="openConfirmModal" />
+    <ConfirmModal :isVisible="isConfirmModalVisible" :confirmFunc="handleDelete" confirmString="Delete"
+      @close="isConfirmModalVisible = false">
+      <p>Are you sure you want to delete?</p>
+    </ConfirmModal>
     <!-- Calendar Modal -->
     <CalendarModal v-if="isCalendarModalVisible" :isVisible="isCalendarModalVisible" :accountId="selectedUser.id"
       :employeeName="`${selectedUser.first_name} ${selectedUser.last_name}`" @close="closeCalendarModal" />
@@ -212,6 +216,7 @@ import axios from 'axios';
 import { auth } from '../../firebase/firebaseConfig.ts';
 import { sendPasswordResetEmail } from 'firebase/auth';
 import Modal from '@/modal/ModalView.vue';
+import ConfirmModal from '@/modal/ConfirmModal.vue';
 import EmployeeDetailsModal from '@/modal/EmployeeDetailsModal.vue';
 import CalendarModal from '@/modal/CalendarModal.vue';
 import { useAuthStore } from '@/stores/authStore';
@@ -230,6 +235,7 @@ const searchTerm = ref('');
 const isAddUserModalVisible = ref(false);
 const isEmployeeDetailsModalVisible = ref(false);
 const isCalendarModalVisible = ref(false);
+const isConfirmModalVisible = ref(false);
 const isLoading = ref(true);
 
 const fetchedEmployees = ref([]);
@@ -287,6 +293,10 @@ const closeAddUserModal = () => {
   isAddUserModalVisible.value = false;
   resetFormData();
 };
+
+const openConfirmModal = () => {
+  isConfirmModalVisible.value = true;
+}
 
 //adding a new user
 const handleSubmit = async () => {
@@ -390,6 +400,7 @@ const handleDelete = async () => {
     if (response.status === 200) {
       console.log('Account deleted successfully');
       await handleFetchEmployees(authStore.user.company_id);
+      isConfirmModalVisible.value = false;
       closeEmployeeDetailsModal();
     } else {
       console.error('Failed to delete account');
