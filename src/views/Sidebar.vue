@@ -23,17 +23,16 @@
         {{ $t('Sidebar.SupervisorCalendar') }}
        </router-link>
     </nav>
-    <div class="flex justify-around p-4 border-t">
-      <router-link to="/settings" class="w-full max-w-[120px] text-center">
-        <button class="bg-gray-300 p-2 rounded w-full">
-          {{ $t('Settings') }}
+    <div class="w-64 flex items-center justify-center gap-10 p-4 m-1 border-t">
+      <router-link to="/settings">
+        <button title="Settings" class="bg-gray-300 hover:bg-gray-400 p-2 rounded max-w-[120px]">
+          <settings/>
         </button>
       </router-link>
       <button
-        @click="handleLogout()"
-        class="bg-red-500 text-white p-2 rounded w-full max-w-[120px] text-center"
-      >
-        {{ $t('Logout') }}
+        @click="handleLogout()" title="Logout"
+        class="bg-gray-300 hover:bg-gray-400 p-2 rounded max-w-[120px] text-center">
+          <logout/>
       </button>
     </div>
   </aside>
@@ -44,6 +43,8 @@ import { useRouter } from 'vue-router'
 import { getAuth, signOut } from "firebase/auth";
 import { useAuthStore } from "@/stores/authStore";
 import axios from "axios";
+import logout from "./svg/logout.vue";
+import settings from "./svg/settings.vue";
 
 const apiUrl = import.meta.env.VITE_API_URL;
 axios.defaults.withCredentials = true;
