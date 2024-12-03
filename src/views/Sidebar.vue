@@ -25,12 +25,12 @@
     </nav>
     <div class="w-64 flex items-center justify-center gap-10 p-4 m-1 border-t">
       <router-link to="/settings">
-        <button title="Settings" class="bg-gray-300 hover:bg-gray-400 p-2 rounded max-w-[120px]">
+        <button :title="$t('Settings')" class="bg-gray-300 hover:bg-gray-400 p-2 rounded max-w-[120px]">
           <settings/>
         </button>
       </router-link>
       <button
-        @click="handleLogout()" title="Logout"
+        @click="handleLogout()" :title="$t('Logout')"
         class="bg-gray-300 hover:bg-gray-400 p-2 rounded max-w-[120px] text-center">
           <logout/>
       </button>
