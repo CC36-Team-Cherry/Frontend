@@ -27,6 +27,7 @@
     "chart.js": "^4.4.6",
     "cors": "^2.8.5",
     "date-holidays": "^3.23.12",
+    "epic-spinners": "^2.0.0",
     "firebase": "^11.0.2",
     "pinia": "^2.2.6",
     "pinia-plugin-persistedstate": "^4.1.3",
