@@ -112,7 +112,18 @@
     </div>
     <!-- Calendar Section -->
     <div ref="calendar"></div>
+</div>
+<div class="relative flex flex-col my-6 bg-white shadow-sm border border-slate-200 rounded-lg w-96">
+  <div class="mx-3 mb-0 border-b border-slate-200 pt-3 pb-2 px-1">
+    <span class="text-sm text-slate-600 font-medium">
+      PTO
+    </span>
   </div>
+  <div class="p-4">
+    <p class="text-slate-600 leading-normal font-light"> 
+    </p>
+  </div>
+</div>
 </template>
 
 <script>
@@ -184,6 +195,7 @@ export default {
     initialView: 'dayGridMonth',
     locale: this.locales[locale.value],
     selectable: true,
+    //showNonCurrentDates: false,
     businessHours: {
       daysOfWeek: [1, 2, 3, 4, 5], 
     },
@@ -235,16 +247,16 @@ export default {
       }
     },
     datesSet: (info) => {
-      // Gestisci il cambio di mese
+      
       console.log('Month changed:', info.start); 
-      this.handleMonthChange(info.start); // Funzione per gestire il cambio mese
+      this.handleMonthChange(info.start); 
     },
   });
 
   console.log(this.calendar);
   this.calendar.render();
 
-  // Watch per il cambiamento di locale
+  
   this.$watch(
     () => locale.value,
     async (newLocale) => {
@@ -252,7 +264,7 @@ export default {
     }
   );
 
-  // Watch per il cambiamento di totalHours
+  
   this.$watch(
     () => totalHours.value,
     (newTotalHour) => {
@@ -264,47 +276,47 @@ export default {
 }
 ,
 methods: {
-  // Gestisce il cambio del mese nel calendario
+ 
   handleMonthChange(startDate) {
   console.log('Handling month change:', startDate);
 
-  // Estrai anno e mese dalla data
+
   const year = startDate.getFullYear();
   const month = startDate.getMonth() + 1;
 
-  // Calcola maxHours per il nuovo mese
   this.maxHours = this.calculateMaxHours(year, month);
   console.log('Updated maxHours:', this.maxHours);
 
-  // Resetta totalHours
+  
   totalHours.value = 0;
 
-  // Fetch dei nuovi dati
+ 
   const authStore = useAuthStore();
   this.fetchAttendanceData(authStore.user.id);
+
 },
 
-  // Calcola il massimo delle ore lavorative in base ai giorni del mese
+  
   calculateMaxHours(year, month) {
-    const daysInMonth = new Date(year, month, 0).getDate(); // Numero di giorni nel mese
+    const daysInMonth = new Date(year, month, 0).getDate(); 
     let workingDays = 0;
 
     for (let day = 1; day <= daysInMonth; day++) {
-      const date = new Date(year, month , day); // Mese è 0-based
-      const isWeekend = date.getDay() === 0 || date.getDay() === 6; // Sabato o Domenica
-      const isHoliday = this.isHoliday(date); // Verifica se è una festività
+      const date = new Date(year, month , day); 
+      const isWeekend = date.getDay() === 0 || date.getDay() === 6;
+      const isHoliday = this.isHoliday(date); 
 
       if (!isWeekend && !isHoliday) {
         workingDays++;
       }
     }
 
-    return workingDays * 8; // Supponendo 8 ore lavorative al giorno
+    return workingDays * 8;
   },
 
-  // Controlla se una data è una festività
+  
   isHoliday(date) {
-    const formattedDate = date.toISOString().split('T')[0]; // Formatta come YYYY-MM-DD
+    const formattedDate = date.toISOString().split('T')[0]; 
     return this.holidays.some((holiday) => holiday.start === formattedDate);
   },
     
@@ -321,8 +333,8 @@ methods: {
       labels: ['Worked Hours', 'Remaining Hours', 'Overworked'],
       datasets: [
         {
-          data: [totalHours.value, this.maxHours, this.extraHours], // Dati iniziali
-          backgroundColor: ['#4caf50', '#e0e0e0', '#1b5e20'], // Verde chiaro, grigio, verde scuro
+          data: [totalHours.value, this.maxHours, this.extraHours], 
+          backgroundColor: ['#4caf50', '#e0e0e0', '#1b5e20'], 
         },
       ],
     },
@@ -346,25 +358,25 @@ updateChart() {
   }
 
   const workedHours = totalHours.value;
-  const extraHours = workedHours > this.maxHours ? workedHours - this.maxHours : 0; // Ore extra
-  const remainingHours = Math.max(this.maxHours - workedHours, 0); // Ore rimanenti
+  const extraHours = workedHours > this.maxHours ? workedHours - this.maxHours : 0; 
+  const remainingHours = Math.max(this.maxHours - workedHours, 0); 
 
   try {
-    // Imposta i dati nel grafico
+    
     this.attendanceChart.data.datasets[0].data = [
-      workedHours - extraHours, // Ore lavorate
-      remainingHours,           // Ore rimanenti
-      extraHours,               // Ore extra
+      workedHours - extraHours, 
+      remainingHours,           
+      extraHours,               
     ];
 
-    // Cambia i colori per riflettere i dati correttamente
+    
     this.attendanceChart.data.datasets[0].backgroundColor = [
-      '#4caf50', // Verde chiaro: Ore lavorate
-      '#e0e0e0', // Grigio: Ore rimanenti
-      '#1b5e20', // Verde scuro: Ore extra
+      '#4caf50', 
+      '#e0e0e0', 
+      '#1b5e20', 
     ];
 
-    // Aggiorna il grafico
+    
     this.attendanceChart.update();
 
     console.log('Chart updated successfully with:', {
