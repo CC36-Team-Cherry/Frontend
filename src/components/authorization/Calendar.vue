@@ -842,6 +842,7 @@ async fetchAttendanceData(accountId) {
 
     try {
       const response = await axios.get(`${apiUrl}/accounts/${authStore.user.id}/remainingPto`);
+      console.log("frontend response for pto: ", response.data)
       this.remainingPto = response.data.remaining_pto;
     } catch(err) {
       console.error('Error fetching remaining PTO: ', err);

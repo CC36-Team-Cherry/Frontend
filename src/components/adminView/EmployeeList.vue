@@ -4,7 +4,7 @@
     <div class="flex justify-between items-center mb-4">
       <input type="text" :placeholder="$t('employeeList.searchPlaceholder')" v-model="searchTerm"
         class="border rounded p-2 w-1/2" />
-      <button v-if="authStore.Privileges?.is_admin || authStore.user.Privileges?.is_supervisor"
+      <button v-if="authStore.user.Privileges?.is_admin"
         @click="openAddUserModal" class="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600">
         {{ $t('employeeList.addUser') }}
       </button>
@@ -66,7 +66,7 @@
                 class="cursor-pointer w-5 h-5 min-w-5 bg-gray-400 rounded" @click="resetSort"></svg-icon>
             </div>
           </th>
-          <th v-if="authStore.Privileges?.is_admin || authStore.user.Privileges?.is_supervisor"
+          <th v-if="authStore.user.Privileges?.is_admin || authStore.user.Privileges?.is_supervisor"
             class="border p-2 text-left">
             <div class="inline-flex items-center space-x-2">
               <span>Last Login</span>
@@ -85,7 +85,7 @@
                 class="cursor-pointer w-5 h-5 min-w-5 bg-gray-400 rounded" @click="resetSort"></svg-icon>
             </div>
           </th>
-          <th v-if="authStore.Privileges?.is_admin || authStore.user.Privileges?.is_supervisor" class="border p-2">{{
+          <th v-if="authStore.user.PrivilegesPrivileges?.is_admin || authStore.user.Privileges?.is_supervisor" class="border p-2">{{
             $t('employeeList.tableHeaders.att') }}</th>
         </tr>
       </thead>
@@ -109,10 +109,10 @@
                       : 'none'
               }}
             </td>
-            <td v-if="authStore.Privileges?.is_admin || authStore.user.Privileges?.is_supervisor" class="border p-2">{{
+            <td v-if="authStore.user.Privileges?.is_admin || authStore.user.Privileges?.is_supervisor" class="border p-2">{{
               employee.last_login ? employee.last_login.split('T')[0] : 'Invite Sent' }}</td>
             <td class="border p-2">{{ employee.email }}</td>
-            <td v-if="authStore.Privileges?.is_admin || authStore.user.Privileges?.is_supervisor" class="border p-2">
+            <td v-if="authStore.user.Privileges?.is_admin || authStore.user.Privileges?.is_supervisor" class="border p-2">
               <button class="bg-green-500 text-white px-2 py-1 rounded" @click.stop="openCalendarModal(employee)">
                 {{ $t('employeeList.view') }}
               </button>
