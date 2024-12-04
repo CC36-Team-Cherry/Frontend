@@ -82,7 +82,7 @@
       "team": "Team",
       "role": "Role",
       "joinDate": "Join Date",
-      "lastDate": "Last Date",
+      "lastDate": "Leave Date",
       "privileges": "Privileges",
       "status": "Status",
       "email": "Email",

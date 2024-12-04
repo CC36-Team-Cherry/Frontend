@@ -38,7 +38,7 @@
                         <th>Message</th>
                         <th>Status</th>
                         <th>Action</th>
-                        <th>Date</th>
+                        <th>Last Updated</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -65,10 +65,10 @@
                         >{{  `${request.attendanceType}: ${request.date}` }}</td>
                         <td
                             v-if="request.attendanceType === 'PTO Request' || request.attendanceType === 'Half PTO Request'"
-                        >{{  `${request.attendanceType}: ${request.date}` }}</td>
+                        >{{  `${request.attendanceType}: ${format(new Date(request.date),'yyyy-MM-dd')}` }}</td>
                         <td
                             v-if="request.attendanceType === 'Special PTO Request'"
-                            >{{  `${request.attendanceType}: ${request.type} for ${request.date}` }}</td>                        
+                            >{{  `${request.attendanceType}: ${request.type} on ${format(new Date(request.date),'yyyy-MM-dd')}` }}</td>                        
                         <td
                             v-if="!request.isEditing"
                         >{{  request.memo }}</td>
@@ -107,7 +107,7 @@
                                 @click="deleteClick(request.id, request.attendanceType)"
                             >Delete</button>
                         </td>
-                        <td>{{  request.updated_at }}</td>
+                        <td>{{  `${format(new Date(request.updated_at), 'yyyy-MM-dd h:mm')}` }}</td>
                     </tr> 
                 </tbody>
             </table>
@@ -120,6 +120,7 @@ import { ref, computed, onMounted } from 'vue';
 import axios from 'axios';
 import { useAuthStore } from '@/stores/authStore';
 import LoopingRhombusesSpinner from '../modal/Loading.vue';
+import { format } from 'date-fns'
 
 const apiUrl = import.meta.env.VITE_API_URL;
 axios.defaults.withCredentials = true;
@@ -128,14 +129,23 @@ const activeAccountId = authStore.user.id;
 const isLoading = ref(true);
 
 // Sample data for the approval requests
-const requests = ref({});
+// const requests = ref({});
+const requests = authStore.approvals
 
 // Reactive state to store current tab
 const activeTab = ref('sent');
 
 // Compute (like use effects) the list of requets based on active tab
 const filteredRequests = computed(() => {
-    return requests.value[activeTab.value] || [];
+        // Ensure requests and the current tab have valid data
+        if (requests && requests[activeTab.value]) {
+            return requests[activeTab.value].sort((a, b) => {
+            const dateA = new Date(a.updated_at);
+            const dateB = new Date(b.updated_at);
+            return dateB - dateA;
+        });
+    }
+    return [];  // Return an empty array if data is not available
 })
 
 // helper function to switch tabs
@@ -149,10 +159,10 @@ const getApprovals = async () => {
         isLoading.value = true;
         const response = await axios.get(`${apiUrl}/accounts/${activeAccountId}/approvals`);
         
-        requests.value.sent = response.data.approvalsSentData;
-        requests.value.received = response.data.approvalsReceivedData;
-        console.log("stored value in requests: ", requests.value)
+        requests.sent = response.data.approvalsSentData.sort((a, b) => new Date(b.updated_at) - new Date(a.updated_at));
+        requests.received = response.data.approvalsReceivedData.sort((a, b) => new Date(b.updated_at) - new Date(a.updated_at));
         isLoading.value = false;
+        authStore.setApprovals(response.data.approvalsSentData, response.data.approvalsReceivedData);
     } catch (err) {
         console.error('Error fetching approvals:', err);
     }
@@ -164,7 +174,7 @@ const statusClick = async (approvalsId, statusChange, requestType) => {
     try {
 
         // Get the requests for the current active tab
-        const tabRequests = requests.value[activeTab.value]; // Get the current active tab's requests
+        const tabRequests = requests[activeTab.value]; // Get the current active tab's requests
 
         // Find the index of the request that matches the ID and type
         const requestIndex = tabRequests.findIndex(request => 
@@ -174,9 +184,9 @@ const statusClick = async (approvalsId, statusChange, requestType) => {
         if (requestIndex !== -1) {
             // Before making the API call, optimistically update the status locally
             tabRequests[requestIndex].status = statusChange; // Update the status in the local state
+            tabRequests[requestIndex].updated_at = new Date().toISOString(); // Update the updated date in the local state
         }
 
-        console.log(requestType)
         const response = await axios.patch(`${apiUrl}/approvals/${requestType}/${approvalsId}`, 
             {
                 // Send status change string
@@ -199,12 +209,9 @@ const remindClick = (request) => {
 const saveRemind = async (request) => {
 
     const newMessage = request.newMessage;
-    console.log(request)
-    console.log(newMessage)
-
 
     try {
-        const response = await axios.patch(`${apiUrl}/approvals/${request.type}/${request.id}/remind`, {
+        const response = await axios.patch(`${apiUrl}/approvals/${request.attendanceType}/${request.id}/remind`, {
             newMessage,
         });
 
@@ -213,6 +220,8 @@ const saveRemind = async (request) => {
             request.updated_at = new Date().toISOString();
             request.isEditing = false;
         }
+
+        requests[activeTab.value].sort((a, b) => new Date(b.updated_at) - new Date(a.updated_at));
 
     } catch (err) {
         console.error('Error setting sending remind:', err)
@@ -234,14 +243,13 @@ const seeAttendanceClick = async () => {
     }
 }
 
-// TODO: Set up delete approval to delete depending on type of request
 const deleteClick = async (approvalsId, requestType) => {
     try {
         // Optimistic rendering
-        const tabRequests = requests.value[activeTab.value]; // Get the requests for the active tab
+        const tabRequests = requests[activeTab.value]; // Get the requests for the active tab
         console.log(tabRequests)
 
-        requests.value[activeTab.value] = tabRequests.filter(request => !(request.id === approvalsId && request.attendanceType === requestType))
+        requests[activeTab.value] = tabRequests.filter(request => !(request.id === approvalsId && request.attendanceType === requestType))
 
         const response = await axios.delete(`${apiUrl}/approvals/${requestType}/${approvalsId}`); 
 
