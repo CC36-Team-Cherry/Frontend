@@ -78,7 +78,7 @@ const goToLogin = () => {
   router.push({ path: `/login` });
 }
 
-const switchLanguage = (lang) => {
+const switchLanguage = (lang : any) => {
   locale.value = lang;
 };
 </script>
