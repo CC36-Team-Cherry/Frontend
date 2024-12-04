@@ -4,8 +4,8 @@
     <div class="flex justify-between items-center mb-4">
       <input type="text" :placeholder="$t('employeeList.searchPlaceholder')" v-model="searchTerm"
         class="border rounded p-2 w-1/2" />
-      <button v-if="authStore.user.Privileges?.is_admin"
-        @click="openAddUserModal" class="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600">
+      <button v-if="authStore.user.Privileges?.is_admin" @click="openAddUserModal"
+        class="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600">
         {{ $t('employeeList.addUser') }}
       </button>
     </div>
@@ -39,7 +39,9 @@
               <span>{{ $t('employeeList.tableHeaders.role') }}</span>
               <svg-icon v-if="!isRoleSorted" :path="path" type="mdi" class="cursor-pointer w-5 h-5 min-w-5"
                 @click="handleRoleSort"></svg-icon>
-              <svg-icon v-if="isRoleSorted" :path="path" type="mdi"
+              <svg-icon v-if="isRoleSorted && !isRoleSortedRev" :path="path" type="mdi"
+                class="cursor-pointer w-5 h-5 min-w-5 bg-gray-400 rounded" @click="handleRoleSort"></svg-icon>
+              <svg-icon v-if="isRoleSorted && isRoleSortedRev" :path="path" type="mdi"
                 class="cursor-pointer w-5 h-5 min-w-5 bg-gray-400 rounded" @click="resetSort"></svg-icon>
             </div>
           </th>
@@ -89,8 +91,9 @@
                 class="cursor-pointer w-5 h-5 min-w-5 bg-gray-400 rounded" @click="resetSort"></svg-icon>
             </div>
           </th>
-          <th v-if="authStore.user.PrivilegesPrivileges?.is_admin || authStore.user.Privileges?.is_supervisor" class="border p-2">{{
-            $t('employeeList.tableHeaders.att') }}</th>
+          <th v-if="authStore.user.PrivilegesPrivileges?.is_admin || authStore.user.Privileges?.is_supervisor"
+            class="border p-2">{{
+              $t('employeeList.tableHeaders.att') }}</th>
         </tr>
       </thead>
       <tbody>
@@ -113,10 +116,12 @@
                       : 'none'
               }}
             </td>
-            <td v-if="authStore.user.Privileges?.is_admin || authStore.user.Privileges?.is_supervisor" class="border p-2">{{
-              employee.last_login ? employee.last_login.split('T')[0] : 'Invite Sent' }}</td>
+            <td v-if="authStore.user.Privileges?.is_admin || authStore.user.Privileges?.is_supervisor"
+              class="border p-2">{{
+                employee.last_login ? employee.last_login.split('T')[0] : 'Invite Sent' }}</td>
             <td class="border p-2">{{ employee.email }}</td>
-            <td v-if="authStore.user.Privileges?.is_admin || authStore.user.Privileges?.is_supervisor" class="border p-2">
+            <td v-if="authStore.user.Privileges?.is_admin || authStore.user.Privileges?.is_supervisor"
+              class="border p-2">
               <button class="bg-green-500 text-white px-2 py-1 rounded" @click.stop="openCalendarModal(employee)">
                 {{ $t('employeeList.view') }}
               </button>
@@ -131,19 +136,24 @@
       <form>
         <div>
           <div>
-            <label class="block mb-1"><span class="text-red-500 font-bold">*</span>{{ $t('employeeList.modal.fields.firstName') }}</label>
+            <label class="block mb-1"><span class="text-red-500 font-bold">*</span>{{
+              $t('employeeList.modal.fields.firstName') }}</label>
             <input type="text" v-model="formData.first_name" class="border rounded p-2 w-full" />
           </div>
           <div>
-            <label class="block mb-1"><span class="text-red-500 font-bold">*</span>{{ $t('employeeList.modal.fields.lastName') }}</label>
+            <label class="block mb-1"><span class="text-red-500 font-bold">*</span>{{
+              $t('employeeList.modal.fields.lastName') }}</label>
             <input type="text" v-model="formData.last_name" class="border rounded p-2 w-full" />
           </div>
           <div>
-            <label class="block mb-1"><span class="text-red-500 font-bold">*</span>{{ $t('employeeList.modal.fields.email') }}</label>
+            <label class="block mb-1"><span class="text-red-500 font-bold">*</span>{{
+              $t('employeeList.modal.fields.email')
+            }}</label>
             <input type="email" v-model="formData.email" class="border rounded p-2 w-full" />
           </div>
           <div>
-            <label class="block mb-1"><span class="text-red-500 font-bold">*</span>{{ $t('employeeList.modal.fields.dateOfBirth') }}</label>
+            <label class="block mb-1"><span class="text-red-500 font-bold">*</span>{{
+              $t('employeeList.modal.fields.dateOfBirth') }}</label>
             <input type="date" v-model="formData.birthdate" class="border rounded p-2 w-full" />
           </div>
           <div>
@@ -170,11 +180,14 @@
             </ul>
           </div>
           <div>
-            <label class="block mb-1"><span class="text-red-500 font-bold">*</span>{{ $t('employeeList.modal.fields.role') }}</label>
+            <label class="block mb-1"><span class="text-red-500 font-bold">*</span>{{
+              $t('employeeList.modal.fields.role')
+            }}</label>
             <input type="text" v-model="formData.role" class="border rounded p-2 w-full" />
           </div>
           <div>
-            <label class="block mb-1"><span class="text-red-500 font-bold">*</span>{{ $t('employeeList.modal.fields.joinDate') }}</label>
+            <label class="block mb-1"><span class="text-red-500 font-bold">*</span>{{
+              $t('employeeList.modal.fields.joinDate') }}</label>
             <input type="date" v-model="formData.join_date" class="border rounded p-2 w-full" />
           </div>
           <div>
@@ -186,7 +199,9 @@
             </template>
           </div>
           <div>
-            <label class="block mb-1"><span class="text-red-500 font-bold">*</span>{{ $t('employeeList.modal.fields.pto') }}</label>
+            <label class="block mb-1"><span class="text-red-500 font-bold">*</span>{{
+              $t('employeeList.modal.fields.pto')
+            }}</label>
             <input type="number" v-model="formData.remaining_pto" class="border rounded p-2 w-full" />
           </div>
         </div>
@@ -559,14 +574,17 @@ function handleTeamSort() {
 }
 
 function handleRoleSort() {
-  resetSort();
-
-  sortedEmployees.value = [...filteredEmployees.value].sort((a, b) => {
-    return a.role.localeCompare(b.role);
-  });
-
-  isSorted.value = true;
-  isRoleSorted.value = true;
+  if (!isRoleSorted.value) {
+    resetSort();
+    sortedEmployees.value = [...filteredEmployees.value].sort((a, b) => {
+      return a.role.localeCompare(b.role);
+    });
+    isSorted.value = true;
+    isRoleSorted.value = true;
+  } else {
+    sortedEmployees.value = [...sortedEmployees.value].reverse();
+    return isRoleSortedRev.value = true;
+  }
 }
 
 function handleJoinDateSort() {
