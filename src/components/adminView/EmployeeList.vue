@@ -84,7 +84,9 @@
               <span>Last Login</span>
               <svg-icon v-if="!isLastLoginSorted" :path="path" type="mdi" class="cursor-pointer w-5 h-5 min-w-5"
                 @click="handleLastLoginSort"></svg-icon>
-              <svg-icon v-if="isLastLoginSorted" :path="path" type="mdi"
+              <svg-icon v-if="isLastLoginSorted && !isLastLoginSortedRev" :path="path" type="mdi"
+                class="cursor-pointer w-5 h-5 min-w-5 bg-gray-400 rounded" @click="handleLastLoginSort"></svg-icon>
+              <svg-icon v-if="isLastLoginSorted && isLastLoginSortedRev" :path="path" type="mdi"
                 class="cursor-pointer w-5 h-5 min-w-5 bg-gray-400 rounded" @click="resetSort"></svg-icon>
             </div>
           </th>
@@ -652,20 +654,23 @@ function handlePrivilegesSort() {
 }
 
 function handleLastLoginSort() {
-  resetSort();
+  if (!isLastLoginSorted.value) {
+    resetSort();
+    sortedEmployees.value = [...filteredEmployees.value].sort((a, b) => {
+      const dateA = a.last_login ? new Date(a.last_login) : new Date(0);
+      const dateB = b.last_login ? new Date(b.last_login) : new Date(0);
 
-  sortedEmployees.value = [...filteredEmployees.value].sort((a, b) => {
-    const dateA = a.last_login ? new Date(a.last_login) : new Date(0);
-    const dateB = b.last_login ? new Date(b.last_login) : new Date(0);
+      if (!a.last_login && b.last_login) return -1;
+      if (a.last_login && !b.last_login) return 1;
 
-    if (!a.last_login && b.last_login) return -1;
-    if (a.last_login && !b.last_login) return 1;
-
-    return dateB - dateA
-  });
-
-  isSorted.value = true;
-  isLastLoginSorted.value = true;
+      return dateB - dateA
+    });
+    isSorted.value = true;
+    isLastLoginSorted.value = true;
+  } else {
+    sortedEmployees.value = [...sortedEmployees.value].reverse();
+    return isLastLoginSortedRev.value = true;
+  }
 }
 
 function handleEmailSort() {
