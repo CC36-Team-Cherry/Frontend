@@ -1,6 +1,6 @@
 <template>
     <LoopingRhombusesSpinner v-if="isLoading" />
-    <div v-else class="p-8 bg-gray-50 min-h-screen">
+    <div v-else class="p-8 bg-gray-50 h-screen">
         <h1 class="text-2xl font-bold">{{ $t('adminConsole.title') }}</h1>
         <h2 class="text-xl font-bold"> {{ organizationName }}</h2>
         <div class="text-xl text-center my-5">{{ $t('adminConsole.fields.teamList') }}</div>
@@ -37,10 +37,10 @@
             <input type="text" v-model="formData.organizationName" class="border rounded p-2" />
         </div>
         <div class="flex flex-col items-center my-5">
-            <button @click="saveSettings" class="my-1 w-1/2 py-1 px-3 rounded bg-blue-500 text-white">
+            <button @click="saveSettings" class="my-1 w-1/2 py-1 px-3 rounded bg-blue-500 hover:bg-blue-600 transition text-white">
                 {{ $t('adminConsole.buttons.save') }}
             </button>
-            <button @click="openConfirmModal" class="my-1 w-1/2 py-1 rounded bg-red-500 text-white">
+            <button @click="openConfirmModal" class="my-6 w-1/2 py-1 rounded bg-red-500 hover:bg-red-600 transition text-white">
                 {{ $t('adminConsole.buttons.deleteOrganization') }}
             </button>
         </div>
