@@ -13,6 +13,7 @@
               placeholder="YYYY-MM-DD - YYYY-MM-DD"
               v-model="selectionRange"
               class="border border-gray-300 rounded p-1 text-xs w-full"
+              :disabled="isMonthSubmitSelected"
             />
           </div>
           <!-- Type -->
@@ -20,6 +21,7 @@
             <label class="block mb-1 font-bold text-xs">{{ $t('calendar.type') }}</label>
             <select v-model="attendanceType" class="border border-gray-300 rounded p-1 text-xs w-full">
               <option value="" disabled>Select Type</option>
+              <option value="monthSubmit">{{  "Month Submission" }}</option>
               <option value="general">{{ $t('calendar.types.general') }}</option>
               <option value="pto">{{ $t('calendar.types.pto') }}</option>
               <option value="halfpto">{{ $t('calendar.types.halfPto') }}</option>
@@ -43,7 +45,7 @@
               type="time"
               v-model="startTime"
               class="border border-gray-300 rounded p-1 text-xs w-full"
-              :disabled="isPtoSelected"
+              :disabled="isPtoSelected || isMonthSubmitSelected"
             />
           </div>
 
@@ -54,7 +56,7 @@
               type="time"
               v-model="endTime"
               class="border border-gray-300 rounded p-1 text-xs w-full"
-              :disabled="isPtoSelected"
+              :disabled="isPtoSelected || isMonthSubmitSelected"
             />
           </div>
 
@@ -63,10 +65,10 @@
             <label class="block mb-1 font-bold text-xs">{{ $t('calendar.attendance') }}</label>
             <button
               @click="logAttendance"
-              :disabled="isPtoSelected || isHalfPtoSelected"
+              :disabled="isPtoSelected || isHalfPtoSelected || isMonthSubmitSelected"
               :class="{
-                'bg-blue-500 text-white py-1 px-3 rounded hover:bg-blue-600 w-full text-xs' : !isPtoSelected || !isHalfPtoSelected,
-                'bg-gray-300 text-gray-500 py-1 px-3 rounded w-full cursor-not-allowed text-xs' : isPtoSelected || isHalfPtoSelected
+                'bg-blue-500 text-white py-1 px-3 rounded hover:bg-blue-600 w-full text-xs' : !isPtoSelected || !isHalfPtoSelected || !isMonthSubmitSelected,
+                'bg-gray-300 text-gray-500 py-1 px-3 rounded w-full cursor-not-allowed text-xs' : isPtoSelected || isHalfPtoSelected || isMonthSubmitSelected
                 }"
               >
               <!-- TODO: Need to update calendar update attendance -->
@@ -199,6 +201,9 @@ export default {
     },
     isHalfPtoSelected() {
       return this.attendanceType ==='halfpto'
+    },
+    isMonthSubmitSelected() {
+      return this.attendanceType === 'monthSubmit'
     }
   },
 
@@ -745,9 +750,15 @@ getEventTypeFromColor(color) {
         return; // Exit the function without submitting the new request
       }
 
+       // Check if PTO or HalfPTO is being requested and remainingPto is 0
+      if ((this.attendanceType === "pto" || this.attendanceType === "halfpto") && this.remainingPto <= 0) {
+        alert("Not enough PTO remaining to submit");
+        return; 
+      }
+
       switch (this.attendanceType) {
 
-        case "general":    
+        case "monthSubmit":    
 
           const generalApproval = {
             account_id: authStore.user.id,
