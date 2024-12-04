@@ -72,7 +72,9 @@
               <span>{{ $t('employeeList.tableHeaders.privileges') }}</span>
               <svg-icon v-if="!isPrivSorted" :path="path" type="mdi" class="cursor-pointer w-5 h-5 min-w-5"
                 @click="handlePrivilegesSort"></svg-icon>
-              <svg-icon v-if="isPrivSorted" :path="path" type="mdi"
+              <svg-icon v-if="isPrivSorted && !isPrivSortedRev" :path="path" type="mdi"
+                class="cursor-pointer w-5 h-5 min-w-5 bg-gray-400 rounded" @click="handlePrivilegesSort"></svg-icon>
+              <svg-icon v-if="isPrivSorted && isPrivSortedRev" :path="path" type="mdi"
                 class="cursor-pointer w-5 h-5 min-w-5 bg-gray-400 rounded" @click="resetSort"></svg-icon>
             </div>
           </th>
@@ -622,24 +624,31 @@ function handleLastDateSort() {
 }
 
 function handlePrivilegesSort() {
-  resetSort();
-
-  const admin = [];
-  const supervisor = [];
-  const user = [];
-  for (let employee of filteredEmployees.value) {
-    if (employee.Privileges.is_admin) {
-      admin.push(employee);
-    } else if (employee.Privileges.is_supervisor) {
-      supervisor.push(employee);
-    } else {
-      user.push(employee);
+  if (!isPrivSorted.value) {
+    resetSort();
+    const dual = [];
+    const admin = [];
+    const supervisor = [];
+    const user = [];
+    for (let employee of filteredEmployees.value) {
+      if (employee.Privileges.is_admin && employee.Privileges.is_supervisor) {
+        dual.push(employee);
+      } else if (employee.Privileges.is_admin) {
+        admin.push(employee);
+      } else if (employee.Privileges.is_supervisor) {
+        supervisor.push(employee);
+      } else {
+        user.push(employee);
+      }
     }
-  }
-  sortedEmployees.value = [...admin, ...supervisor, ...user];
+    sortedEmployees.value = [...dual, ...admin, ...supervisor, ...user];
 
-  isSorted.value = true;
-  isPrivSorted.value = true;
+    isSorted.value = true;
+    return isPrivSorted.value = true;
+  } else {
+    sortedEmployees.value = [...sortedEmployees.value].reverse();
+    return isPrivSortedRev.value = true;
+  }
 }
 
 function handleLastLoginSort() {
