@@ -50,7 +50,9 @@
               <span>{{ $t('employeeList.tableHeaders.joinDate') }}</span>
               <svg-icon v-if="!isJoinDateSorted" :path="path" type="mdi" class="cursor-pointer w-5 h-5 min-w-5"
                 @click="handleJoinDateSort"></svg-icon>
-              <svg-icon v-if="isJoinDateSorted" :path="path" type="mdi"
+              <svg-icon v-if="isJoinDateSorted && !isJoinDateSortedRev" :path="path" type="mdi"
+                class="cursor-pointer w-5 h-5 min-w-5 bg-gray-400 rounded" @click="handleJoinDateSort"></svg-icon>
+              <svg-icon v-if="isJoinDateSorted && isJoinDateSortedRev" :path="path" type="mdi"
                 class="cursor-pointer w-5 h-5 min-w-5 bg-gray-400 rounded" @click="resetSort"></svg-icon>
             </div>
           </th>
@@ -563,7 +565,7 @@ function handleTeamSort() {
   if (!isTeamSorted.value) {
     resetSort();
     sortedEmployees.value = [...filteredEmployees.value].sort((a, b) => {
-      return a.team_id - b.team_id;
+      return b.team_id - a.team_id;
     });
     isTeamSorted.value = true;
     return isSorted.value = true;
@@ -580,7 +582,7 @@ function handleRoleSort() {
       return a.role.localeCompare(b.role);
     });
     isSorted.value = true;
-    isRoleSorted.value = true;
+    return isRoleSorted.value = true;
   } else {
     sortedEmployees.value = [...sortedEmployees.value].reverse();
     return isRoleSortedRev.value = true;
@@ -588,14 +590,17 @@ function handleRoleSort() {
 }
 
 function handleJoinDateSort() {
-  resetSort();
-
-  sortedEmployees.value = [...filteredEmployees.value].sort((a, b) => {
-    return new Date(b.join_date) - new Date(a.join_date);
-  });
-
-  isSorted.value = true;
-  isJoinDateSorted.value = true;
+  if (!isJoinDateSorted.value) {
+    resetSort();
+    sortedEmployees.value = [...filteredEmployees.value].sort((a, b) => {
+      return new Date(b.join_date) - new Date(a.join_date);
+    });
+    isSorted.value = true;
+    return isJoinDateSorted.value = true;
+  } else {
+    sortedEmployees.value = [...sortedEmployees.value].reverse();
+    return isJoinDateSortedRev.value = true;
+  }
 }
 
 function handleLastDateSort() {
