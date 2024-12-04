@@ -6,7 +6,7 @@
         <div class="text-xl text-center my-5">{{ $t('adminConsole.fields.teamList') }}</div>
         <div>
             <ul class="flex flex-col">
-                <li v-for="(team, index) in teams" :key="team.id" class="flex justify-around">
+                <li v-for="(team, index) in teams" :key="team.id" class="grid grid-cols-3">
                     <input v-if="editingIndex === index" v-model="teams[index].team_name" @blur="stopEditing"
                         @keyup.enter="stopEditing" />
                     <span v-else class="border-2">
