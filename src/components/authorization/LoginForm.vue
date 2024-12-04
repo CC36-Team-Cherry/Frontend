@@ -6,7 +6,6 @@
       <form @submit.prevent="handleLogin" class="flex flex-col space-y-4">
         <div>
           <label for="username" class="block text-gray-700">
-
           </label>
           <input
             type="text"
@@ -36,16 +35,17 @@
           {{ $t('login.submit') }}
         </button>
         <button
+          @click="goToForgotPassword()"
+          class="text-blue-500 text-sm hover:underline"
+        >
+          {{ $t('login.forgotPassword') }}
+        </button>
+        <hr class="border-gray-300">
+        <button
           @click="goToRegister()"
           class="bg-green-500 text-white py-2 px-4 rounded hover:bg-green-600"
         >
           {{ $t('login.register') }}
-        </button>
-        <button
-          @click="goToForgotPassword()"
-          class="italic hover:underline"
-        >
-        {{ $t('login.forgotPassword') }}
         </button>
       </form>
     </div>

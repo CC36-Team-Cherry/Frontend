@@ -3,28 +3,28 @@
   <div v-else>
     <div class="flex justify-center items-center h-screen bg-gray-100">
       <div class="bg-white p-8 rounded shadow-md w-full max-w-md">
-        <h2 class="text-2xl font-bold mb-4">{{ $t('login.title') }}</h2>
+        <h2 class="text-2xl font-bold mb-4">{{ $t('login.resetPassword') }}</h2>
         <form class="flex flex-col space-y-4">
           <div>
             <label for="password" class="block text-gray-700">
-              {{ $t('login.password') }}:
             </label>
             <input
               type="password"
               id="password"
               v-model="newPassword"
+              :placeholder="$t('login.placeholders.newPassword')"
               class="w-full p-2 border border-gray-300 rounded"
               required
             />
           </div>
           <div>
             <label for="password" class="block text-gray-700">
-            Confirm {{ $t('login.password') }}:
             </label>
             <input
               type="password"
               id="password-confirm"
               v-model="confirmNewPassword"
+              :placeholder="$t('login.placeholders.confirmPassword')"
               class="w-full p-2 border border-gray-300 rounded"
               required
             />

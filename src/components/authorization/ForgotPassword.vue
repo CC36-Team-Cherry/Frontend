@@ -2,7 +2,7 @@
     <LoopingRhombusesSpinner v-if="isLoading" class="bg-gray-100"/>
     <div v-else class="flex justify-center items-center h-screen bg-gray-100">
       <div class="bg-white p-8 rounded shadow-md w-full max-w-md">
-        <h2 class="text-2xl font-bold mb-4">Reset Password</h2>
+        <h2 class="text-2xl font-bold mb-4">{{ $t('login.resetPassword') }}</h2>
         <form @submit.prevent="handleSubmit" class="flex flex-col space-y-4">
           <div>
             <label for="username" class="block text-gray-700"></label>
@@ -19,13 +19,13 @@
             type="submit"
             class="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600"
           >
-          Send
+          {{ $t('login.sendEmail') }}
           </button>
           <button
             @click="goToLogin()"
-            class="italic underline"
+            class="text-blue-500 text-sm hover:underline"
           >
-          Cancel
+          {{ $t('login.return') }}
           </button>
         </form>
       </div>
@@ -55,6 +55,9 @@
     isLoading.value = false;
 
     //TODO: add toast popup on success
+    //Success! Please check your email
+    
+    //TODO: add validation to confirm if account exists
 
   };
 

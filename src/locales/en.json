@@ -38,9 +38,14 @@
     "submit": "Login",
     "register": "Register new organization",
     "forgotPassword": "Forgot your password?",
+    "return": "Return to login",
+    "resetPassword": "Reset your password",
+    "sendEmail": "Submit",
     "placeholders": {
       "email": "Enter your email address",
-      "password": "Enter your password"
+      "password": "Enter your password",
+      "newPassword": "Enter your new password",
+      "confirmPassword": "Confirm your new password"
     }
   },
   "register": {

@@ -38,9 +38,14 @@
     "submit": "ログイン",
     "register": "組織を登録",
     "forgotPassword": "パスワードをお忘れの場合",
+    "return": "ログインに戻る",
+    "resetPassword": "パスワードをリセットする",
+    "sendEmail": "送信",
     "placeholders": {
       "email": "メールアドレスを入力してください",
-      "password": "パスワードを入力してください"
+      "password": "パスワードを入力してください",
+      "newPassword": "新しいパスワードを入力してください",
+      "confirmPassword": "新しいパスワードを確認してください"
     }
   },
   "register": {
