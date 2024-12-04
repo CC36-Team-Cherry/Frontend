@@ -22,7 +22,7 @@
         <form class="flex flex-col space-y-4">
           <div>
             <label class="block text-gray-700 font-medium mb-2">
-              {{ $t('login.email') }}:
+              <span class="text-red-500 font-bold">*</span>{{ $t('login.email') }}:
             </label>
             <input v-model="formData.email" type="email"
               class="w-full p-3 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-400"
@@ -30,7 +30,7 @@
           </div>
           <div>
             <label class="block text-gray-700 font-medium mb-2">
-              {{ $t('login.password') }}:
+              <span class="text-red-500 font-bold">*</span>{{ $t('login.password') }}:
             </label>
             <input v-model="formData.password" type="password"
               class="w-full p-3 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-400"
@@ -38,7 +38,7 @@
           </div>
           <div>
             <label class="block text-gray-700 font-medium mb-2">
-              {{ $t('register.firstName') }}:
+              <span class="text-red-500 font-bold">*</span>{{ $t('register.firstName') }}:
             </label>
             <input v-model="formData.first_name" type="text"
               class="w-full p-3 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-400"
@@ -46,7 +46,7 @@
           </div>
           <div>
             <label class="block text-gray-700 font-medium mb-2">
-              {{ $t('register.lastName') }}:
+              <span class="text-red-500 font-bold">*</span>{{ $t('register.lastName') }}:
             </label>
             <input v-model="formData.last_name" type="text"
               class="w-full p-3 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-400"
@@ -54,7 +54,7 @@
           </div>
           <div>
             <label class="block text-gray-700 font-medium mb-2">
-              {{ $t('employeeDetails.fields.dateOfBirth') }}:
+              <span class="text-red-500 font-bold">*</span>{{ $t('employeeDetails.fields.dateOfBirth') }}:
             </label>
             <input v-model="formData.birthdate" type="date"
               class="w-full p-3 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-400"
@@ -62,7 +62,7 @@
           </div>
           <div>
             <label class="block text-gray-700 font-medium mb-2">
-              {{ $t('settings.fields.role') }}:
+              <span class="text-red-500 font-bold">*</span>{{ $t('settings.fields.role') }}:
             </label>
             <input v-model="formData.role" type="text"
               class="w-full p-3 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-400"
@@ -70,7 +70,7 @@
           </div>
           <div>
             <label class="block text-gray-700 font-medium mb-2">
-              {{ $t('settings.fields.joinDate') }}:
+              <span class="text-red-500 font-bold">*</span>{{ $t('settings.fields.joinDate') }}:
             </label>
             <input v-model="formData.join_date" type="date"
               class="w-full p-3 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-400"
@@ -78,7 +78,7 @@
           </div>
           <div>
             <label class="block text-gray-700 font-medium mb-2">
-              {{ $t('register.organizationName') }}:
+              <span class="text-red-500 font-bold">*</span>{{ $t('register.organizationName') }}:
             </label>
             <input v-model="formData.company_name" type="text"
               class="w-full p-3 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-400"
@@ -137,7 +137,6 @@ const goToLogin = () => {
 }
 
 const handleSubmit = async () => {
-  isLoading.value = true;
   try {
     if (
       !formData.value.email ||
@@ -152,6 +151,7 @@ const handleSubmit = async () => {
       alert(t('register.errorFillAllFields'));
       return;
     }
+    isLoading.value = true;
     // create Firebase user with form data and fetch post to add to backend
     await createUserFirebase();
     router.push({ path: `/employee` });
