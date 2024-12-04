@@ -1,7 +1,7 @@
 <template>
   <LoopingRhombusesSpinner v-if="isLoading" class="bg-gray-100" />
   <div v-else class="flex flex-col h-screen bg-gray-100">
-    
+
     <!-- Language Buttons in the Top-Right Corner -->
     <div class="absolute top-4 right-4 flex space-x-2">
       <button @click="switchLanguage('en-US')"
