@@ -21,7 +21,7 @@
             <label for="username" class="block text-gray-700">
               {{ $t('login.email') }}:
             </label>
-            <input type="text" id="username" v-model="email" class="w-full p-2 border border-gray-300 rounded"
+            <input type="email" id="username" v-model="email" class="w-full p-2 border border-gray-300 rounded"
               required />
           </div>
           <div>
