@@ -14,7 +14,7 @@ const i18n = createI18n({
   messages: {
     'en-US': en,
     'ja-JP': ja,
-  } as Record<AvailableLocales, MessageSchema>, 
+  } as unknown as Record<AvailableLocales, MessageSchema>, 
 });
 
 export default i18n;

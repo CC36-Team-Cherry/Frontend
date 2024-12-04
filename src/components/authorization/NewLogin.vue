@@ -127,7 +127,7 @@ const loginFirebase = async () => {
   isLoading.value = false;
 }
 
-const switchLanguage = (lang) => {
+const switchLanguage = (lang : any) => {
   locale.value = lang;
 };
 </script>
