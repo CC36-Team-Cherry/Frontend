@@ -165,7 +165,7 @@
     "submit": "Submit",
     "supervisorPlaceholder": "List of Supervisor",
     "types": {
-      "general": "General",
+      "general": "General Attendance",
       "pto": "PTO",
       "specialPto": "Special PTO",
       "halfPto": "Half PTO",
