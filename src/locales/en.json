@@ -8,7 +8,7 @@
     "Profile": "Profile",
     "Approvals": "Approvals",
     "EmployeeList": "Employee List",
-    "AdminPage": "Admin Page",
+    "AdminPage": "Admin Console",
     "SupervisorCalendar": "Supervisor Calendar"
   },
   "settings": {
@@ -44,8 +44,8 @@
     "placeholders": {
       "email": "Enter your email address",
       "password": "Enter your password",
-      "newPassword": "Enter your new password",
-      "confirmPassword": "Confirm your new password"
+      "newPassword": "Enter new password",
+      "confirmPassword": "Confirm new password"
     }
   },
   "register": {

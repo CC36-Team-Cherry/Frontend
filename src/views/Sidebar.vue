@@ -6,11 +6,11 @@
     <div class="border-b p-2 text-center"> {{ $t('Sidebar.Welcome') }} {{ authStore.user.first_name + " " +
       authStore.user.last_name}} </div>
     <nav class="flex-1 p-4 space-y-2">
-      <router-link to="/calendar" class="block p-2 hover:bg-gray-200 rounded">
+      <router-link to="/calendar" class="block p-2 hover:bg-gray-400 rounded">
         {{ $t('Sidebar.Calendar') }}
       </router-link>
       <div class="flex flex-row items-center">
-        <router-link to="/approvals" class="block p-2 hover:bg-gray-200 rounded">
+        <router-link to="/approvals" class="block p-2 hover:bg-gray-400 rounded">
           {{ $t('Sidebar.Approvals') }}
         </router-link>
         <span v-if="pendingApprovalsCount > 0"
@@ -18,15 +18,15 @@
           {{ pendingApprovalsCount }}
         </span>
       </div>
-      <router-link to="/employee" class="block p-2 hover:bg-gray-200 rounded">
+      <router-link to="/employee" class="block p-2 hover:bg-gray-400 rounded">
         {{ $t('Sidebar.EmployeeList') }}
       </router-link>
-      <router-link to="/admin" class="block p-2 hover:bg-gray-200 rounded">
+      <router-link to="/admin" class="block p-2 hover:bg-gray-400 rounded">
         {{ $t('Sidebar.AdminPage') }}
       </router-link>
       <!-- Supervisor-specific link -->
       <router-link to="/supervisor-calendar" v-if="authStore.user.Privileges.is_supervisor"
-        class="block p-2 hover:bg-gray-200 rounded">
+        class="block p-2 hover:bg-gray-400 rounded">
         {{ $t('Sidebar.SupervisorCalendar') }}
       </router-link>
     </nav>
