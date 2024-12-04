@@ -119,7 +119,7 @@
           </div>
           <div class="p-2">
             <p class="text-slate-600 leading-normal text-xs font-light">
-              Informazioni aggiuntive sul PTO o altro contenuto.
+              {{ remainingPto }}
             </p>
           </div>
         </div>
@@ -190,6 +190,7 @@ export default {
       },
       specialPtos: [],
       selectedSpecialPtoType: '',
+      remainingPto: null,
     };
   },
   computed: {
@@ -201,7 +202,7 @@ export default {
   mounted() {
   const authStore = useAuthStore();
   this.getSpecialPto();
-
+  this.fetchRemainingPto();
 
   if (!authStore.user || !authStore.user.id) {
     console.error("User ID is not defined in authStore");
@@ -481,9 +482,6 @@ updateChart() {
     console.error('Error updating chart:', err);
   }
 },
-
-
-
 async fetchAttendanceData(accountId) {
   try {
     const response = await axios.get(`${apiUrl}/accounts/${accountId}/attendance`);
@@ -702,11 +700,6 @@ async fetchAttendanceData(accountId) {
         return year === currentYear && month === nextMonth;
       });
 
-      console.log("approval requests: ", requests)
-      console.log(nextMonth);
-      console.log(currentYear);
-      console.log(existingRequest);
-
       if (existingRequest) {
         // If an approval request already exists, show a message and prevent submission
         alert('A request for this month has already been submitted for approval.');
@@ -836,6 +829,17 @@ async fetchAttendanceData(accountId) {
       }));
     } catch(err) {
       console.error('Error fetching special pto:', err);
+    }
+  },
+  async fetchRemainingPto() {
+
+    const authStore = useAuthStore();
+
+    try {
+      const response = await axios.get(`${apiUrl}/accounts/${authStore.user.id}/remainingPto`);
+      this.remainingPto = response.data.remaining_pto;
+    } catch(err) {
+      console.error('Error fetching remaining PTO: ', err);
     }
   }
  }
