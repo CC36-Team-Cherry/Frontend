@@ -1,6 +1,7 @@
 <template>
   <LoopingRhombusesSpinner v-if="isLoading" class="bg-gray-100" />
   <div v-else class="flex flex-col h-screen bg-gray-100">
+
     <!-- Language Buttons in the Top-Right Corner -->
     <div class="absolute top-4 right-4 flex space-x-2">
       <button @click="switchLanguage('en-US')"
@@ -55,7 +56,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
+import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/authStore';
 import { verifyPasswordResetCode, confirmPasswordReset, signInWithEmailAndPassword } from "firebase/auth";
@@ -86,17 +87,13 @@ const handleResetPassword = () => {
       confirmPasswordReset(auth, actionCode, newPassword.value)
         .then((res) => {
           loginFirebase();
-        })
+      })
         .catch((error) => {
           console.log(error.code, error.message);
-        });
+      });
     })
     .catch((error) => {
       console.log(error.code, error.message);
-    });
-  })
-  .catch((error) => {
-    console.log(error.code, error.message);
   });
 }
 
