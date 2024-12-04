@@ -301,6 +301,10 @@ const openConfirmModal = () => {
 
 //adding a new user
 const handleSubmit = async () => {
+  if (!formData.email || !formData.first_name || !formData.last_name || !formData.birthdate || !formData.join_date || !formData.role) {
+    alert('Please fill out all required fields.');
+    return;
+  }
   const email = formData.email;
   // post new user to backend
   await addUserBackend();
