@@ -55,10 +55,10 @@
           return;
         }
   
-  axios
-    .get(`${apiUrl}/accounts/${this.accountId}/attendance`)
-    .then((response) => {
-      console.log("Attendance data fetched successfully:", response.data);
+       axios
+       .get(`${apiUrl}/accounts/${this.accountId}/attendance`)
+        .then((response) => {
+         console.log("Attendance data fetched successfully:", response.data);
 
       
       this.events = response.data.map((record) => ({

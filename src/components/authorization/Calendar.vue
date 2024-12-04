@@ -707,6 +707,13 @@ getEventTypeFromColor(color) {
         { title: 'Sports Day', start: `${year}-10-14`, isHoliday: true },
         { title: 'Culture Day', start: `${year}-11-03`, isHoliday: true },
         { title: 'Labor Thanksgiving Day', start: `${year}-11-23`, isHoliday: true },
+        { title: 'Christmas Holiday', start: `${year}-12-28`, isHoliday: true },
+        { title: 'Christmas Holiday', start: `${year}-12-29`, isHoliday: true },
+        { title: 'Christmas Holiday', start: `${year}-12-30`, isHoliday: true },
+        { title: 'Christmas Holiday', start: `${year}-12-31`, isHoliday: true },
+        { title: 'Christmas Holiday', start: `2025-01-01`, isHoliday: true },
+        { title: 'Christmas Holiday', start: `2025-01-02`, isHoliday: true },
+        { title: 'Christmas Holiday', start: `2025-01-03`, isHoliday: true }
       ];
     },
     isHoliday(date) {
