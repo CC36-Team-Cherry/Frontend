@@ -4,8 +4,8 @@
     <div class="flex justify-between items-center mb-4">
       <input type="text" :placeholder="$t('employeeList.searchPlaceholder')" v-model="searchTerm"
         class="border rounded p-2 w-1/2" />
-      <button v-if="authStore.user.Privileges?.is_admin"
-        @click="openAddUserModal" class="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600">
+      <button v-if="authStore.user.Privileges?.is_admin" @click="openAddUserModal"
+        class="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600">
         {{ $t('employeeList.addUser') }}
       </button>
     </div>
@@ -39,7 +39,9 @@
               <span>{{ $t('employeeList.tableHeaders.role') }}</span>
               <svg-icon v-if="!isRoleSorted" :path="path" type="mdi" class="cursor-pointer w-5 h-5 min-w-5"
                 @click="handleRoleSort"></svg-icon>
-              <svg-icon v-if="isRoleSorted" :path="path" type="mdi"
+              <svg-icon v-if="isRoleSorted && !isRoleSortedRev" :path="path" type="mdi"
+                class="cursor-pointer w-5 h-5 min-w-5 bg-gray-400 rounded" @click="handleRoleSort"></svg-icon>
+              <svg-icon v-if="isRoleSorted && isRoleSortedRev" :path="path" type="mdi"
                 class="cursor-pointer w-5 h-5 min-w-5 bg-gray-400 rounded" @click="resetSort"></svg-icon>
             </div>
           </th>
@@ -48,7 +50,9 @@
               <span>{{ $t('employeeList.tableHeaders.joinDate') }}</span>
               <svg-icon v-if="!isJoinDateSorted" :path="path" type="mdi" class="cursor-pointer w-5 h-5 min-w-5"
                 @click="handleJoinDateSort"></svg-icon>
-              <svg-icon v-if="isJoinDateSorted" :path="path" type="mdi"
+              <svg-icon v-if="isJoinDateSorted && !isJoinDateSortedRev" :path="path" type="mdi"
+                class="cursor-pointer w-5 h-5 min-w-5 bg-gray-400 rounded" @click="handleJoinDateSort"></svg-icon>
+              <svg-icon v-if="isJoinDateSorted && isJoinDateSortedRev" :path="path" type="mdi"
                 class="cursor-pointer w-5 h-5 min-w-5 bg-gray-400 rounded" @click="resetSort"></svg-icon>
             </div>
           </th>
@@ -57,7 +61,9 @@
               <span>{{ $t('employeeList.tableHeaders.lastDate') }}</span>
               <svg-icon v-if="!isLastDateSorted" :path="path" type="mdi" class="cursor-pointer w-5 h-5 min-w-5"
                 @click="handleLastDateSort"></svg-icon>
-              <svg-icon v-if="isLastDateSorted" :path="path" type="mdi"
+              <svg-icon v-if="isLastDateSorted && !isLastDateSortedRev" :path="path" type="mdi"
+                class="cursor-pointer w-5 h-5 min-w-5 bg-gray-400 rounded" @click="handleLastDateSort"></svg-icon>
+              <svg-icon v-if="isLastDateSorted && isLastDateSortedRev" :path="path" type="mdi"
                 class="cursor-pointer w-5 h-5 min-w-5 bg-gray-400 rounded" @click="resetSort"></svg-icon>
             </div>
           </th>
@@ -66,7 +72,9 @@
               <span>{{ $t('employeeList.tableHeaders.privileges') }}</span>
               <svg-icon v-if="!isPrivSorted" :path="path" type="mdi" class="cursor-pointer w-5 h-5 min-w-5"
                 @click="handlePrivilegesSort"></svg-icon>
-              <svg-icon v-if="isPrivSorted" :path="path" type="mdi"
+              <svg-icon v-if="isPrivSorted && !isPrivSortedRev" :path="path" type="mdi"
+                class="cursor-pointer w-5 h-5 min-w-5 bg-gray-400 rounded" @click="handlePrivilegesSort"></svg-icon>
+              <svg-icon v-if="isPrivSorted && isPrivSortedRev" :path="path" type="mdi"
                 class="cursor-pointer w-5 h-5 min-w-5 bg-gray-400 rounded" @click="resetSort"></svg-icon>
             </div>
           </th>
@@ -76,7 +84,9 @@
               <span>Last Login</span>
               <svg-icon v-if="!isLastLoginSorted" :path="path" type="mdi" class="cursor-pointer w-5 h-5 min-w-5"
                 @click="handleLastLoginSort"></svg-icon>
-              <svg-icon v-if="isLastLoginSorted" :path="path" type="mdi"
+              <svg-icon v-if="isLastLoginSorted && !isLastLoginSortedRev" :path="path" type="mdi"
+                class="cursor-pointer w-5 h-5 min-w-5 bg-gray-400 rounded" @click="handleLastLoginSort"></svg-icon>
+              <svg-icon v-if="isLastLoginSorted && isLastLoginSortedRev" :path="path" type="mdi"
                 class="cursor-pointer w-5 h-5 min-w-5 bg-gray-400 rounded" @click="resetSort"></svg-icon>
             </div>
           </th>
@@ -85,12 +95,15 @@
               <span>{{ $t('employeeList.tableHeaders.email') }}</span>
               <svg-icon v-if="!isEmailSorted" :path="path" type="mdi" class="cursor-pointer w-5 h-5 min-w-5"
                 @click="handleEmailSort"></svg-icon>
-              <svg-icon v-if="isEmailSorted" :path="path" type="mdi"
+              <svg-icon v-if="isEmailSorted && !isEmailSortedRev" :path="path" type="mdi"
+                class="cursor-pointer w-5 h-5 min-w-5 bg-gray-400 rounded" @click="handleEmailSort"></svg-icon>
+              <svg-icon v-if="isEmailSorted && isEmailSortedRev" :path="path" type="mdi"
                 class="cursor-pointer w-5 h-5 min-w-5 bg-gray-400 rounded" @click="resetSort"></svg-icon>
             </div>
           </th>
-          <th v-if="authStore.user.PrivilegesPrivileges?.is_admin || authStore.user.Privileges?.is_supervisor" class="border p-2">{{
-            $t('employeeList.tableHeaders.att') }}</th>
+          <th v-if="authStore.user.PrivilegesPrivileges?.is_admin || authStore.user.Privileges?.is_supervisor"
+            class="border p-2">{{
+              $t('employeeList.tableHeaders.att') }}</th>
         </tr>
       </thead>
       <tbody>
@@ -113,10 +126,12 @@
                       : 'none'
               }}
             </td>
-            <td v-if="authStore.user.Privileges?.is_admin || authStore.user.Privileges?.is_supervisor" class="border p-2">{{
-              employee.last_login ? employee.last_login.split('T')[0] : 'Invite Sent' }}</td>
+            <td v-if="authStore.user.Privileges?.is_admin || authStore.user.Privileges?.is_supervisor"
+              class="border p-2">{{
+                employee.last_login ? employee.last_login.split('T')[0] : 'Invite Sent' }}</td>
             <td class="border p-2">{{ employee.email }}</td>
-            <td v-if="authStore.user.Privileges?.is_admin || authStore.user.Privileges?.is_supervisor" class="border p-2">
+            <td v-if="authStore.user.Privileges?.is_admin || authStore.user.Privileges?.is_supervisor"
+              class="border p-2">
               <button class="bg-green-500 text-white px-2 py-1 rounded" @click.stop="openCalendarModal(employee)">
                 {{ $t('employeeList.view') }}
               </button>
@@ -131,19 +146,24 @@
       <form>
         <div>
           <div>
-            <label class="block mb-1"><span class="text-red-500 font-bold">*</span>{{ $t('employeeList.modal.fields.firstName') }}</label>
+            <label class="block mb-1"><span class="text-red-500 font-bold">*</span>{{
+              $t('employeeList.modal.fields.firstName') }}</label>
             <input type="text" v-model="formData.first_name" class="border rounded p-2 w-full" />
           </div>
           <div>
-            <label class="block mb-1"><span class="text-red-500 font-bold">*</span>{{ $t('employeeList.modal.fields.lastName') }}</label>
+            <label class="block mb-1"><span class="text-red-500 font-bold">*</span>{{
+              $t('employeeList.modal.fields.lastName') }}</label>
             <input type="text" v-model="formData.last_name" class="border rounded p-2 w-full" />
           </div>
           <div>
-            <label class="block mb-1"><span class="text-red-500 font-bold">*</span>{{ $t('employeeList.modal.fields.email') }}</label>
+            <label class="block mb-1"><span class="text-red-500 font-bold">*</span>{{
+              $t('employeeList.modal.fields.email')
+            }}</label>
             <input type="email" v-model="formData.email" class="border rounded p-2 w-full" />
           </div>
           <div>
-            <label class="block mb-1"><span class="text-red-500 font-bold">*</span>{{ $t('employeeList.modal.fields.dateOfBirth') }}</label>
+            <label class="block mb-1"><span class="text-red-500 font-bold">*</span>{{
+              $t('employeeList.modal.fields.dateOfBirth') }}</label>
             <input type="date" v-model="formData.birthdate" class="border rounded p-2 w-full" />
           </div>
           <div>
@@ -170,11 +190,14 @@
             </ul>
           </div>
           <div>
-            <label class="block mb-1"><span class="text-red-500 font-bold">*</span>{{ $t('employeeList.modal.fields.role') }}</label>
+            <label class="block mb-1"><span class="text-red-500 font-bold">*</span>{{
+              $t('employeeList.modal.fields.role')
+            }}</label>
             <input type="text" v-model="formData.role" class="border rounded p-2 w-full" />
           </div>
           <div>
-            <label class="block mb-1"><span class="text-red-500 font-bold">*</span>{{ $t('employeeList.modal.fields.joinDate') }}</label>
+            <label class="block mb-1"><span class="text-red-500 font-bold">*</span>{{
+              $t('employeeList.modal.fields.joinDate') }}</label>
             <input type="date" v-model="formData.join_date" class="border rounded p-2 w-full" />
           </div>
           <div>
@@ -186,7 +209,9 @@
             </template>
           </div>
           <div>
-            <label class="block mb-1"><span class="text-red-500 font-bold">*</span>{{ $t('employeeList.modal.fields.pto') }}</label>
+            <label class="block mb-1"><span class="text-red-500 font-bold">*</span>{{
+              $t('employeeList.modal.fields.pto')
+            }}</label>
             <input type="number" v-model="formData.remaining_pto" class="border rounded p-2 w-full" />
           </div>
         </div>
@@ -548,7 +573,7 @@ function handleTeamSort() {
   if (!isTeamSorted.value) {
     resetSort();
     sortedEmployees.value = [...filteredEmployees.value].sort((a, b) => {
-      return a.team_id - b.team_id;
+      return b.team_id - a.team_id;
     });
     isTeamSorted.value = true;
     return isSorted.value = true;
@@ -559,87 +584,109 @@ function handleTeamSort() {
 }
 
 function handleRoleSort() {
-  resetSort();
-
-  sortedEmployees.value = [...filteredEmployees.value].sort((a, b) => {
-    return a.role.localeCompare(b.role);
-  });
-
-  isSorted.value = true;
-  isRoleSorted.value = true;
+  if (!isRoleSorted.value) {
+    resetSort();
+    sortedEmployees.value = [...filteredEmployees.value].sort((a, b) => {
+      return a.role.localeCompare(b.role);
+    });
+    isSorted.value = true;
+    return isRoleSorted.value = true;
+  } else {
+    sortedEmployees.value = [...sortedEmployees.value].reverse();
+    return isRoleSortedRev.value = true;
+  }
 }
 
 function handleJoinDateSort() {
-  resetSort();
-
-  sortedEmployees.value = [...filteredEmployees.value].sort((a, b) => {
-    return new Date(b.join_date) - new Date(a.join_date);
-  });
-
-  isSorted.value = true;
-  isJoinDateSorted.value = true;
+  if (!isJoinDateSorted.value) {
+    resetSort();
+    sortedEmployees.value = [...filteredEmployees.value].sort((a, b) => {
+      return new Date(b.join_date) - new Date(a.join_date);
+    });
+    isSorted.value = true;
+    return isJoinDateSorted.value = true;
+  } else {
+    sortedEmployees.value = [...sortedEmployees.value].reverse();
+    return isJoinDateSortedRev.value = true;
+  }
 }
 
 function handleLastDateSort() {
-  resetSort();
-
-  sortedEmployees.value = [...filteredEmployees.value].sort((a, b) => {
-    const dateA = a.leave_date ? new Date(a.leave_date) : new Date(0);
-    const dateB = b.leave_date ? new Date(b.leave_date) : new Date(0);
-    return dateB - dateA;
-  });
-
-  isSorted.value = true;
-  isLastDateSorted.value = true;
+  if (!isLastDateSorted.value) {
+    resetSort();
+    sortedEmployees.value = [...filteredEmployees.value].sort((a, b) => {
+      const dateA = a.leave_date ? new Date(a.leave_date) : new Date(0);
+      const dateB = b.leave_date ? new Date(b.leave_date) : new Date(0);
+      return dateB - dateA;
+    });
+    isSorted.value = true;
+    return isLastDateSorted.value = true;
+  } else {
+    sortedEmployees.value = [...sortedEmployees.value].reverse();
+    return isLastDateSortedRev.value = true;
+  }
 }
 
 function handlePrivilegesSort() {
-  resetSort();
-
-  const admin = [];
-  const supervisor = [];
-  const user = [];
-  for (let employee of filteredEmployees.value) {
-    if (employee.Privileges.is_admin) {
-      admin.push(employee);
-    } else if (employee.Privileges.is_supervisor) {
-      supervisor.push(employee);
-    } else {
-      user.push(employee);
+  if (!isPrivSorted.value) {
+    resetSort();
+    const dual = [];
+    const admin = [];
+    const supervisor = [];
+    const user = [];
+    for (let employee of filteredEmployees.value) {
+      if (employee.Privileges.is_admin && employee.Privileges.is_supervisor) {
+        dual.push(employee);
+      } else if (employee.Privileges.is_admin) {
+        admin.push(employee);
+      } else if (employee.Privileges.is_supervisor) {
+        supervisor.push(employee);
+      } else {
+        user.push(employee);
+      }
     }
-  }
-  sortedEmployees.value = [...admin, ...supervisor, ...user];
+    sortedEmployees.value = [...dual, ...admin, ...supervisor, ...user];
 
-  isSorted.value = true;
-  isPrivSorted.value = true;
+    isSorted.value = true;
+    return isPrivSorted.value = true;
+  } else {
+    sortedEmployees.value = [...sortedEmployees.value].reverse();
+    return isPrivSortedRev.value = true;
+  }
 }
 
 function handleLastLoginSort() {
-  resetSort();
+  if (!isLastLoginSorted.value) {
+    resetSort();
+    sortedEmployees.value = [...filteredEmployees.value].sort((a, b) => {
+      const dateA = a.last_login ? new Date(a.last_login) : new Date(0);
+      const dateB = b.last_login ? new Date(b.last_login) : new Date(0);
 
-  sortedEmployees.value = [...filteredEmployees.value].sort((a, b) => {
-    const dateA = a.last_login ? new Date(a.last_login) : new Date(0);
-    const dateB = b.last_login ? new Date(b.last_login) : new Date(0);
+      if (!a.last_login && b.last_login) return -1;
+      if (a.last_login && !b.last_login) return 1;
 
-    if (!a.last_login && b.last_login) return -1;
-    if (a.last_login && !b.last_login) return 1;
-
-    return dateB - dateA
-  });
-
-  isSorted.value = true;
-  isLastLoginSorted.value = true;
+      return dateB - dateA
+    });
+    isSorted.value = true;
+    return isLastLoginSorted.value = true;
+  } else {
+    sortedEmployees.value = [...sortedEmployees.value].reverse();
+    return isLastLoginSortedRev.value = true;
+  }
 }
 
 function handleEmailSort() {
-  resetSort();
-
-  sortedEmployees.value = [...filteredEmployees.value].sort((a, b) => {
-    return a.email.localeCompare(b.email);
-  });
-
-  isSorted.value = true;
-  isEmailSorted.value = true;
+  if (!isEmailSorted.value) {
+    resetSort();
+    sortedEmployees.value = [...filteredEmployees.value].sort((a, b) => {
+      return a.email.localeCompare(b.email);
+    });
+    isSorted.value = true;
+    return isEmailSorted.value = true;
+  } else {
+    sortedEmployees.value = [...sortedEmployees.value].reverse();
+    return isEmailSortedRev.value = true;
+  }
 }
 
 function resetSort() {
