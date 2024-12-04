@@ -17,7 +17,9 @@
               <span>{{ $t('employeeList.tableHeaders.name') }}</span>
               <svg-icon v-if="!isNameSorted" :path="path" type="mdi" class="cursor-pointer w-5 h-5 min-w-5"
                 @click="handleNameSort"></svg-icon>
-              <svg-icon v-if="isNameSorted" :path="path" type="mdi"
+              <svg-icon v-if="isNameSorted && !isNameSortedRev" :path="path" type="mdi"
+                class="cursor-pointer w-5 h-5 min-w-5 bg-gray-400 rounded" @click="handleNameSort"></svg-icon>
+              <svg-icon v-if="isNameSorted && isNameSortedRev" :path="path" type="mdi"
                 class="cursor-pointer w-5 h-5 min-w-5 bg-gray-400 rounded" @click="resetSort"></svg-icon>
             </div>
           </th>
@@ -26,7 +28,9 @@
               <span>{{ $t('employeeList.tableHeaders.team') }}</span>
               <svg-icon v-if="!isTeamSorted" :path="path" type="mdi" class="cursor-pointer w-5 h-5 min-w-5"
                 @click="handleTeamSort"></svg-icon>
-              <svg-icon v-if="isTeamSorted" :path="path" type="mdi"
+              <svg-icon v-if="isTeamSorted && !isTeamSortedRev" :path="path" type="mdi"
+                class="cursor-pointer w-5 h-5 min-w-5 bg-gray-400 rounded" @click="handleTeamSort"></svg-icon>
+              <svg-icon v-if="isTeamSorted && isTeamSortedRev" :path="path" type="mdi"
                 class="cursor-pointer w-5 h-5 min-w-5 bg-gray-400 rounded" @click="resetSort"></svg-icon>
             </div>
           </th>
@@ -152,12 +156,9 @@
           </div>
           <div>
             <label class="block mb-1">{{ "Supervisor" }}</label>
-            <input v-model="supervisorSearch" @input="filterSupervisors" @focus="showDropdown = true" type="text" placeholder="Select Supervisor"
-              class="border rounded p-2 w-full">
-            <button
-              v-if="formData.supervisor_id"
-              @click="clearSupervisor"
-            >
+            <input v-model="supervisorSearch" @input="filterSupervisors" @focus="showDropdown = true" type="text"
+              placeholder="Select Supervisor" class="border rounded p-2 w-full">
+            <button v-if="formData.supervisor_id" @click="clearSupervisor">
               x
             </button>
             <ul v-if="showDropdown && filteredSupervisors.length > 0" ref="dropdown"
@@ -223,7 +224,7 @@ import CalendarModal from '@/modal/CalendarModal.vue';
 import { useAuthStore } from '@/stores/authStore';
 import { onClickOutside } from '@vueuse/core';
 import SvgIcon from '@jamescoyle/vue-icon';
-import { mdiSortAscending } from '@mdi/js';
+import { mdiSort } from '@mdi/js';
 import LoopingRhombusesSpinner from '../../modal/Loading.vue';
 
 const apiUrl = import.meta.env.VITE_API_URL;
@@ -249,7 +250,7 @@ const filteredSupervisors = ref([]);
 const dropdown = ref(null);
 const showDropdown = ref(false);
 
-const path = mdiSortAscending;
+const path = mdiSort;
 
 const formData = reactive({
   first_name: '',
@@ -509,57 +510,56 @@ const displayedEmployees = computed(() => {
 //sorting functions
 const isSorted = ref(false);
 const isNameSorted = ref(false);
+const isNameSortedRev = ref(false);
 const isTeamSorted = ref(false);
+const isTeamSortedRev = ref(false);
 const isRoleSorted = ref(false);
+const isRoleSortedRev = ref(false);
 const isJoinDateSorted = ref(false);
+const isJoinDateSortedRev = ref(false);
 const isLastDateSorted = ref(false);
+const isLastDateSortedRev = ref(false);
 const isPrivSorted = ref(false);
+const isPrivSortedRev = ref(false);
 const isLastLoginSorted = ref(false);
+const isLastLoginSortedRev = ref(false);
 const isEmailSorted = ref(false);
+const isEmailSortedRev = ref(false);
 const sortedEmployees = ref([]);
 
 function handleNameSort() {
-  isTeamSorted.value = false;
-  isRoleSorted.value = false;
-  isJoinDateSorted.value = false;
-  isLastDateSorted.value = false;
-  isPrivSorted.value = false;
-  isLastLoginSorted.value = false;
-  isEmailSorted.value = false;
 
-  sortedEmployees.value = [...filteredEmployees.value].sort((a, b) => {
-    return a.first_name.localeCompare(b.first_name);
-  });
-
-  isNameSorted.value = true;
-  isSorted.value = true;
+  // If not already sorted, sort in ascending order
+  if (!isNameSorted.value) {
+    resetSort();
+    sortedEmployees.value = [...filteredEmployees.value].sort((a, b) => {
+      return a.first_name.localeCompare(b.first_name);
+    });
+    isSorted.value = true;
+    return isNameSorted.value = true;
+  } else {
+    // If already sorted, reverse the order
+    sortedEmployees.value = [...sortedEmployees.value].reverse();
+    return isNameSortedRev.value = true;
+  }
 }
 
 function handleTeamSort() {
-  isNameSorted.value = false;
-  isRoleSorted.value = false;
-  isJoinDateSorted.value = false;
-  isLastDateSorted.value = false;
-  isPrivSorted.value = false;
-  isLastLoginSorted.value = false;
-  isEmailSorted.value = false;
-
-  sortedEmployees.value = [...filteredEmployees.value].sort((a, b) => {
-    return a.team_id - b.team_id;
-  });
-
-  isTeamSorted.value = true;
-  isSorted.value = true;
+  if (!isTeamSorted.value) {
+    resetSort();
+    sortedEmployees.value = [...filteredEmployees.value].sort((a, b) => {
+      return a.team_id - b.team_id;
+    });
+    isTeamSorted.value = true;
+    return isSorted.value = true;
+  } else {
+    sortedEmployees.value = [...sortedEmployees.value].reverse();
+    return isTeamSortedRev.value = true;
+  }
 }
 
 function handleRoleSort() {
-  isNameSorted.value = false;
-  isTeamSorted.value = false;
-  isJoinDateSorted.value = false;
-  isLastDateSorted.value = false;
-  isPrivSorted.value = false;
-  isLastLoginSorted.value = false;
-  isEmailSorted.value = false;
+  resetSort();
 
   sortedEmployees.value = [...filteredEmployees.value].sort((a, b) => {
     return a.role.localeCompare(b.role);
@@ -570,13 +570,7 @@ function handleRoleSort() {
 }
 
 function handleJoinDateSort() {
-  isNameSorted.value = false;
-  isTeamSorted.value = false;
-  isRoleSorted.value = false;
-  isLastDateSorted.value = false;
-  isPrivSorted.value = false;
-  isLastLoginSorted.value = false;
-  isEmailSorted.value = false;
+  resetSort();
 
   sortedEmployees.value = [...filteredEmployees.value].sort((a, b) => {
     return new Date(b.join_date) - new Date(a.join_date);
@@ -587,13 +581,7 @@ function handleJoinDateSort() {
 }
 
 function handleLastDateSort() {
-  isNameSorted.value = false;
-  isTeamSorted.value = false;
-  isRoleSorted.value = false;
-  isJoinDateSorted.value = false;
-  isPrivSorted.value = false;
-  isLastLoginSorted.value = false;
-  isEmailSorted.value = false;
+  resetSort();
 
   sortedEmployees.value = [...filteredEmployees.value].sort((a, b) => {
     const dateA = a.leave_date ? new Date(a.leave_date) : new Date(0);
@@ -606,13 +594,7 @@ function handleLastDateSort() {
 }
 
 function handlePrivilegesSort() {
-  isNameSorted.value = false;
-  isTeamSorted.value = false;
-  isRoleSorted.value = false;
-  isJoinDateSorted.value = false;
-  isLastDateSorted.value = false;
-  isLastLoginSorted.value = false;
-  isEmailSorted.value = false;
+  resetSort();
 
   const admin = [];
   const supervisor = [];
@@ -633,13 +615,7 @@ function handlePrivilegesSort() {
 }
 
 function handleLastLoginSort() {
-  isNameSorted.value = false;
-  isTeamSorted.value = false;
-  isRoleSorted.value = false;
-  isJoinDateSorted.value = false;
-  isLastDateSorted.value = false;
-  isPrivSorted.value = false;
-  isEmailSorted.value = false;
+  resetSort();
 
   sortedEmployees.value = [...filteredEmployees.value].sort((a, b) => {
     const dateA = a.last_login ? new Date(a.last_login) : new Date(0);
@@ -656,13 +632,7 @@ function handleLastLoginSort() {
 }
 
 function handleEmailSort() {
-  isNameSorted.value = false;
-  isTeamSorted.value = false;
-  isRoleSorted.value = false;
-  isJoinDateSorted.value = false;
-  isLastDateSorted.value = false;
-  isPrivSorted.value = false;
-  isLastLoginSorted.value = false;
+  resetSort();
 
   sortedEmployees.value = [...filteredEmployees.value].sort((a, b) => {
     return a.email.localeCompare(b.email);
@@ -675,13 +645,21 @@ function handleEmailSort() {
 function resetSort() {
   isSorted.value = false;
   isNameSorted.value = false;
+  isNameSortedRev.value = false;
   isTeamSorted.value = false;
+  isTeamSortedRev.value = false;
   isRoleSorted.value = false;
+  isRoleSortedRev.value = false;
   isJoinDateSorted.value = false;
+  isJoinDateSortedRev.value = false;
   isLastDateSorted.value = false;
+  isLastDateSortedRev.value = false;
   isPrivSorted.value = false;
+  isPrivSortedRev.value = false;
   isLastLoginSorted.value = false;
+  isLastLoginSortedRev.value = false;
   isEmailSorted.value = false;
+  isEmailSortedRev.value = false;
 }
 
 const handleFetchAll = async () => {
