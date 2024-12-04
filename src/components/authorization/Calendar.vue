@@ -148,8 +148,6 @@
   }
 </style>
 
-
-
 <script>
 import { Calendar } from '@fullcalendar/core';
 import interactionPlugin from '@fullcalendar/interaction';
@@ -757,6 +755,9 @@ async fetchAttendanceData(accountId) {
               console.log("BE receive sent pto Approval: ", response);
             }
 
+            // Update remainingPto after PTO request submission
+            this.remainingPto -= selectedPtoDates.length; // Subtract the number of PTO days requested
+
           } catch (err) {
             console.error('Error submitting pto approval: ', err)
           }
@@ -782,6 +783,10 @@ async fetchAttendanceData(accountId) {
           try {
             const response = await axios.post(`${apiUrl}/approvals/pto`, halfPtoApproval);
             console.log(response.data);
+
+            // Update remainingPto after half PTO request submission
+            this.remainingPto -= 0.5; // Subtract half a day for a half PTO request
+
           } catch (err) {
             console.error('Error submitting pto approval: ', err)
           }
@@ -842,8 +847,8 @@ async fetchAttendanceData(accountId) {
 
     try {
       const response = await axios.get(`${apiUrl}/accounts/${authStore.user.id}/remainingPto`);
-      console.log("frontend response for pto: ", response.data)
       this.remainingPto = response.data.remaining_pto;
+      console.log("frontend response for pto: ", response.data)
     } catch(err) {
       console.error('Error fetching remaining PTO: ', err);
     }
