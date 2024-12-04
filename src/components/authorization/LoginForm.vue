@@ -1,6 +1,8 @@
 <template>
   <LoopingRhombusesSpinner v-if="isLoading" class="bg-gray-100" />
   <div v-else class="flex flex-col h-screen bg-gray-100">
+
+    <!-- en/jp switch -->
     <div class="absolute top-4 right-4 flex space-x-2">
       <button @click="switchLanguage('en-US')"
         :class="locale === 'en-US' ? 'bg-blue-500 text-white' : 'bg-gray-300 text-gray-700'"
@@ -13,8 +15,19 @@
         {{ $t('language.jp') }}
       </button>
     </div>
-    <div class="flex justify-center items-center flex-1">
-      <div class="bg-white p-8 rounded shadow-md w-full max-w-md">
+
+    <!-- login page contents -->
+    <div class="grid grid-cols-2 h-screen gap-x-36 m-auto">
+
+    <!-- logo & text -->
+      <div class="flex flex-col justify-center items-center">
+        <img src="/favicon.png" title="Breeze">
+        <h2 class="text-5xl font-bold mt-6">Breeze</h2>
+        <h1 class="italic mt-2">The simple attendance management app</h1>
+      </div>
+
+    <!-- login form -->
+      <div class="bg-white p-8 rounded shadow-md w-[32rem] m-auto">
         <h2 class="text-2xl font-bold mb-4">{{ $t('login.title') }}</h2>
         <form @submit.prevent="handleLogin" class="flex flex-col space-y-4">
           <div>
