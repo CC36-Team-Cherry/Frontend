@@ -1,5 +1,6 @@
 import { defineStore } from 'pinia';
 import { AppPageType } from '@/types/AppState';
+import piniaPersist from 'pinia-plugin-persistedstate';
 import axios from 'axios';
 const apiUrl = import.meta.env.VITE_API_URL;
 
@@ -17,6 +18,7 @@ interface User {
   leave_date?: Date;
   pto: number;
   last_login?: Date;
+  language_preference: string;
   Privileges: {
     is_admin: boolean,
     is_supervisor: boolean;

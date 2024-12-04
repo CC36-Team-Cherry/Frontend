@@ -15,7 +15,6 @@
               class="border border-gray-300 rounded p-1 text-xs w-full"
             />
           </div>
-
           <!-- Type -->
           <div>
             <label class="block mb-1 font-bold text-xs">{{ $t('calendar.type') }}</label>
@@ -44,6 +43,7 @@
               type="time"
               v-model="startTime"
               class="border border-gray-300 rounded p-1 text-xs w-full"
+              :disabled="isPtoSelected"
             />
           </div>
 
@@ -54,6 +54,7 @@
               type="time"
               v-model="endTime"
               class="border border-gray-300 rounded p-1 text-xs w-full"
+              :disabled="isPtoSelected"
             />
           </div>
 
@@ -68,7 +69,8 @@
                 'bg-gray-300 text-gray-500 py-1 px-3 rounded w-full cursor-not-allowed text-xs' : isPtoSelected
                 }"
               >
-              {{ selectedEventId ? $t('calendar.updateAttendance') : $t('calendar.logAttendance') }}
+              <!-- TODO: Need to update calendar update attendance -->
+              {{ selectedEventId ? "Update Attendance" : $t('calendar.logAttendance') }}
             </button>
           </div>
 
@@ -195,7 +197,10 @@ export default {
   },
   computed: {
     isPtoSelected() {
-      return this.attendanceType === 'pto' || this.attendanceType === 'halfpto' || this.attendanceType === 'Special PTO'
+      return this.attendanceType === 'pto' || this.attendanceType === 'Special PTO'
+    },
+    isHalfPtoSelected() {
+      return this.attendanceType ==='halfpto'
     }
   },
 

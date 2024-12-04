@@ -62,7 +62,8 @@ axios.defaults.withCredentials = true;
 
 const email = ref('')
 const password = ref('');
-const authStore = useAuthStore();
+// TODO: Need to edit with correct type
+const authStore = useAuthStore() as any;
 const router = useRouter();
 const { locale } = useI18n();
 const isLoading = ref(false);
@@ -105,15 +106,15 @@ const loginFirebase = async () => {
   const token = await user.getIdToken();
   await getUserFromBackend(token);
   updateLastLogin();
-  if(authStore.user.language_preference === 'en') {
+  if(authStore.user?.language_preference === 'en') {
     locale.value = 'en-US';
-  } else if (authStore.user.language_preference === 'ja') {
+  } else if (authStore.user?.language_preference === 'ja') {
     locale.value = 'ja-JP';
   }
   router.push({ path: `/calendar` });
 }
 
-const switchLanguage = (lang) => {
+const switchLanguage = (lang : string) => {
   locale.value = lang;
 };
 </script>
