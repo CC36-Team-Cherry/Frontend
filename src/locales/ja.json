@@ -36,7 +36,12 @@
     "email": "メールアドレス",
     "password": "パスワード",
     "submit": "ログイン",
-    "register": "組織を登録"
+    "register": "組織を登録",
+    "forgotPassword": "パスワードをお忘れの場合",
+    "placeholders": {
+      "email": "メールアドレスを入力してください",
+      "password": "パスワードを入力してください"
+    }
   },
   "register": {
     "title": "組織を登録",

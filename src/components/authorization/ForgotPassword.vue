@@ -5,13 +5,12 @@
         <h2 class="text-2xl font-bold mb-4">Reset Password</h2>
         <form @submit.prevent="handleSubmit" class="flex flex-col space-y-4">
           <div>
-            <label for="username" class="block text-gray-700">
-            Enter your email address:
-            </label>
+            <label for="username" class="block text-gray-700"></label>
             <input
               type="text"
               id="username"
               v-model="email"
+              :placeholder="$t('login.placeholders.email')"
               class="w-full p-2 border border-gray-300 rounded"
               required
             />

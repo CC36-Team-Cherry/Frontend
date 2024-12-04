@@ -36,7 +36,12 @@
     "email": "Email",
     "password": "Password",
     "submit": "Login",
-    "register": "Register new organization"
+    "register": "Register new organization",
+    "forgotPassword": "Forgot your password?",
+    "placeholders": {
+      "email": "Enter your email address",
+      "password": "Enter your password"
+    }
   },
   "register": {
     "title": "Register New Organization",

@@ -12,20 +12,19 @@
             type="text"
             id="username"
             v-model="email"
-            placeholder="Enter your email address"
+            :placeholder="$t('login.placeholders.email')"
             class="w-full p-2 border border-gray-300 rounded"
             required
           />
         </div>
         <div>
           <label for="password" class="block text-gray-700">
-
           </label>
           <input
             type="password"
             id="password"
             v-model="password"
-            placeholder="Enter your password"
+            :placeholder="$t('login.placeholders.password')"
             class="w-full p-2 border border-gray-300 rounded"
             required
           />
@@ -46,7 +45,7 @@
           @click="goToForgotPassword()"
           class="italic hover:underline"
         >
-        Forgot your password?
+        {{ $t('login.forgotPassword') }}
         </button>
       </form>
     </div>
