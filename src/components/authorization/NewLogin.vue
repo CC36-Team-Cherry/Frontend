@@ -79,6 +79,10 @@ const router = useRouter();
 let accountEmail = '';
 
 const handleResetPassword = () => {
+  if (newPassword.value !== confirmNewPassword.value) {
+    alert("Passwords don't match.");
+    return;
+  }
   isLoading.value = true;
   const actionCode = getParameterByName('oobCode');
   verifyPasswordResetCode(auth, actionCode)
