@@ -1,12 +1,12 @@
 <template>
     <LoopingRhombusesSpinner v-if="isLoading" />
-    <div v-else class="p-8 bg-gray-50 min-h-screen">
+    <div v-else class="p-8 bg-gray-50 h-screen">
         <h1 class="text-2xl font-bold">{{ $t('adminConsole.title') }}</h1>
         <h2 class="text-xl font-bold"> {{ organizationName }}</h2>
         <div class="text-xl text-center my-5">{{ $t('adminConsole.fields.teamList') }}</div>
         <div>
             <ul class="flex flex-col">
-                <li v-for="(team, index) in teams" :key="team.id" class="flex justify-around">
+                <li v-for="(team, index) in teams" :key="team.id" class="grid grid-cols-3">
                     <input v-if="editingIndex === index" v-model="teams[index].team_name" @blur="stopEditing"
                         @keyup.enter="stopEditing" />
                     <span v-else class="border-2">
@@ -37,14 +37,14 @@
             <input type="text" v-model="formData.organizationName" class="border rounded p-2" />
         </div>
         <div class="flex flex-col items-center my-5">
-            <button @click="saveSettings" class="my-1 w-1/2 py-1 px-3 rounded bg-blue-500 text-white">
+            <button @click="saveSettings" class="my-1 w-1/2 py-1 px-3 rounded bg-blue-500 hover:bg-blue-600 transition text-white">
                 {{ $t('adminConsole.buttons.save') }}
             </button>
-            <button @click="openConfirmModal" class="my-1 w-1/2 py-1 rounded bg-red-500 text-white">
+            <button @click="openConfirmModal" class="my-6 w-1/2 py-1 rounded bg-red-500 hover:bg-red-600 transition text-white">
                 {{ $t('adminConsole.buttons.deleteOrganization') }}
             </button>
         </div>
-        <ConfirmModal :isVisible="isConfirmModalVisible" :confirmFunc="deleteOrg" confirmString="Delete"
+        <ConfirmModal :isVisible="isConfirmModalVisible" :confirmFunc="deleteOrg" confirmString="Yes, delete"
             @close="isConfirmModalVisible = false">
             <p>Are you sure you want to delete your organization?</p>
         </ConfirmModal>

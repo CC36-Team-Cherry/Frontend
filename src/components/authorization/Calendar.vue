@@ -13,6 +13,7 @@
               placeholder="YYYY-MM-DD - YYYY-MM-DD"
               v-model="selectionRange"
               class="border border-gray-300 rounded p-1 text-xs w-full"
+              :disabled="isMonthSubmitSelected"
             />
           </div>
           <!-- Type -->
@@ -20,6 +21,7 @@
             <label class="block mb-1 font-bold text-xs">{{ $t('calendar.type') }}</label>
             <select v-model="attendanceType" class="border border-gray-300 rounded p-1 text-xs w-full">
               <option value="" disabled>Select Type</option>
+              <option value="monthSubmit">{{  "Month Submission" }}</option>
               <option value="general">{{ $t('calendar.types.general') }}</option>
               <option value="pto">{{ $t('calendar.types.pto') }}</option>
               <option value="halfpto">{{ $t('calendar.types.halfPto') }}</option>
@@ -43,7 +45,7 @@
               type="time"
               v-model="startTime"
               class="border border-gray-300 rounded p-1 text-xs w-full"
-              :disabled="isPtoSelected"
+              :disabled="isPtoSelected || isMonthSubmitSelected"
             />
           </div>
 
@@ -54,7 +56,7 @@
               type="time"
               v-model="endTime"
               class="border border-gray-300 rounded p-1 text-xs w-full"
-              :disabled="isPtoSelected"
+              :disabled="isPtoSelected || isMonthSubmitSelected"
             />
           </div>
 
@@ -63,10 +65,10 @@
             <label class="block mb-1 font-bold text-xs">{{ $t('calendar.attendance') }}</label>
             <button
               @click="logAttendance"
-              :disabled="isPtoSelected"
+              :disabled="isPtoSelected || isHalfPtoSelected || isMonthSubmitSelected"
               :class="{
-                'bg-blue-500 text-white py-1 px-3 rounded hover:bg-blue-600 w-full text-xs' : !isPtoSelected,
-                'bg-gray-300 text-gray-500 py-1 px-3 rounded w-full cursor-not-allowed text-xs' : isPtoSelected
+                'bg-blue-500 text-white py-1 px-3 rounded hover:bg-blue-600 w-full text-xs' : !isPtoSelected || !isHalfPtoSelected || !isMonthSubmitSelected,
+                'bg-gray-300 text-gray-500 py-1 px-3 rounded w-full cursor-not-allowed text-xs' : isPtoSelected || isHalfPtoSelected || isMonthSubmitSelected
                 }"
               >
               <!-- TODO: Need to update calendar update attendance -->
@@ -148,8 +150,6 @@
   }
 </style>
 
-
-
 <script>
 import { Calendar } from '@fullcalendar/core';
 import interactionPlugin from '@fullcalendar/interaction';
@@ -201,6 +201,9 @@ export default {
     },
     isHalfPtoSelected() {
       return this.attendanceType ==='halfpto'
+    },
+    isMonthSubmitSelected() {
+      return this.attendanceType === 'monthSubmit'
     }
   },
 
@@ -264,26 +267,39 @@ export default {
     },
     eventContent: (arg) => {
       if (arg.event.extendedProps.isHoliday) {
-        return {
-          html: `
-            <div style="text-align: center; font-size: 0.9em; color: black; background-color: rgba(255, 0, 0, 0.2); padding: 10px; border-radius: 4px;">
-              <b>${arg.event.title}</b>
-            </div>
-          `,
-        };
-      }
-      if (arg.event.extendedProps.startTime && arg.event.extendedProps.endTime) {
-        return {
-          html: `
-            <div style="text-align: center; font-size: 0.9em; color: black; background-color: ${
-              arg.event.backgroundColor
-            }; padding: 0px; border-radius: 4px;">
-              <b>${arg.event.extendedProps.startTime} - ${arg.event.extendedProps.endTime}</b>
-            </div>
-          `,
-        };
-      }
-    },
+  return {
+    html: `
+      <div style="text-align: center; font-size: 1.2em; color: black; background-color: rgba(255, 0, 0, 0.2); padding: 12px; border-radius: 4px;">
+        <b>${arg.event.title}</b>
+      </div>
+    `,
+  };
+}
+
+// Gestione degli eventi con orari di ingresso e uscita
+if (arg.event.extendedProps.startTime && arg.event.extendedProps.endTime) {
+  return {
+    html: `
+      <div style="text-align: center; font-size: 1.1em; color: black; background-color: ${arg.event.backgroundColor}; padding: 10px; border-radius: 4px;">
+        <b>${arg.event.extendedProps.startTime} - ${arg.event.extendedProps.endTime}</b>
+      </div>
+    `,
+  };
+}
+
+// Gestione degli eventi PTO
+if (arg.event.extendedProps.status) {
+  return {
+    html: `
+      <div style="text-align: center; font-size: 1.1em; color: white; background-color: ${arg.event.backgroundColor}; padding: 12px; border-radius: 4px;">
+        <b>${arg.event.title}</b><br><i>${arg.event.extendedProps.status}</i>
+      </div>
+    `,
+  };
+}
+
+},
+
     datesSet: (info) => {
       
       console.log('Month changed:', info.start); 
@@ -489,15 +505,17 @@ updateChart() {
 },
 async fetchAttendanceData(accountId) {
   try {
+    // Chiamate API per attendance e PTO
     const response = await axios.get(`${apiUrl}/accounts/${accountId}/attendance`);
+    const response2 = await axios.get(`${apiUrl}/accounts/${accountId}/approvalsPTO`);
 
-    console.log("Response data:", response.data); 
-    
+    console.log("Response data:", response.data, response2.data);
+
     const currentDate = this.calendar.getDate(); 
     const currentMonth = currentDate.getMonth() + 1; 
     const currentYear = currentDate.getFullYear();
 
-    
+    // Filtro per attendance del mese corrente
     const filteredAttendance = response.data.filter((record) => {
       const recordDate = new Date(record.day);
       return (
@@ -505,8 +523,9 @@ async fetchAttendanceData(accountId) {
         recordDate.getFullYear() === currentYear
       );
     });
-    
-    this.events = filteredAttendance.map((record) => {
+
+    // Mappatura degli eventi delle attendance
+    const attendanceEvents = filteredAttendance.map((record) => {
       const startTime = record.punch_in ? record.punch_in.split('T')[1].slice(0, 5) : null;
       const endTime = record.punch_out ? record.punch_out.split('T')[1].slice(0, 5) : null;
 
@@ -515,10 +534,8 @@ async fetchAttendanceData(accountId) {
         const [startHour, startMinute] = startTime.split(':').map(Number);
         const [endHour, endMinute] = endTime.split(':').map(Number);
 
-
         totalHours = (endHour * 60 + endMinute - (startHour * 60 + startMinute)) / 60;
 
-        
         if (totalHours < 0) {
           totalHours = 0;
         }
@@ -528,7 +545,7 @@ async fetchAttendanceData(accountId) {
         id: record.id,
         title: startTime && endTime ? `${startTime} - ${endTime}` : 'No Time Logged',
         start: record.day,
-        backgroundColor: this.getEventColor(record),
+        backgroundColor: this.getEventColor(record), // Usa getEventColor per determinare il colore
         extendedProps: {
           startTime,
           endTime,
@@ -537,7 +554,31 @@ async fetchAttendanceData(accountId) {
       };
     });
 
-    
+    // Gestione delle PTO requests
+    const ptoEvents = response2.data.approvalsSentData.map((pto) => {
+      const title = `${pto.type}`;
+      const backgroundColor = this.getEventColor(pto); // Usa getEventColor per determinare il colore
+
+      return {
+        id: pto.id,
+        title: title,
+        start: pto.date,
+        backgroundColor: backgroundColor,
+        extendedProps: {
+          status: pto.status,
+          memo: pto.memo,
+        },
+      };
+    });
+
+    console.log("Attendance Event:", attendanceEvents);
+    console.log("PTO Event:", ptoEvents);
+
+
+    // Aggiungi gli eventi delle attendance e delle PTO al calendario
+    this.events = [...attendanceEvents, ...ptoEvents];
+
+    // Calcola il totale delle ore per le attendance
     const calculatedTotalHours = this.events.reduce(
       (sum, event) => sum + (event.extendedProps?.totalHours || 0),
       0
@@ -546,21 +587,47 @@ async fetchAttendanceData(accountId) {
     console.log("Calculated Total Hours:", calculatedTotalHours);
 
     if (!isNaN(calculatedTotalHours) && calculatedTotalHours >= 0) {
-      totalHours.value = calculatedTotalHours; 
+      totalHours.value = calculatedTotalHours;
       console.log("Updated totalHours:", totalHours.value);
     } else {
       console.error("Invalid total hours data:", calculatedTotalHours);
     }
 
-    
+    // Rimuove gli eventi esistenti e aggiunge quelli aggiornati
     this.calendar.getEvents().forEach((event) => event.remove());
     [...this.holidays, ...this.events].forEach((event) => this.calendar.addEvent(event));
   } catch (error) {
-    console.error("Error fetching attendance records:", error.response?.data || error.message);
+    console.error("Error fetching data:", error.response?.data || error.message);
   }
-}
-,
+},
 
+// Usa la tua funzione esistente per determinare il colore
+getEventColor(data) {
+  console.log("Data received in getEventColor:", data);
+
+  if (data.absence) return 'red';  // Assenza
+  if (data.status === "Approved") return 'blue';  // PTO completo
+  if (data.special_pto) return 'green';  // PTO speciale
+  if (data.status === "Pending") return 'gray';  // PTO parziale
+  return 'lightblue';  // Colore di default
+},
+
+
+// Se necessario, puoi anche aggiungere la funzione getEventTypeFromColor per determinare il tipo di evento dal colore
+getEventTypeFromColor(color) {
+  switch (color) {
+    case 'red':
+      return 'absence';
+    case 'orange':
+      return 'pto';
+    case 'green':
+      return 'specialPto';
+    case 'yellow':
+      return 'halfpto';
+    default:
+      return 'general';
+  }
+},
     handleEventClick(event) {
       if (event.extendedProps.isHoliday) return; 
       this.selectedEventId = event.id;
@@ -646,32 +713,18 @@ async fetchAttendanceData(accountId) {
         { title: 'Sports Day', start: `${year}-10-14`, isHoliday: true },
         { title: 'Culture Day', start: `${year}-11-03`, isHoliday: true },
         { title: 'Labor Thanksgiving Day', start: `${year}-11-23`, isHoliday: true },
+        { title: 'Christmas Holiday', start: `${year}-12-28`, isHoliday: true },
+        { title: 'Christmas Holiday', start: `${year}-12-29`, isHoliday: true },
+        { title: 'Christmas Holiday', start: `${year}-12-30`, isHoliday: true },
+        { title: 'Christmas Holiday', start: `${year}-12-31`, isHoliday: true },
+        { title: 'Christmas Holiday', start: `2025-01-01`, isHoliday: true },
+        { title: 'Christmas Holiday', start: `2025-01-02`, isHoliday: true },
+        { title: 'Christmas Holiday', start: `2025-01-03`, isHoliday: true }
       ];
     },
     isHoliday(date) {
       const formattedDate = date.toISOString().split('T')[0];
       return this.holidays.some((holiday) => holiday.start === formattedDate);
-    },
-    getEventColor(data) {
-      if (data.absence) return 'red';
-      if (data.full_pto) return 'orange';
-      if (data.special_pto) return 'green';
-      if (data.half_pto) return 'yellow';
-      return 'lightblue';
-    },
-    getEventTypeFromColor(color) {
-      switch (color) {
-        case 'red':
-          return 'absence';
-        case 'orange':
-          return 'pto';
-        case 'green':
-          return 'specialPto';
-        case 'yellow':
-          return 'halfpto';
-        default:
-          return 'general';
-      }
     },
     clearForm() {
       this.selectionRange = '';
@@ -711,9 +764,15 @@ async fetchAttendanceData(accountId) {
         return; // Exit the function without submitting the new request
       }
 
+       // Check if PTO or HalfPTO is being requested and remainingPto is 0
+      if ((this.attendanceType === "pto" || this.attendanceType === "halfpto") && this.remainingPto <= 0) {
+        alert("Not enough PTO remaining to submit");
+        return; 
+      }
+
       switch (this.attendanceType) {
 
-        case "general":    
+        case "monthSubmit":    
 
           const generalApproval = {
             account_id: authStore.user.id,
@@ -757,6 +816,9 @@ async fetchAttendanceData(accountId) {
               console.log("BE receive sent pto Approval: ", response);
             }
 
+            // Update remainingPto after PTO request submission
+            this.remainingPto -= selectedPtoDates.length; // Subtract the number of PTO days requested
+
           } catch (err) {
             console.error('Error submitting pto approval: ', err)
           }
@@ -782,6 +844,10 @@ async fetchAttendanceData(accountId) {
           try {
             const response = await axios.post(`${apiUrl}/approvals/pto`, halfPtoApproval);
             console.log(response.data);
+
+            // Update remainingPto after half PTO request submission
+            this.remainingPto -= 0.5; // Subtract half a day for a half PTO request
+
           } catch (err) {
             console.error('Error submitting pto approval: ', err)
           }
@@ -843,6 +909,7 @@ async fetchAttendanceData(accountId) {
     try {
       const response = await axios.get(`${apiUrl}/accounts/${authStore.user.id}/remainingPto`);
       this.remainingPto = response.data.remaining_pto;
+      console.log("frontend response for pto: ", response.data)
     } catch(err) {
       console.error('Error fetching remaining PTO: ', err);
     }

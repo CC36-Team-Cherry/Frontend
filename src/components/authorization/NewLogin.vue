@@ -1,6 +1,7 @@
 <template>
   <LoopingRhombusesSpinner v-if="isLoading" class="bg-gray-100" />
   <div v-else class="flex flex-col h-screen bg-gray-100">
+
     <!-- Language Buttons in the Top-Right Corner -->
     <div class="absolute top-4 right-4 flex space-x-2">
       <button @click="switchLanguage('en-US')"
@@ -18,24 +19,34 @@
     <!-- Reset Password Confirmation Form -->
     <div class="flex justify-center items-center flex-1">
       <div class="bg-white p-8 rounded shadow-md w-full max-w-md">
-        <h2 class="text-2xl font-bold mb-4">{{ $t('login.title') }}</h2>
+        <h2 class="text-2xl font-bold mb-4">{{ $t('login.resetPassword') }}</h2>
         <form class="flex flex-col space-y-4">
           <div>
             <label for="password" class="block text-gray-700">
-              {{ $t('login.password') }}:
             </label>
-            <input type="password" id="password" v-model="newPassword" class="w-full p-2 border border-gray-300 rounded"
-              required />
+            <input
+              type="password"
+              id="password"
+              v-model="newPassword"
+              :placeholder="$t('login.placeholders.newPassword')"
+              class="w-full p-2 border border-gray-300 rounded"
+              required
+            />
           </div>
           <div>
-            <label for="password-confirm" class="block text-gray-700">
-              Confirm {{ $t('login.password') }}:
+            <label for="password" class="block text-gray-700">
             </label>
-            <input type="password" id="password-confirm" v-model="confirmNewPassword"
-              class="w-full p-2 border border-gray-300 rounded" required />
+            <input
+              type="password"
+              id="password-confirm"
+              v-model="confirmNewPassword"
+              :placeholder="$t('login.placeholders.confirmPassword')"
+              class="w-full p-2 border border-gray-300 rounded"
+              required
+            />
           </div>
           <button @click="handleResetPassword()" type="button"
-            class="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600">
+            class="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600 transition">
             {{ $t('login.submit') }}
           </button>
         </form>
@@ -44,15 +55,14 @@
   </div>
 </template>
 
-
-
 <script setup lang="ts">
-import { ref } from 'vue';
+import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/authStore';
 import { verifyPasswordResetCode, confirmPasswordReset, signInWithEmailAndPassword } from "firebase/auth";
 import { auth } from '../../firebase/firebaseConfig.ts';
 import { useI18n } from 'vue-i18n';
+
 import axios from "axios";
 import LoopingRhombusesSpinner from '../../modal/Loading.vue';
 
@@ -81,15 +91,16 @@ const handleResetPassword = () => {
       confirmPasswordReset(auth, actionCode, newPassword.value)
         .then((res) => {
           loginFirebase();
-        })
+      })
         .catch((error) => {
           console.log(error.code, error.message);
-        });
+      });
     })
     .catch((error) => {
       console.log(error.code, error.message);
-    });
+  });
 }
+
 
 const getParameterByName = (name: string) => {
   name = name.replace(/[\[]/, "\\\[").replace(/[\]]/, "\\\]");
@@ -134,4 +145,15 @@ const loginFirebase = async () => {
 const switchLanguage = (lang : any) => {
   locale.value = lang;
 };
+
+const checkLogin = () => {
+  if (authStore.user) {
+    router.push({ path: `/calendar` });
+  }
+}
+
+onMounted(() => {
+  checkLogin();
+});
+
 </script>

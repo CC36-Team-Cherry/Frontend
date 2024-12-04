@@ -1,6 +1,8 @@
 <template>
   <LoopingRhombusesSpinner v-if="isLoading" class="bg-gray-100" />
   <div v-else class="flex flex-col h-screen bg-gray-100">
+
+    <!-- en/jp switch -->
     <div class="absolute top-4 right-4 flex space-x-2">
       <button @click="switchLanguage('en-US')"
         :class="locale === 'en-US' ? 'bg-blue-500 text-white' : 'bg-gray-300 text-gray-700'"
@@ -13,33 +15,64 @@
         {{ $t('language.jp') }}
       </button>
     </div>
-    <div class="flex justify-center items-center flex-1">
-      <div class="bg-white p-8 rounded shadow-md w-full max-w-md">
+
+    <!-- login page contents -->
+    <div class="grid grid-cols-2 h-screen gap-x-36 m-auto">
+
+    <!-- logo & text -->
+      <div class="flex flex-col justify-center items-center">
+        <img src="/favicon.png" title="Breeze">
+        <h2 class="text-5xl font-bold mt-6">Breeze</h2>
+        <h1 class="italic mt-2">The simple attendance management app</h1>
+      </div>
+
+    <!-- login form -->
+      <div class="bg-white p-8 rounded shadow-md w-[32rem] m-auto">
         <h2 class="text-2xl font-bold mb-4">{{ $t('login.title') }}</h2>
         <form @submit.prevent="handleLogin" class="flex flex-col space-y-4">
           <div>
-            <label for="username" class="block text-gray-700">
-              {{ $t('login.email') }}:
-            </label>
-            <input type="email" id="username" v-model="email" class="w-full p-2 border border-gray-300 rounded"
-              required />
-          </div>
-          <div>
-            <label for="password" class="block text-gray-700">
-              {{ $t('login.password') }}:
-            </label>
-            <input type="password" id="password" v-model="password" class="w-full p-2 border border-gray-300 rounded"
-              required />
-          </div>
-          <button type="submit" class="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600">
-            {{ $t('login.submit') }}
-          </button>
-          <button @click="goToRegister()" class="bg-green-500 text-white py-2 px-4 rounded hover:bg-green-600">
-            {{ $t('login.register') }}
-          </button>
-          <button @click="goToForgotPassword()" class="italic underline">
-            Forgot your password?
-          </button>
+          <label for="username" class="block text-gray-700">
+          </label>
+          <input
+            type="text"
+            id="username"
+            v-model="email"
+            :placeholder="$t('login.placeholders.email')"
+            class="w-full p-2 border border-gray-300 rounded"
+            required
+          />
+        </div>
+        <div>
+          <label for="password" class="block text-gray-700">
+          </label>
+          <input
+            type="password"
+            id="password"
+            v-model="password"
+            :placeholder="$t('login.placeholders.password')"
+            class="w-full p-2 border border-gray-300 rounded"
+            required
+          />
+        </div>
+        <button
+          type="submit"
+          class="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600 transition"
+        >
+          {{ $t('login.submit') }}
+        </button>
+        <button
+          @click="goToForgotPassword()"
+          class="text-blue-500 text-sm hover:underline"
+        >
+          {{ $t('login.forgotPassword') }}
+        </button>
+        <hr class="border-gray-300">
+        <button
+          @click="goToRegister()"
+          class="bg-green-500 text-white py-2 px-4 rounded hover:bg-green-600 transition"
+        >
+          {{ $t('login.register') }}
+        </button>
         </form>
       </div>
     </div>
@@ -48,7 +81,7 @@
 
 
 <script setup lang="ts">
-import { ref } from 'vue';
+import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/authStore';
 import { signInWithEmailAndPassword } from "firebase/auth";
@@ -117,4 +150,15 @@ const loginFirebase = async () => {
 const switchLanguage = (lang : string) => {
   locale.value = lang;
 };
+
+const checkLogin = () => {
+  if (authStore.user) {
+    router.push({ path: `/calendar` });
+  }
+}
+
+onMounted(() => {
+  checkLogin();
+});
+
 </script>

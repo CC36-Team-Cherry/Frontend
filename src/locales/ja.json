@@ -8,7 +8,7 @@
     "Profile": "プロフィール",
     "Approvals": "承認",
     "EmployeeList": "従業員リスト",
-    "AdminPage": "管理ページ",
+    "AdminPage": "管理コンソール",
     "SupervisorCalendar": "監督者カレンダー"
   },
   "settings": {
@@ -36,7 +36,17 @@
     "email": "メールアドレス",
     "password": "パスワード",
     "submit": "ログイン",
-    "register": "組織を登録"
+    "register": "組織を登録",
+    "forgotPassword": "パスワードをお忘れの場合",
+    "return": "ログインに戻る",
+    "resetPassword": "パスワードをリセットする",
+    "sendEmail": "送信",
+    "placeholders": {
+      "email": "メールアドレスを入力してください",
+      "password": "パスワードを入力してください",
+      "newPassword": "新しいパスワードを入力してください",
+      "confirmPassword": "新しいパスワードを確認してください"
+    }
   },
   "register": {
     "title": "組織を登録",
