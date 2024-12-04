@@ -182,7 +182,7 @@ const createUserFirebase = async () => {
   authStore.login(backendData.data);
 };
 
-const switchLanguage = (lang) => {
+const switchLanguage = (lang : any) => {
   locale.value = lang;
 };
 </script>
