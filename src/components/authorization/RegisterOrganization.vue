@@ -170,6 +170,10 @@ const createUserFirebase = async () => {
   const credential = await createUserWithEmailAndPassword(auth, email, password);
   const user = credential.user;
 
+  //add the new user's UID to the formData payload
+  const uid = user.uid;
+  formData.value.auth_key = uid;
+
   //generate the token to send to backend for cookie creation
   const token = await user.getIdToken();
 
