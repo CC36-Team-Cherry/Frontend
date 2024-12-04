@@ -63,10 +63,10 @@
             <label class="block mb-1 font-bold text-xs">{{ $t('calendar.attendance') }}</label>
             <button
               @click="logAttendance"
-              :disabled="isPtoSelected"
+              :disabled="isPtoSelected || isHalfPtoSelected"
               :class="{
-                'bg-blue-500 text-white py-1 px-3 rounded hover:bg-blue-600 w-full text-xs' : !isPtoSelected,
-                'bg-gray-300 text-gray-500 py-1 px-3 rounded w-full cursor-not-allowed text-xs' : isPtoSelected
+                'bg-blue-500 text-white py-1 px-3 rounded hover:bg-blue-600 w-full text-xs' : !isPtoSelected || !isHalfPtoSelected,
+                'bg-gray-300 text-gray-500 py-1 px-3 rounded w-full cursor-not-allowed text-xs' : isPtoSelected || isHalfPtoSelected
                 }"
               >
               <!-- TODO: Need to update calendar update attendance -->
