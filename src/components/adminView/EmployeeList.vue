@@ -61,7 +61,9 @@
               <span>{{ $t('employeeList.tableHeaders.lastDate') }}</span>
               <svg-icon v-if="!isLastDateSorted" :path="path" type="mdi" class="cursor-pointer w-5 h-5 min-w-5"
                 @click="handleLastDateSort"></svg-icon>
-              <svg-icon v-if="isLastDateSorted" :path="path" type="mdi"
+              <svg-icon v-if="isLastDateSorted && !isLastDateSortedRev" :path="path" type="mdi"
+                class="cursor-pointer w-5 h-5 min-w-5 bg-gray-400 rounded" @click="handleLastDateSort"></svg-icon>
+              <svg-icon v-if="isLastDateSorted && isLastDateSortedRev" :path="path" type="mdi"
                 class="cursor-pointer w-5 h-5 min-w-5 bg-gray-400 rounded" @click="resetSort"></svg-icon>
             </div>
           </th>
@@ -604,16 +606,19 @@ function handleJoinDateSort() {
 }
 
 function handleLastDateSort() {
-  resetSort();
-
-  sortedEmployees.value = [...filteredEmployees.value].sort((a, b) => {
-    const dateA = a.leave_date ? new Date(a.leave_date) : new Date(0);
-    const dateB = b.leave_date ? new Date(b.leave_date) : new Date(0);
-    return dateB - dateA;
-  });
-
-  isSorted.value = true;
-  isLastDateSorted.value = true;
+  if (!isLastDateSorted.value) {
+    resetSort();
+    sortedEmployees.value = [...filteredEmployees.value].sort((a, b) => {
+      const dateA = a.leave_date ? new Date(a.leave_date) : new Date(0);
+      const dateB = b.leave_date ? new Date(b.leave_date) : new Date(0);
+      return dateB - dateA;
+    });
+    isSorted.value = true;
+    return isLastDateSorted.value = true;
+  } else {
+    sortedEmployees.value = [...sortedEmployees.value].reverse();
+    return isLastDateSortedRev.value = true;
+  }
 }
 
 function handlePrivilegesSort() {
