@@ -100,7 +100,7 @@
 
 
 <script setup lang="ts">
-import { ref, toRaw } from 'vue';
+import { ref, toRaw, onMounted } from 'vue';
 import { useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n';
 import { useAuthStore } from '@/stores/authStore';
@@ -185,4 +185,15 @@ const createUserFirebase = async () => {
 const switchLanguage = (lang : any) => {
   locale.value = lang;
 };
+
+const checkLogin = () => {
+  if (authStore.user) {
+    router.push({ path: `/calendar` });
+  }
+}
+
+onMounted(() => {
+  checkLogin();
+});
+
 </script>

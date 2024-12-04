@@ -18,28 +18,48 @@
         <h2 class="text-2xl font-bold mb-4">{{ $t('login.title') }}</h2>
         <form @submit.prevent="handleLogin" class="flex flex-col space-y-4">
           <div>
-            <label for="username" class="block text-gray-700">
-              {{ $t('login.email') }}:
-            </label>
-            <input type="text" id="username" v-model="email" class="w-full p-2 border border-gray-300 rounded"
-              required />
-          </div>
-          <div>
-            <label for="password" class="block text-gray-700">
-              {{ $t('login.password') }}:
-            </label>
-            <input type="password" id="password" v-model="password" class="w-full p-2 border border-gray-300 rounded"
-              required />
-          </div>
-          <button type="submit" class="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600">
-            {{ $t('login.submit') }}
-          </button>
-          <button @click="goToRegister()" class="bg-green-500 text-white py-2 px-4 rounded hover:bg-green-600">
-            {{ $t('login.register') }}
-          </button>
-          <button @click="goToForgotPassword()" class="italic underline">
-            Forgot your password?
-          </button>
+          <label for="username" class="block text-gray-700">
+          </label>
+          <input
+            type="text"
+            id="username"
+            v-model="email"
+            :placeholder="$t('login.placeholders.email')"
+            class="w-full p-2 border border-gray-300 rounded"
+            required
+          />
+        </div>
+        <div>
+          <label for="password" class="block text-gray-700">
+          </label>
+          <input
+            type="password"
+            id="password"
+            v-model="password"
+            :placeholder="$t('login.placeholders.password')"
+            class="w-full p-2 border border-gray-300 rounded"
+            required
+          />
+        </div>
+        <button
+          type="submit"
+          class="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600"
+        >
+          {{ $t('login.submit') }}
+        </button>
+        <button
+          @click="goToForgotPassword()"
+          class="text-blue-500 text-sm hover:underline"
+        >
+          {{ $t('login.forgotPassword') }}
+        </button>
+        <hr class="border-gray-300">
+        <button
+          @click="goToRegister()"
+          class="bg-green-500 text-white py-2 px-4 rounded hover:bg-green-600"
+        >
+          {{ $t('login.register') }}
+        </button>
         </form>
       </div>
     </div>
@@ -48,7 +68,7 @@
 
 
 <script setup lang="ts">
-import { ref } from 'vue';
+import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/authStore';
 import { signInWithEmailAndPassword } from "firebase/auth";
@@ -117,4 +137,15 @@ const loginFirebase = async () => {
 const switchLanguage = (lang : string) => {
   locale.value = lang;
 };
+
+const checkLogin = () => {
+  if (authStore.user) {
+    router.push({ path: `/calendar` });
+  }
+}
+
+onMounted(() => {
+  checkLogin();
+});
+
 </script>
