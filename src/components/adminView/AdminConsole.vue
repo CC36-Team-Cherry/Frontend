@@ -44,7 +44,7 @@
                 {{ $t('adminConsole.buttons.deleteOrganization') }}
             </button>
         </div>
-        <ConfirmModal :isVisible="isConfirmModalVisible" :confirmFunc="deleteOrg" confirmString="Delete"
+        <ConfirmModal :isVisible="isConfirmModalVisible" :confirmFunc="deleteOrg" confirmString="Yes, delete"
             @close="isConfirmModalVisible = false">
             <p>Are you sure you want to delete your organization?</p>
         </ConfirmModal>

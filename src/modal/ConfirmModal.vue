@@ -3,8 +3,8 @@
     <div class="bg-white p-6 rounded shadow-lg w-4/5 max-w-xl relative" style="max-height: 90%;">
       <button @click="$emit('close')" class="absolute top-2 right-2 text-gray-500 hover:text-black">✕</button>
       <slot></slot>
-      <div class="mt-4 flex justify-end space-x-2">
-        <button @click="confirmFunc" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition">{{
+      <div class="mt-4 flex flex-col justify-center space-x-2">
+        <button @click="confirmFunc" class="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 transition">{{
           confirmString }}</button>
         <button @click="$emit('close')" class="bg-gray-300 text-gray-800 px-4 py-2 rounded hover:bg-gray-400 transition">Cancel</button>
       </div>

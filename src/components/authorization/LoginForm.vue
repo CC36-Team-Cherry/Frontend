@@ -56,7 +56,7 @@
         </div>
         <button
           type="submit"
-          class="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600"
+          class="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600 transition"
         >
           {{ $t('login.submit') }}
         </button>
@@ -69,7 +69,7 @@
         <hr class="border-gray-300">
         <button
           @click="goToRegister()"
-          class="bg-green-500 text-white py-2 px-4 rounded hover:bg-green-600"
+          class="bg-green-500 text-white py-2 px-4 rounded hover:bg-green-600 transition"
         >
           {{ $t('login.register') }}
         </button>
