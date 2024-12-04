@@ -267,35 +267,39 @@ export default {
     },
     eventContent: (arg) => {
       if (arg.event.extendedProps.isHoliday) {
-        return {
-          html: `
-            <div style="text-align: center; font-size: 0.9em; color: black; background-color: rgba(255, 0, 0, 0.2); padding: 10px; border-radius: 4px;">
-              <b>${arg.event.title}</b>
-            </div>
-          `,
-        };
-      }
-      if (arg.event.extendedProps.startTime && arg.event.extendedProps.endTime) {
-        return {
-          html: `
-            <div style="text-align: center; font-size: 0.9em; color: black; background-color: ${
-              arg.event.backgroundColor
-            }; padding: 0px; border-radius: 4px;">
-              <b>${arg.event.extendedProps.startTime} - ${arg.event.extendedProps.endTime}</b>
-            </div>
-          `,
-        };
-      }
-        if (arg.event.extendedProps.status) {
-         return {
-          html: `
-        <div style="text-align: center; font-size: 0.9em; color: black; background-color: ${arg.event.backgroundColor}; padding: 5px; border-radius: 4px;">
-          <b>${arg.event.title}</b><br><i>${arg.event.extendedProps.status}</i>
-        </div>
-      `,
-    };
-    }
-  },
+  return {
+    html: `
+      <div style="text-align: center; font-size: 1.2em; color: black; background-color: rgba(255, 0, 0, 0.2); padding: 12px; border-radius: 4px;">
+        <b>${arg.event.title}</b>
+      </div>
+    `,
+  };
+}
+
+// Gestione degli eventi con orari di ingresso e uscita
+if (arg.event.extendedProps.startTime && arg.event.extendedProps.endTime) {
+  return {
+    html: `
+      <div style="text-align: center; font-size: 1.1em; color: black; background-color: ${arg.event.backgroundColor}; padding: 10px; border-radius: 4px;">
+        <b>${arg.event.extendedProps.startTime} - ${arg.event.extendedProps.endTime}</b>
+      </div>
+    `,
+  };
+}
+
+// Gestione degli eventi PTO
+if (arg.event.extendedProps.status) {
+  return {
+    html: `
+      <div style="text-align: center; font-size: 1.1em; color: white; background-color: ${arg.event.backgroundColor}; padding: 12px; border-radius: 4px;">
+        <b>${arg.event.title}</b><br><i>${arg.event.extendedProps.status}</i>
+      </div>
+    `,
+  };
+}
+
+},
+
     datesSet: (info) => {
       
       console.log('Month changed:', info.start); 
@@ -552,7 +556,7 @@ async fetchAttendanceData(accountId) {
 
     // Gestione delle PTO requests
     const ptoEvents = response2.data.approvalsSentData.map((pto) => {
-      const title = `${pto.supervisorName} - ${pto.type}`;
+      const title = `${pto.type}`;
       const backgroundColor = this.getEventColor(pto); // Usa getEventColor per determinare il colore
 
       return {
@@ -599,12 +603,15 @@ async fetchAttendanceData(accountId) {
 
 // Usa la tua funzione esistente per determinare il colore
 getEventColor(data) {
-  if (data.absence) return 'red';
-  if (data.full_pto) return 'orange';
-  if (data.special_pto) return 'green';
-  if (data.half_pto) return 'yellow';
-  return 'lightblue';
+  console.log("Data received in getEventColor:", data);
+
+  if (data.absence) return 'red';  // Assenza
+  if (data.status === "Approved") return 'blue';  // PTO completo
+  if (data.special_pto) return 'green';  // PTO speciale
+  if (data.status === "Pending") return 'gray';  // PTO parziale
+  return 'lightblue';  // Colore di default
 },
+
 
 // Se necessario, puoi anche aggiungere la funzione getEventTypeFromColor per determinare il tipo di evento dal colore
 getEventTypeFromColor(color) {
@@ -706,6 +713,13 @@ getEventTypeFromColor(color) {
         { title: 'Sports Day', start: `${year}-10-14`, isHoliday: true },
         { title: 'Culture Day', start: `${year}-11-03`, isHoliday: true },
         { title: 'Labor Thanksgiving Day', start: `${year}-11-23`, isHoliday: true },
+        { title: 'Christmas Holiday', start: `${year}-12-28`, isHoliday: true },
+        { title: 'Christmas Holiday', start: `${year}-12-29`, isHoliday: true },
+        { title: 'Christmas Holiday', start: `${year}-12-30`, isHoliday: true },
+        { title: 'Christmas Holiday', start: `${year}-12-31`, isHoliday: true },
+        { title: 'Christmas Holiday', start: `2025-01-01`, isHoliday: true },
+        { title: 'Christmas Holiday', start: `2025-01-02`, isHoliday: true },
+        { title: 'Christmas Holiday', start: `2025-01-03`, isHoliday: true }
       ];
     },
     isHoliday(date) {
