@@ -34,9 +34,10 @@
   
   
   <script setup lang="ts">
-  import { ref } from 'vue';
+  import { ref, onMounted } from 'vue';
   import { useRouter } from 'vue-router'
-  import { sendPasswordResetEmail, signInWithEmailAndPassword } from "firebase/auth";
+  import { useAuthStore } from '@/stores/authStore';
+  import { sendPasswordResetEmail } from "firebase/auth";
   import { auth } from '../../firebase/firebaseConfig.ts'
   import axios from "axios";
   import LoopingRhombusesSpinner from '../../modal/Loading.vue';
@@ -44,6 +45,7 @@
   
   const email = ref('')
   const router = useRouter();
+  const authStore = useAuthStore();
   const isLoading = ref(false);
   
   const handleSubmit = async () => {
@@ -67,5 +69,15 @@
   const goToLogin = () => {
     router.push({ path: `/login` });
   }
+
+  const checkLogin = () => {
+  if (authStore.user) {
+    router.push({ path: `/calendar` });
+  }
+}
+
+onMounted(() => {
+  checkLogin();
+});
   
   </script>

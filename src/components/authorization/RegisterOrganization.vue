@@ -111,7 +111,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, toRaw } from 'vue';
+import { ref, toRaw, onMounted } from 'vue';
 import { useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n';
 import { useAuthStore } from '@/stores/authStore';
@@ -191,6 +191,16 @@ const createUserFirebase = async () => {
   const backendData = await axios.post(`${apiUrl}/login`, {email: email, token: token});
   authStore.login(backendData.data);
 };
+
+const checkLogin = () => {
+  if (authStore.user) {
+    router.push({ path: `/calendar` });
+  }
+}
+
+onMounted(() => {
+  checkLogin();
+});
 
 </script>
 

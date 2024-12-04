@@ -54,7 +54,7 @@
 
 
 <script setup lang="ts">
-import { ref } from 'vue';
+import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/authStore';
 import { signInWithEmailAndPassword } from "firebase/auth";
@@ -111,5 +111,15 @@ const loginFirebase = async () => {
   updateLastLogin();
   router.push({ path: `/calendar` });
 }
+
+const checkLogin = () => {
+  if (authStore.user) {
+    router.push({ path: `/calendar` });
+  }
+}
+
+onMounted(() => {
+  checkLogin();
+});
 
 </script>

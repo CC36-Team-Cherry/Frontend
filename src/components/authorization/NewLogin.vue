@@ -39,50 +39,50 @@
         </form>
       </div>
     </div>
-    </div>
-  </template>
+  </div>
+</template>
   
   
-  <script setup lang="ts">
-  import { ref } from 'vue';
-  import { useRouter } from 'vue-router'
-  import { useAuthStore } from '@/stores/authStore';
-  import { verifyPasswordResetCode, confirmPasswordReset, signInWithEmailAndPassword } from "firebase/auth";
-  import { auth } from '../../firebase/firebaseConfig.ts'
-  import axios from "axios";
-  import LoopingRhombusesSpinner from '../../modal/Loading.vue';
+<script setup lang="ts">
+import { ref, onMounted } from 'vue';
+import { useRouter } from 'vue-router';
+import { useAuthStore } from '@/stores/authStore';
+import { verifyPasswordResetCode, confirmPasswordReset, signInWithEmailAndPassword } from "firebase/auth";
+import { auth } from '../../firebase/firebaseConfig.ts';
+import axios from "axios";
+import LoopingRhombusesSpinner from '../../modal/Loading.vue';
 
-  const apiUrl = import.meta.env.VITE_API_URL;
-  axios.defaults.withCredentials = true;
-  const isLoading = ref(false);
+const apiUrl = import.meta.env.VITE_API_URL;
+axios.defaults.withCredentials = true;
+const isLoading = ref(false);
 
-  const newPassword = ref('');
-  const confirmNewPassword = ref('');
-  const authStore = useAuthStore();
-  const router = useRouter();
+const newPassword = ref('');
+const confirmNewPassword = ref('');
+const authStore = useAuthStore();
+const router = useRouter();
 
-  let accountEmail = '';
+let accountEmail = '';
 
-  const handleResetPassword = () => {
-    isLoading.value = true;
-    const actionCode = getParameterByName('oobCode');
-    verifyPasswordResetCode(auth, actionCode)
-    .then((email) => {
-      accountEmail = email;
-      confirmPasswordReset(auth, actionCode, newPassword.value)
-      .then((res) => {
-        loginFirebase();
-      })
-      .catch((error) => {
-        console.log(error.code, error.message);
-      });
+const handleResetPassword = () => {
+  isLoading.value = true;
+  const actionCode = getParameterByName('oobCode');
+  verifyPasswordResetCode(auth, actionCode)
+  .then((email) => {
+    accountEmail = email;
+    confirmPasswordReset(auth, actionCode, newPassword.value)
+    .then((res) => {
+      loginFirebase();
     })
     .catch((error) => {
       console.log(error.code, error.message);
     });
-  }
+  })
+  .catch((error) => {
+    console.log(error.code, error.message);
+  });
+}
 
-  const getParameterByName = (name: string) => {    
+const getParameterByName = (name: string) => {    
     name = name.replace(/[\[]/,"\\\[").replace(/[\]]/,"\\\]");
     const regexS = "[\\?&]"+name+"=([^&#]*)";
     const regex = new RegExp(regexS);
@@ -94,7 +94,7 @@
     }
   }
 
-  const getUserFromBackend = async (token: string) => {
+const getUserFromBackend = async (token: string) => {
   try {
     const backendData = await axios.post(`${apiUrl}/login`, {email: accountEmail, token: token});
     // store user data in Pinia
@@ -104,7 +104,7 @@
   }
 }
 
-  const updateLastLogin = async () => {
+const updateLastLogin = async () => {
   try {
     const response = await axios.patch(`${apiUrl}/accounts/${authStore.user?.id}`, {last_login: new Date()})
   } catch (err) {
@@ -112,15 +112,25 @@
   }
 }
   
-  const loginFirebase = async () => {
-    const credential = await signInWithEmailAndPassword(auth, accountEmail, newPassword.value);
-    const user = credential.user;
-    const token = await user.getIdToken();
-    await getUserFromBackend(token);
-    updateLastLogin();
+const loginFirebase = async () => {
+  const credential = await signInWithEmailAndPassword(auth, accountEmail, newPassword.value);
+  const user = credential.user;
+  const token = await user.getIdToken();
+  await getUserFromBackend(token);
+  updateLastLogin();
+  router.push({ path: `/calendar` });
+  isLoading.value = false;
+}
+
+const checkLogin = () => {
+  if (authStore.user) {
     router.push({ path: `/calendar` });
-    isLoading.value = false;
   }
+}
+
+onMounted(() => {
+  checkLogin();
+});
   
   </script>
   
