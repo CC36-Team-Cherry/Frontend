@@ -95,7 +95,9 @@
               <span>{{ $t('employeeList.tableHeaders.email') }}</span>
               <svg-icon v-if="!isEmailSorted" :path="path" type="mdi" class="cursor-pointer w-5 h-5 min-w-5"
                 @click="handleEmailSort"></svg-icon>
-              <svg-icon v-if="isEmailSorted" :path="path" type="mdi"
+              <svg-icon v-if="isEmailSorted && !isEmailSortedRev" :path="path" type="mdi"
+                class="cursor-pointer w-5 h-5 min-w-5 bg-gray-400 rounded" @click="handleEmailSort"></svg-icon>
+              <svg-icon v-if="isEmailSorted && isEmailSortedRev" :path="path" type="mdi"
                 class="cursor-pointer w-5 h-5 min-w-5 bg-gray-400 rounded" @click="resetSort"></svg-icon>
             </div>
           </th>
@@ -666,7 +668,7 @@ function handleLastLoginSort() {
       return dateB - dateA
     });
     isSorted.value = true;
-    isLastLoginSorted.value = true;
+    return isLastLoginSorted.value = true;
   } else {
     sortedEmployees.value = [...sortedEmployees.value].reverse();
     return isLastLoginSortedRev.value = true;
@@ -674,14 +676,17 @@ function handleLastLoginSort() {
 }
 
 function handleEmailSort() {
-  resetSort();
-
-  sortedEmployees.value = [...filteredEmployees.value].sort((a, b) => {
-    return a.email.localeCompare(b.email);
-  });
-
-  isSorted.value = true;
-  isEmailSorted.value = true;
+  if (!isEmailSorted.value) {
+    resetSort();
+    sortedEmployees.value = [...filteredEmployees.value].sort((a, b) => {
+      return a.email.localeCompare(b.email);
+    });
+    isSorted.value = true;
+    return isEmailSorted.value = true;
+  } else {
+    sortedEmployees.value = [...sortedEmployees.value].reverse();
+    return isEmailSortedRev.value = true;
+  }
 }
 
 function resetSort() {
