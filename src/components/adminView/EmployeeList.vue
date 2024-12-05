@@ -108,7 +108,7 @@
       <tbody>
         <template v-if="displayedEmployees.length > 0">
           <tr v-for="employee in displayedEmployees" :key="employee.id" @click="openEmployeeDetailsModal(employee)"
-            class="cursor-pointer hover:bg-gray-100">
+            class="cursor-pointer hover:bg-gray-200 even:bg-gray-100 odd:bg-white">
             <td class="border p-2">{{ employee.first_name + ' ' + employee.last_name }}</td>
             <td class="border p-2">{{ employee.team ? employee.team.team_name : 'NA' }}</td>
             <td class="border p-2">{{ employee.role }}</td>
