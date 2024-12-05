@@ -6,26 +6,26 @@
     <div class="border-b p-2 text-center"> {{ $t('Sidebar.Welcome') }} {{ authStore.user.first_name + " " +
       authStore.user.last_name}} </div>
     <nav class="flex-1 p-4 space-y-2">
-      <router-link to="/calendar" class="block p-2 hover:bg-gray-400 rounded">
+      <router-link to="/calendar" class="block p-2 hover:bg-gray-400 rounded" active-class="bg-blue-500 text-white">
         {{ $t('Sidebar.Calendar') }}
       </router-link>
       <div class="flex flex-row items-center relative">
-        <router-link to="/approvals" class="block p-2 hover:bg-gray-400 rounded w-full">
+        <router-link to="/approvals" class="block p-2 hover:bg-gray-400 rounded w-full" active-class="bg-blue-500 text-white">
           {{ $t('Sidebar.Approvals') }}
         </router-link>
         <span v-if="pendingApprovalsCount > 0"
-          class="bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center absolute right-28">
+          class="bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center absolute right-28" active-class="bg-blue-500 text-white">
           {{ pendingApprovalsCount }}
         </span>
       </div>
-      <router-link to="/employee" class="block p-2 hover:bg-gray-400 rounded">
+      <router-link to="/employee" class="block p-2 hover:bg-gray-400 rounded" active-class="bg-blue-500 text-white">
         {{ $t('Sidebar.EmployeeList') }}
       </router-link>
-      <router-link to="/admin" class="block p-2 hover:bg-gray-400 rounded" v-if="authStore.user.Privileges.is_admin">
+      <router-link to="/admin" class="block p-2 hover:bg-gray-400 rounded" active-class="bg-blue-500 text-white" v-if="authStore.user.Privileges.is_admin">
         {{ $t('Sidebar.AdminPage') }}
       </router-link>
       <!-- Supervisor-specific link -->
-      <router-link to="/supervisor-calendar" v-if="authStore.user.Privileges.is_supervisor"
+      <router-link to="/supervisor-calendar" active-class="bg-blue-500 text-white" v-if="authStore.user.Privileges.is_supervisor"
         class="block p-2 hover:bg-gray-400 rounded">
         {{ $t('Sidebar.SupervisorCalendar') }}
       </router-link>
