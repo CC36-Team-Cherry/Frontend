@@ -2,9 +2,10 @@
     <LoopingRhombusesSpinner v-if="isLoading" />
     <div v-else>
         <div class="border-2 flex flex-row justify-evenly">
-            <button class="w-full h-8" :class="{
-                'bg-blue-500 text-white': activeTab === 'sent',
-                'bg-gray-200 text-black': activeTab !== 'sent'
+            <button 
+                class="w-full h-8" 
+                :class="{'bg-blue-500 text-white': activeTab === 'sent',
+                        'bg-gray-200 text-black': activeTab !== 'sent'
             }" @click="switchTab('sent')">
                 Approval Requests Sent
             </button>

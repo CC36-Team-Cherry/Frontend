@@ -19,27 +19,27 @@
           <div class="space-y-3">
             <div>
               <label class="font-semibold block">{{ $t('employeeDetails.fields.firstName') }}</label>
-              <input :disabled="!authStore.user.Privileges?.is_admin && !authStore.user.Privileges?.is_supervisor"
+              <input :disabled="!authStore.user.Privileges?.is_admin"
                 type="text" v-model="formData.first_name" class="border w-full rounded px-2 py-1" />
             </div>
             <div>
               <label class="font-semibold block">{{ $t('employeeDetails.fields.lastName') }}</label>
-              <input :disabled="!authStore.user.Privileges?.is_admin && !authStore.user.Privileges?.is_supervisor"
+              <input :disabled="!authStore.user.Privileges?.is_admin"
                 type="text" v-model="formData.last_name" class="border w-full rounded px-2 py-1" />
             </div>
             <div>
               <label class="font-semibold block">{{ $t('employeeDetails.fields.email') }}</label>
-              <input :disabled="!authStore.user.Privileges.is_admin && !authStore.user.Privileges.is_supervisor"
+              <input :disabled="!authStore.user.Privileges.is_admin"
                 type="email" v-model="formData.email" class="border w-full rounded px-2 py-1" />
             </div>
             <div>
               <label class="font-semibold block">{{ $t('employeeDetails.fields.dateOfBirth') }}</label>
-              <input :disabled="!authStore.user.Privileges.is_admin && !authStore.user.Privileges.is_supervisor"
+              <input :disabled="!authStore.user.Privileges.is_admin"
                 type="date" v-model="formData.birthdate" class="border w-full rounded px-2 py-1" />
             </div>
             <div>
               <label class="font-semibold block">{{ $t('employeeDetails.fields.team') }}</label>
-              <select v-if="authStore.user.Privileges.is_admin || authStore.user.Privileges.is_supervisor"
+              <select v-if="authStore.user.Privileges.is_admin"
                 v-model="formData.team_id" class="border rounded p-2 w-full">
                 <option value="" disabled>{{ $t('employeeDetails.placeholders.selectTeam') }}</option>
                 <option v-for="team in teams" :key="team.id" :value="team.id">{{ team.team_name }}</option>
@@ -50,7 +50,7 @@
             <div>
               <label class="font-semibold block">{{ $t('employeeDetails.fields.supervisor') }}</label>
               <input 
-                :disabled="!authStore.user.Privileges.is_admin && !authStore.user.Privileges.is_supervisor"
+                :disabled="!authStore.user.Privileges.is_admin"
                 v-model="supervisorSearch" 
                 @input="filterSupervisors" 
                 @focus="showDropdown = true" 
@@ -60,6 +60,7 @@
               <button 
                 v-if="formData.supervisor_id" 
                 @click="clearSupervisor"
+                :disabled="!authStore.user.Privileges.is_admin"
                 class="border rounded p-2 bg-gray-50 w-1/12"
               >
                 ✕
@@ -74,17 +75,17 @@
             </div>
             <div>
               <label class="font-semibold block">Role</label>
-              <input :disabled="!authStore.user.Privileges.is_admin && !authStore.user.Privileges.is_supervisor"
+              <input :disabled="!authStore.user.Privileges.is_admin"
                 type="text" v-model="formData.role" class="border w-full rounded px-2 py-1" />
             </div>
             <div>
               <label class="font-semibold block">Join Date</label>
-              <input :disabled="!authStore.user.Privileges.is_admin && !authStore.user.Privileges.is_supervisor"
+              <input :disabled="!authStore.user.Privileges.is_admin"
                 type="date" v-model="formData.join_date" class="border w-full rounded px-2 py-1" />
             </div>
             <div v-if="authStore.user.Privileges.is_admin || authStore.user.Privileges.is_supervisor">
               <label class="font-semibold block">Leave Date</label>
-              <input :disabled="!authStore.user.Privileges.is_admin && !authStore.user.Privileges.is_supervisor"
+              <input :disabled="!authStore.user.Privileges.is_admin"
                 type="date" v-model="formData.leave_date" class="border w-full rounded px-2 py-1" />
             </div>
             <div v-if="authStore.user.Privileges.is_admin">
@@ -93,7 +94,7 @@
             </div>
           </div>
           <!-- Attendance Settings -->
-          <div v-if="authStore.user.Privileges.is_admin || authStore.user.Privileges.is_supervisor">
+          <div v-if="authStore.user.Privileges.is_admin">
             <h3 class="text-lg font-semibold text-center mb-4">
               --- {{ $t('employeeDetails.attendanceSettings') }} ---
             </h3>
@@ -142,10 +143,18 @@
 
       <!-- Footer Buttons -->
       <div class="flex justify-between mt-6">
-        <button class="bg-blue-500 text-white py-2 px-6 rounded hover:bg-blue-600" @click="onSave">
+        <button 
+          class="bg-blue-500 text-white py-2 px-6 rounded hover:bg-blue-600" 
+          @click="onSave" 
+          v-show="authStore.user.Privileges.is_admin" 
+        >
           {{ $t('employeeDetails.buttons.save') }}
         </button>
-        <button class="bg-red-500 text-white py-2 px-6 rounded hover:bg-red-600" @click="onDelete">
+        <button 
+          class="bg-red-500 text-white py-2 px-6 rounded hover:bg-red-600" 
+          @click="onDelete" 
+          v-show="authStore.user.Privileges.is_admin" 
+        >
           {{ $t('employeeDetails.buttons.delete') }}
         </button>
       </div>
