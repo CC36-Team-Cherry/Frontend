@@ -30,15 +30,13 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <!-- Empty state -->
                     <tr v-if="filteredRequests.length === 0">
                         <td colspan="7" class="text-center text-xl text-gray-500 p-10">
                             No approvals to show.
                         </td>
                     </tr>
-                    <!-- Data rows -->
                     <tr v-for="(request, index) in filteredRequests" :key="index"
-                        class="even:bg-white odd:bg-gray-100">
+                        class="even:bg-gray-100 odd:bg-white">
                         <td v-if="activeTab === 'sent'" class="border p-2">{{ request.supervisorName }}</td>
                         <td v-if="activeTab === 'received'" class="border p-2">{{ request.employeeName }}</td>
                         <td class="border p-2" v-if="request.attendanceType === 'Month Attendance Request'">
