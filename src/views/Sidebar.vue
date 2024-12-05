@@ -9,12 +9,12 @@
       <router-link to="/calendar" class="block p-2 hover:bg-gray-400 rounded">
         {{ $t('Sidebar.Calendar') }}
       </router-link>
-      <div class="flex flex-row items-center">
-        <router-link to="/approvals" class="block p-2 hover:bg-gray-400 rounded">
+      <div class="flex flex-row items-center relative">
+        <router-link to="/approvals" class="block p-2 hover:bg-gray-400 rounded w-full">
           {{ $t('Sidebar.Approvals') }}
         </router-link>
         <span v-if="pendingApprovalsCount > 0"
-          class="bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+          class="bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center absolute right-28">
           {{ pendingApprovalsCount }}
         </span>
       </div>
