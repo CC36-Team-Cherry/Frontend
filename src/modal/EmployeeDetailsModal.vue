@@ -56,10 +56,11 @@
                 @focus="showDropdown = true" 
                 type="text" 
                 :placeholder="supervisorPlaceholder"
-                class="border rounded p-2 w-ull">
+                class="border rounded p-2 w-11/12">
               <button 
                 v-if="formData.supervisor_id" 
                 @click="clearSupervisor"
+                class="border rounded p-2 bg-gray-50 w-1/12"
               >
                 ✕
               </button>
@@ -114,7 +115,7 @@
                   <ul class="flex flex-col">
                     <li v-for="(specialPto, index) in specialPtos" :key="specialPto.id" class="flex justify-around">
                       <input v-if="editingSpecialPtoIndex === index" v-model="specialPtos[index].type"
-                        @blur="stopEditing" @keyup.enter="stopEditing" />
+                        @keyup.enter="stopEditing" />
                       <span v-else>
                         {{ specialPto.type }}</span>
                       <button @click="startEditingSpecialPto(index)" v-if="editingSpecialPtoIndex !== index"
@@ -241,12 +242,9 @@ const addSpecialPto = async () => {
       { content: newSpecialPto.value }
     );
 
-    // TODO: Confirm if correct
-    specialPtos.value.push({
-      type: newSpecialPto.value, // The content of the new special PTO
-    });
-
-    console.log('New special pto saved', toRaw(response));
+    if (response.status === 200) {
+      specialPtos.value.push(response.data)
+    }
 
     // Reset input 
     newSpecialPto.value = '';
@@ -264,24 +262,21 @@ const startEditingSpecialPto = (index) => {
 // Save the edited special pto
 const stopEditing = async () => {
 
+  const specialPto = specialPtos.value[editingSpecialPtoIndex.value];
+  
   try {
-    const specialPto = specialPtos.value[editingSpecialPtoIndex.value];
-    const updatedSpecialPtoType = specialPto.type;
-    console.log(specialPto)
-    console.log("updatedspecialpto", updatedSpecialPtoType);
-
+    
+    console.log("specialPto", specialPto);
 
     const response = await axios.patch(`${apiUrl}/specialPto/${specialPto.id}`, {
-      updatedSpecialPtoType
+      specialPto
     });
 
     if (response.status === 200) {
-      specialPtos.value[editingSpecialPtoIndex.value].type = updatedSpecialPtoType;
+      specialPtos.value[editingSpecialPtoIndex.value].type = specialPto.type;
     }
 
     editingSpecialPtoIndex.value = null;
-
-    console.log('Special pto edited', toRaw(response))
 
   } catch (err) {
     console.error(err);

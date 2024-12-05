@@ -60,22 +60,6 @@
             />
           </div>
 
-          <!-- Attendance -->
-          <div>
-            <label class="block mb-1 font-bold text-xs">{{ $t('calendar.attendance') }}</label>
-            <button
-              @click="logAttendance"
-              :disabled="isPtoSelected || isHalfPtoSelected || isMonthSubmitSelected"
-              :class="{
-                'bg-blue-500 text-white py-1 px-3 rounded hover:bg-blue-600 w-full text-xs' : !isPtoSelected || !isHalfPtoSelected || !isMonthSubmitSelected,
-                'bg-gray-300 text-gray-500 py-1 px-3 rounded w-full cursor-not-allowed text-xs' : isPtoSelected || isHalfPtoSelected || isMonthSubmitSelected
-                }"
-              >
-              <!-- TODO: Need to update calendar update attendance -->
-              {{ selectedEventId ? "Update Attendance" : $t('calendar.logAttendance') }}
-            </button>
-          </div>
-
           <!-- Supervisor and Memo -->
           <div>
             <div>
@@ -99,16 +83,30 @@
               placeholder="Optional Memo"
               class="border-2 text-xs p-1 w-full"
             />
-            <div>
-              <label class="block mb-1 font-bold text-xs">{{ "Submit" }}</label>
+          </div>
+                      <!-- Attendance -->
+            <div  v-if="this.attendanceType === '' || this.attendanceType === 'general'">
+              <!-- <label class="block font-bold text-xs"></label> -->
               <button
-                @click="submitHandler"
-                class="bg-green-500 text-white py-1 px-3 rounded hover:bg-green-600 w-full text-xs"
-              >
-                {{ "Submit" }}
+                @click="logAttendance"
+                :class="{
+                  'bg-blue-500 text-white py-2 px-3 rounded hover:bg-blue-600 w-full text-xs' : !isPtoSelected || !isHalfPtoSelected || !isMonthSubmitSelected,
+                  'bg-gray-300 text-gray-500 py-2 px-3 rounded w-full cursor-not-allowed text-xs' : isPtoSelected || isHalfPtoSelected || isMonthSubmitSelected
+                  }"
+                >
+                <!-- TODO: Need to update calendar update attendance -->
+                {{ selectedEventId ? "Update Attendance" : $t('calendar.logAttendance') }}
               </button>
             </div>
-          </div>
+          <div  v-if="isPtoSelected || isHalfPtoSelected || isMonthSubmitSelected">
+              <label class="block font-bold text-xs"></label>
+              <button
+                @click="submitHandler"
+                class="bg-green-500 text-white py-2 px-3 rounded hover:bg-green-600 w-full text-xs"
+              >
+                {{ "Submit For Approval" }}
+              </button>
+            </div>
         </div>
       </div>
 

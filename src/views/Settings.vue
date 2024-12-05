@@ -39,11 +39,12 @@
               @focus="showDropdown = true"
               type="text"
               :placeholder="supervisorPlaceholder"
-              class="border rounded p-2 w-full"
+              class="border rounded p-2 w-11/12"
             >
             <button 
                 v-if="formData.supervisor_id" 
                 @click="clearSupervisor" 
+                class="border rounded p-2 bg-gray-50 w-1/12"
               >
                 ✕
               </button>
