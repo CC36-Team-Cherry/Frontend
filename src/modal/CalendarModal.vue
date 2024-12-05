@@ -1,12 +1,12 @@
 <template>
-  <div v-if="isVisible" class="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-50">
-    <div class="bg-white p-6 rounded shadow-lg max-w-5xl w-full relative">
+  <div v-if="isVisible" class="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-50" @click.self="onClose">
+    <div @click.stop class="bg-white p-6 rounded shadow-lg max-w-5xl w-full relative">
       
       <button @click="onClose" class="absolute top-4 right-4 text-gray-500 hover:text-gray-800">✕</button>
 
       
-      <h2 class="text-2xl font-bold mb-6 text-center">
-        {{ $t("attendance.title") }} - {{ employeeName }}
+      <h2 class="text-5xl font-bold mb-6 text-center">
+        {{ employeeName }}
       </h2>
 
       
