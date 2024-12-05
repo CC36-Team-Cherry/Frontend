@@ -178,9 +178,6 @@
             <label class="block mb-1">{{ "Supervisor" }}</label>
             <input v-model="supervisorSearch" @input="filterSupervisors" @focus="showDropdown = true" type="text"
               placeholder="Select Supervisor" class="border rounded p-2 w-full">
-            <button v-if="formData.supervisor_id" @click="clearSupervisor">
-              x
-            </button>
             <ul v-if="showDropdown && filteredSupervisors.length > 0" ref="dropdown"
               class="border rounded mt-2 max-h-48 overflow-y-auto">
               <li v-for="supervisor in filteredSupervisors" :key="supervisor.id" @click="selectedSupervisor(supervisor)"
@@ -511,13 +508,14 @@ const selectedSupervisor = (supervisor) => {
   showDropdown.value = false;
 }
 
-const clearSupervisor = () => {
-  formData.supervisor_id = '';  // Reset the supervisor ID
-  supervisorSearch.value = '';   // Clear the input field
-  filteredSupervisors.value = [];  // Clear the filtered supervisors list
-  showDropdown.value = false;
-  filterSupervisors();
-};
+// NOTE: May delete after, depreciated after removing clear supervisor button from add user
+// const clearSupervisor = () => {
+//   formData.supervisor_id = '';  // Reset the supervisor ID
+//   supervisorSearch.value = '';   // Clear the input field
+//   filteredSupervisors.value = [];  // Clear the filtered supervisors list
+//   showDropdown.value = false;
+//   filterSupervisors();
+// };
 
 const closeDropdown = () => {
   filteredSupervisors.value = [];  // Close the dropdown by clearing the filtered list
