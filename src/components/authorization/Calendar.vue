@@ -352,7 +352,8 @@ if (arg.event.extendedProps.status) {
 
 
   const year = startDate.getFullYear();
-  const month = startDate.getMonth() + 1;
+  const month = startDate.getMonth();
+  console.log(month);
 
   this.maxHours = this.calculateMaxHours(year, month);
   console.log('Updated maxHours:', this.maxHours);
@@ -660,7 +661,7 @@ getEventTypeFromColor(color) {
       break_amount: 0,
       totalHours: isNaN(totalHours) || totalHours < 0 ? 0 : totalHours,
     };
-
+   
     console.log('Attendance Data:', attendanceData);
     console.log(totalHours);
 
