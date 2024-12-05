@@ -172,10 +172,20 @@
       <!-- Monthly Submit Button -->
       <button
         class="bg-green-500 text-white py-1 px-3 rounded hover:bg-gray-600 w-full text-base mb-2 h-16 mt-auto"
-        disabled
+        @click.stop="openSubmitMonthModal"
       >
         Monthly Submit
       </button>
+
+      <SubmitMonthModal 
+        :isVisible="isSubmitMonthModalVisible"
+        :supervisors="supervisors"
+        :selectedSupervisorId="selectedSupervisorId"
+        :memo="memo"
+        @submit="submitMonthApproval"
+        @close="closeSubmitMonthModal"
+      />
+
     </div>
   </div>
 </template>
@@ -185,8 +195,6 @@
   height: 80px !important;
 }
 </style>
-
-
 
 <script>
 import { Calendar } from '@fullcalendar/core';
@@ -199,12 +207,26 @@ import { useI18n } from 'vue-i18n';
 import { useAuthStore } from '@/stores/authStore';
 import Chart from 'chart.js/auto';
 import { ref } from 'vue';
+import SubmitMonthModal from '@/modal/SubmitMonthModal.vue';
 
 const apiUrl = import.meta.env.VITE_API_URL;
 axios.defaults.withCredentials = true;
 
 const totalHours = ref(0);
 const selectedMonth = ref(null);
+const isSubmitMonthModalVisible = ref(false);
+
+const openSubmitMonthModal = () => {
+    console.log("passing")
+    isSubmitMonthModalVisible.value = true;
+    fetchSupervisors();
+  }
+
+const closeSubmitMonthModal = () => {
+    isSubmitMonthModalVisible.value = false;
+    selectedSupervisorId = null;
+    memo = '';
+  }
 
 export default {
   
@@ -804,22 +826,23 @@ getEventTypeFromColor(color) {
       const authStore = useAuthStore();
       const requests = authStore.approvals;
 
-      const selectedDate = new Date(selectedMonth.value);
-      const currentMonth = (selectedDate.getMonth() + 1);
-      const currentYear = selectedDate.getFullYear();
-      const nextMonth = currentMonth === 12 ? 12 : currentMonth + 1;
+      // TODO: Delete after completing submit month modal
+      // const selectedDate = new Date(selectedMonth.value);
+      // const currentMonth = (selectedDate.getMonth() + 1);
+      // const currentYear = selectedDate.getFullYear();
+      // const nextMonth = currentMonth === 12 ? 12 : currentMonth + 1;
 
-      // Check if a request already exists for the selected month and year
-      const existingRequest = requests.sent.find(request => {
-        const [month, year] = request.date.split(' / ').map(Number);  // Split date into month and year
-        return year === currentYear && month === nextMonth;
-      });
+      // // Check if a request already exists for the selected month and year
+      // const existingRequest = requests.sent.find(request => {
+      //   const [month, year] = request.date.split(' / ').map(Number);  // Split date into month and year
+      //   return year === currentYear && month === nextMonth;
+      // });
 
-      if (existingRequest) {
-        // If an approval request already exists, show a message and prevent submission
-        alert('A request for this month has already been submitted for approval.');
-        return; // Exit the function without submitting the new request
-      }
+      // if (existingRequest) {
+      //   // If an approval request already exists, show a message and prevent submission
+      //   alert('A request for this month has already been submitted for approval.');
+      //   return; // Exit the function without submitting the new request
+      // }
 
        // Check if PTO or HalfPTO is being requested and remainingPto is 0
       if ((this.attendanceType === "pto" || this.attendanceType === "halfpto") && this.remainingPto <= 0) {
@@ -829,24 +852,25 @@ getEventTypeFromColor(color) {
 
       switch (this.attendanceType) {
 
-        case "monthSubmit":    
+        // TODO: Delete after completing submit month modal
+        // case "monthSubmit":    
 
-          const generalApproval = {
-            account_id: authStore.user.id,
-            supervisor_id: this.selectedSupervisorId,
-            month: nextMonth,
-            year: currentYear,
-            content: this.memo,
-            status: 'Pending',
-          };
+        //   const generalApproval = {
+        //     account_id: authStore.user.id,
+        //     supervisor_id: this.selectedSupervisorId,
+        //     month: nextMonth,
+        //     year: currentYear,
+        //     content: this.memo,
+        //     status: 'Pending',
+        //   };
 
-          try {
-            const response = await axios.post(`${apiUrl}/approvals/monthAttendance`, generalApproval);
-            console.log(response.data);
-          } catch (err) {
-            console.error('Error general attendance approval:', err);
-          }
-        break;
+        //   try {
+        //     const response = await axios.post(`${apiUrl}/approvals/monthAttendance`, generalApproval);
+        //     console.log(response.data);
+        //   } catch (err) {
+        //     console.error('Error general attendance approval:', err);
+        //   }
+        // break;
 
         case "pto":
 
@@ -946,6 +970,51 @@ getEventTypeFromColor(color) {
         console.error('Error fetching approvals:', err);
       }
     },
+    // Submit handler for general attendance
+    async submitMonthApproval({ supervisorId, memo }) {
+
+      const authStore = useAuthStore();
+
+      const selectedDate = new Date(selectedMonth.value);
+      const currentMonth = selectedDate.getMonth() + 1;
+      const currentYear = selectedDate.getFullYear();
+      const nextMonth = currentMonth === 12 ? 12 : currentMonth + 1;
+
+      // Check if a request already exists for the selected month and year
+      const requests = authStore.approvals;
+      const existingRequest = requests.sent.find(request => {
+        const [month, year] = request.date.split(' / ').map(Number); // Split date into month and year
+        return year === currentYear && month === nextMonth;
+      });
+
+      if (existingRequest) {
+        alert('A request for this month has already been submitted for approval.');
+        return;
+      }
+
+      const generalApproval = {
+        account_id: authStore.user.id,
+        supervisor_id: supervisorId,
+        month: nextMonth,
+        year: currentYear,
+        content: memo,
+        status: 'Pending',
+      };
+
+    try {
+      const response = await axios.post(`${apiUrl}/approvals/monthAttendance`, generalApproval);
+      console.log(response.data);
+
+      // Close the modal on success
+      closeModal();
+
+      // Optionally, show a success message or update the state
+      alert('Month attendance approval request submitted successfully.');
+    } catch (err) {
+      console.error('Error submitting month approval request:', err);
+      alert('Failed to submit month approval request.');
+    }
+  },
     async getSpecialPto() {
 
       const authStore = useAuthStore();
@@ -972,7 +1041,8 @@ getEventTypeFromColor(color) {
       console.error('Error fetching remaining PTO: ', err);
     }
   }
- }
+ },
+
 };
 
 </script>
