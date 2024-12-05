@@ -155,7 +155,7 @@
     }
   },
   "calendar": {
-    "selection": "YYYY-MM-DD",
+    "selection": "Date Selection",
     "type": "Type",
     "startTime": "Start Time",
     "endTime": "End Time",

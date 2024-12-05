@@ -101,9 +101,8 @@
                 class="cursor-pointer w-5 h-5 min-w-5 bg-gray-400 rounded" @click="resetSort"></svg-icon>
             </div>
           </th>
-          <th v-if="authStore.user.PrivilegesPrivileges?.is_admin"
-            class="border p-2">{{
-              $t('employeeList.tableHeaders.att') }}</th>
+          <th v-if="authStore.user.Privileges?.is_admin"
+            class="border p-2">{{$t('employeeList.tableHeaders.att') }}</th>
         </tr>
       </thead>
       <tbody>
