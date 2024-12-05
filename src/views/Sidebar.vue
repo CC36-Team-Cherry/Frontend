@@ -21,7 +21,7 @@
       <router-link to="/employee" class="block p-2 hover:bg-gray-400 rounded">
         {{ $t('Sidebar.EmployeeList') }}
       </router-link>
-      <router-link to="/admin" class="block p-2 hover:bg-gray-400 rounded">
+      <router-link to="/admin" class="block p-2 hover:bg-gray-400 rounded" v-if="authStore.user.Privileges.is_admin">
         {{ $t('Sidebar.AdminPage') }}
       </router-link>
       <!-- Supervisor-specific link -->
