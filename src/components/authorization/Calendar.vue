@@ -1,152 +1,154 @@
 <template>
-  <div class="p-4 bg-gray-100 h-full">
-    <!-- Header Section -->
-    <div class="grid grid-cols-1 md:grid-cols-12 gap-4 mb-4">
-      <!-- Left column for form inputs and chart -->
-      <div class="md:col-span-8">
-        <div class="grid grid-cols-1 gap-4 mb-4">
-          <!-- Selection -->
-          <div>
-            <label class="block mb-1 font-bold text-xs">{{ $t('calendar.selection') }}</label>
-            <input
-              type="text"
-              placeholder="YYYY-MM-DD - YYYY-MM-DD"
-              v-model="selectionRange"
-              class="border border-gray-300 rounded p-1 text-xs w-full"
-              :disabled="isMonthSubmitSelected"
-            />
+  <div class="flex h-screen bg-gray-100">
+    <!-- Left Section: Chart and Calendar -->
+    <div class="flex-1 flex flex-col p-2">
+      <!-- Chart and PTO Card -->
+      <div class="grid grid-cols-2 gap-2 p-2">
+        <!-- Chart Section (con larghezza maggiore) -->
+        <div class="bg-white shadow-sm border border-slate-200 rounded-lg p-1 flex items-center">
+          <!-- Aggiunta del titolo sopra la chart -->
+          <div class="flex-1">
+            <canvas ref="attendanceChart" class="w-full custom-chart-height" style="height: 80px;"></canvas>
           </div>
-          <!-- Type -->
-          <div>
-            <label class="block mb-1 font-bold text-xs">{{ $t('calendar.type') }}</label>
-            <select v-model="attendanceType" class="border border-gray-300 rounded p-1 text-xs w-full">
-              <option value="" disabled>Select Type</option>
-              <option value="monthSubmit">{{  "Month Submission" }}</option>
-              <option value="general">{{ $t('calendar.types.general') }}</option>
-              <option value="pto">{{ $t('calendar.types.pto') }}</option>
-              <option value="halfpto">{{ $t('calendar.types.halfPto') }}</option>
-              <optgroup v-if="specialPtos.length > 0" label="Special PTO">
-                <option 
-                  v-for="specialPto in specialPtos" 
-                  :key="specialPto.id" 
-                  :value="specialPto.attendanceType"
-                >
-                  {{ specialPto.type }}
-                </option>
-              </optgroup>
-              <option value="absence">{{ $t('calendar.types.absence') }}</option>
-            </select>
-          </div>
-
-          <!-- Start Time -->
-          <div>
-            <label class="block mb-1 font-bold text-xs">{{ $t('calendar.startTime') }}</label>
-            <input
-              type="time"
-              v-model="startTime"
-              class="border border-gray-300 rounded p-1 text-xs w-full"
-              :disabled="isPtoSelected || isMonthSubmitSelected"
-            />
-          </div>
-
-          <!-- End Time -->
-          <div>
-            <label class="block mb-1 font-bold text-xs">{{ $t('calendar.endTime') }}</label>
-            <input
-              type="time"
-              v-model="endTime"
-              class="border border-gray-300 rounded p-1 text-xs w-full"
-              :disabled="isPtoSelected || isMonthSubmitSelected"
-            />
-          </div>
-
-          <!-- Supervisor and Memo -->
-          <div>
-            <div>
-              <label class="block mb-1 font-bold text-xs">{{ "Supervisor" }}</label>
-              <select 
-                v-model="selectedSupervisorId" 
-                class="border border-gray-300 rounded p-1 text-xs w-full"
-              >
-                <option value="" disabled>Select Supervisor</option>
-                <option 
-                  v-for="supervisor in supervisors" 
-                  :key="supervisor.id" 
-                  :value="supervisor.id">
-                  {{ supervisor.first_name + supervisor.last_name }}
-                </option>
-              </select>
+          <!-- Column per "Hours/Total Hours" -->
+          <div class="ml-2 text-right">
+            <span class="text-xs font-medium text-slate-600">Hours/Month</span>
+            <div class="text-xs text-slate-500 mt-1">
+              <span>  totalHours.value   / totalHours.value  </span>
             </div>
-            <input
-              v-model="memo"
-              type="text"
-              placeholder="Optional Memo"
-              class="border-2 text-xs p-1 w-full"
-            />
           </div>
-                      <!-- Attendance -->
-            <div  v-if="this.attendanceType === '' || this.attendanceType === 'general'">
-              <!-- <label class="block font-bold text-xs"></label> -->
-              <button
-                @click="logAttendance"
-                :class="{
-                  'bg-blue-500 text-white py-2 px-3 rounded hover:bg-blue-600 w-full text-xs' : !isPtoSelected || !isHalfPtoSelected || !isMonthSubmitSelected,
-                  'bg-gray-300 text-gray-500 py-2 px-3 rounded w-full cursor-not-allowed text-xs' : isPtoSelected || isHalfPtoSelected || isMonthSubmitSelected
-                  }"
-                >
-                <!-- TODO: Need to update calendar update attendance -->
-                {{ selectedEventId ? "Update Attendance" : $t('calendar.logAttendance') }}
-              </button>
-            </div>
-          <div  v-if="isPtoSelected || isHalfPtoSelected || isMonthSubmitSelected">
-              <label class="block font-bold text-xs"></label>
-              <button
-                @click="submitHandler"
-                class="bg-green-500 text-white py-2 px-3 rounded hover:bg-green-600 w-full text-xs"
-              >
-                {{ "Submit For Approval" }}
-              </button>
-            </div>
+        </div>
+        <!-- PTO Card (ancora più piccola) -->
+        <div class="bg-white shadow-sm border border-slate-200 rounded-lg p-1">
+          <div class="border-b border-slate-200 pb-0.5 mb-0.5">
+            <span class="text-xs text-slate-600 font-medium">PTO</span>
+          </div>
+          <p class="text-xs text-slate-600">{{ remainingPto }}</p>
         </div>
       </div>
 
-      <!-- Right column for PTO card and chart -->
-      <div class="md:col-span-4 flex flex-col gap-4">
-        <!-- PTO Card Section (above the calendar) -->
-        <div class="relative flex flex-col bg-white shadow-sm border border-slate-200 rounded-lg w-full p-3">
-          <div class="mx-3 mb-0 border-b border-slate-200 pt-2 pb-1 px-1">
-            <span class="text-xs text-slate-600 font-medium">
-              PTO
-            </span>
-          </div>
-          <div class="p-2">
-            <p class="text-slate-600 leading-normal text-xs font-light">
-              {{ remainingPto }}
-            </p>
-          </div>
-        </div>
-
-        <!-- Chart Section (moved above the calendar) -->
-        <div class="mb-2 ml-20">
-          <!-- Aggiungi una classe per la chart -->
-          <canvas ref="attendanceChart" class="custom-chart-height w-full"></canvas>
-        </div>
+      <!-- Calendar Section -->
+      <div class="flex-1 bg-white shadow-sm border border-slate-200 rounded-lg p-4 overflow-y-auto">
+        <div ref="calendar" class="h-full"></div>
       </div>
     </div>
 
-    <!-- Calendar Section -->
-    <div class="mt-4 md:col-span-12 bg-white shadow-sm border border-slate-200 rounded-lg p-2">
-      <div ref="calendar"></div>
+    <!-- Right Sidebar -->
+    <div class="bg-white shadow-sm border border-slate-200 rounded-lg p-2" style="width: 240px; max-width: 240px;">
+      <!-- Selection -->
+      <div>
+        <label class="block mb-1 font-bold text-xs">{{ $t('calendar.selection') }}</label>
+        <input
+          type="text"
+          placeholder="YYYY-MM-DD - YYYY-MM-DD"
+          v-model="selectionRange"
+          class="border border-gray-300 rounded p-1 text-xs w-full"
+          :disabled="isMonthSubmitSelected"
+        />
+      </div>
+      <!-- Type -->
+      <div>
+        <label class="block mb-1 font-bold text-xs">{{ $t('calendar.type') }}</label>
+        <select v-model="attendanceType" class="border border-gray-300 rounded p-1 text-xs w-full">
+          <option value="" disabled>Select Type</option>
+          <option value="monthSubmit">{{ "Month Submission" }}</option>
+          <option value="general">{{ $t('calendar.types.general') }}</option>
+          <option value="pto">{{ $t('calendar.types.pto') }}</option>
+          <option value="halfpto">{{ $t('calendar.types.halfPto') }}</option>
+          <optgroup v-if="specialPtos.length > 0" label="Special PTO">
+            <option
+              v-for="specialPto in specialPtos"
+              :key="specialPto.id"
+              :value="specialPto.attendanceType"
+            >
+              {{ specialPto.type }}
+            </option>
+          </optgroup>
+          <option value="absence">{{ $t('calendar.types.absence') }}</option>
+        </select>
+      </div>
+      <!-- Start Time -->
+      <div>
+        <label class="block mb-1 font-bold text-xs">{{ $t('calendar.startTime') }}</label>
+        <input
+          type="time"
+          v-model="startTime"
+          class="border border-gray-300 rounded p-1 text-xs w-full"
+          :disabled="isPtoSelected || isMonthSubmitSelected"
+        />
+      </div>
+      <!-- End Time -->
+      <div>
+        <label class="block mb-1 font-bold text-xs">{{ $t('calendar.endTime') }}</label>
+        <input
+          type="time"
+          v-model="endTime"
+          class="border border-gray-300 rounded p-1 text-xs w-full"
+          :disabled="isPtoSelected || isMonthSubmitSelected"
+        />
+      </div>
+      <!-- Supervisor -->
+      <div>
+        <label class="block mb-1 font-bold text-xs">Supervisor</label>
+        <select
+          v-model="selectedSupervisorId"
+          class="border border-gray-300 rounded p-1 text-xs w-full"
+        >
+          <option value="" disabled>Select Supervisor</option>
+          <option
+            v-for="supervisor in supervisors"
+            :key="supervisor.id"
+            :value="supervisor.id"
+          >
+            {{ supervisor.first_name + supervisor.last_name }}
+          </option>
+        </select>
+      </div>
+      <!-- Memo -->
+      <div>
+        <label class="block mb-1 font-bold text-xs">Memo</label>
+        <input
+          v-model="memo"
+          type="text"
+          placeholder="Optional Memo"
+          class="border border-gray-300 rounded p-1 text-xs w-full"
+        />
+      </div>
+      <!-- Buttons -->
+      <div class="flex gap-2">
+        <!-- Log Attendance Button -->
+        <button
+          @click="logAttendance"
+          class="bg-blue-500 text-white py-1 px-3 rounded hover:bg-blue-600 w-full text-xs"
+        >
+          {{ $t('calendar.logAttendance') }}
+        </button>
+        <!-- Submit Button -->
+        <button
+          @click="submitHandler"
+          class="bg-green-500 text-white py-1 px-3 rounded hover:bg-green-600 w-full text-xs"
+        >
+          Submit
+        </button>
+      </div>
+      <!-- Monthly Submit Button -->
+      <button
+        class="bg-gray-500 text-white py-1 px-3 rounded hover:bg-gray-600 w-full text-xs"
+        disabled
+      >
+        Monthly Submit
+      </button>
     </div>
   </div>
 </template>
 
 <style scoped>
-  /* Imposta altezza più piccola per la chart */
-  .custom-chart-height {
-    height: 250px !important; /* Altezza definitiva per la chart */
-  }
+.custom-chart-height {
+  height: 80px !important;
+}
 </style>
+
+
 
 <script>
 import { Calendar } from '@fullcalendar/core';
@@ -445,7 +447,7 @@ setStartTimeFourHoursBefore() {
   this.attendanceChart = new Chart(ctx, {
     type: 'doughnut',
     data: {
-      labels: ['Worked Hours', 'Remaining Hours', 'Overworked'],
+      
       datasets: [
         {
           data: [totalHours.value, this.maxHours, this.extraHours], 
@@ -556,6 +558,7 @@ async fetchAttendanceData(accountId) {
     // Gestione delle PTO requests
     const ptoEvents = response2.data.approvalsSentData.map((pto) => {
       const title = `${pto.type}`;
+      console.log(title);
       const backgroundColor = this.getEventColor(pto); // Usa getEventColor per determinare il colore
 
       return {
@@ -569,9 +572,6 @@ async fetchAttendanceData(accountId) {
         },
       };
     });
-
-    console.log("Attendance Event:", attendanceEvents);
-    console.log("PTO Event:", ptoEvents);
 
 
     // Aggiungi gli eventi delle attendance e delle PTO al calendario
@@ -634,6 +634,8 @@ getEventTypeFromColor(color) {
       this.startTime = event.extendedProps.startTime || '';
       this.endTime = event.extendedProps.endTime || '';
       this.attendanceType = this.getEventTypeFromColor(event.backgroundColor);
+
+      console.log(attendanceType);
     },
   logAttendance() {
     const authStore = useAuthStore();
@@ -648,11 +650,28 @@ getEventTypeFromColor(color) {
     const [endHour, endMinute] = this.endTime.split(':').map(Number);
 
     
-    const startTotalMinutes = startHour * 60 + startMinute;
-    const endTotalMinutes = endHour * 60 + endMinute;
-    
-    const totalHours = (endTotalMinutes - startTotalMinutes) / 60;
-    
+    let totalHours = 0;
+    if (this.attendanceType === 'general') {
+      const startTotalMinutes = startHour * 60 + startMinute;
+      const endTotalMinutes = endHour * 60 + endMinute;
+      totalHours = (endTotalMinutes - startTotalMinutes) / 60;
+    }
+    // Aggiungi 8 ore se è PTO o Special PTO
+    else if (this.attendanceType === 'pto' || this.attendanceType === 'specialPto') {
+      totalHours = 8; // Per PTO e Special PTO aggiungi automaticamente 8 ore
+    }
+    // Aggiungi 4 ore se è Half PTO
+    else if (this.attendanceType === 'halfpto') {
+      totalHours = 4; // Per Half PTO aggiungi automaticamente 4 ore
+    }
+    // Se è Absence non aggiungere ore
+    else if (this.attendanceType === 'absence') {
+      totalHours = 0;
+    }
+
+    // Se le ore calcolate sono negative, impostale a 0
+    totalHours = isNaN(totalHours) || totalHours < 0 ? 0 : totalHours;
+
     const attendanceData = {
       account_id: authStore.user.id,
       day: `${day}T00:00:00.000Z`,
@@ -663,9 +682,9 @@ getEventTypeFromColor(color) {
       half_pto: this.attendanceType === 'halfpto',
       special_pto: this.attendanceType === 'specialPto',
       break_amount: 0,
-      totalHours: isNaN(totalHours) || totalHours < 0 ? 0 : totalHours,
+      totalHours: totalHours, // Usa il valore calcolato per totalHours
     };
-   
+    
     console.log('Attendance Data:', attendanceData);
     console.log(totalHours);
 
@@ -880,6 +899,7 @@ getEventTypeFromColor(color) {
       
       try {
         const response = await axios.get(`${apiUrl}/accounts/${authStore.user.id}/approvals`);
+        console.log("respose", response);
         requests.sent = response.data.approvalsSentData;
         requests.received = response.data.approvalsReceivedData;
         authStore.setApprovals(response.data.approvalsSentData, response.data.approvalsReceivedData);
