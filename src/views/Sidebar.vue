@@ -6,11 +6,11 @@
     <div class="border-b p-2 text-center"> {{ $t('Sidebar.Welcome') }} {{ authStore.user.first_name + " " +
       authStore.user.last_name}} </div>
     <nav class="flex-1 p-4 space-y-2">
-      <router-link to="/calendar" class="block p-2 hover:bg-gray-200 rounded">
+      <router-link to="/calendar" class="block p-2 hover:bg-gray-400 rounded">
         {{ $t('Sidebar.Calendar') }}
       </router-link>
       <div class="flex flex-row items-center">
-        <router-link to="/approvals" class="block p-2 hover:bg-gray-200 rounded">
+        <router-link to="/approvals" class="block p-2 hover:bg-gray-400 rounded">
           {{ $t('Sidebar.Approvals') }}
         </router-link>
         <span v-if="pendingApprovalsCount > 0"
@@ -18,26 +18,28 @@
           {{ pendingApprovalsCount }}
         </span>
       </div>
-      <router-link to="/employee" class="block p-2 hover:bg-gray-200 rounded">
+      <router-link to="/employee" class="block p-2 hover:bg-gray-400 rounded">
         {{ $t('Sidebar.EmployeeList') }}
       </router-link>
-      <router-link to="/admin" class="block p-2 hover:bg-gray-200 rounded">
+      <router-link to="/admin" class="block p-2 hover:bg-gray-400 rounded">
         {{ $t('Sidebar.AdminPage') }}
       </router-link>
       <!-- Supervisor-specific link -->
       <router-link to="/supervisor-calendar" v-if="authStore.user.Privileges.is_supervisor"
-        class="block p-2 hover:bg-gray-200 rounded">
+        class="block p-2 hover:bg-gray-400 rounded">
         {{ $t('Sidebar.SupervisorCalendar') }}
       </router-link>
     </nav>
-    <div class="flex justify-around p-4 border-t">
-      <router-link to="/settings" class="w-full max-w-[120px] text-center">
-        <button class="bg-gray-300 p-2 rounded w-full">
-          {{ $t('Settings') }}
+    <div class="w-64 flex items-center justify-center gap-10 p-4 m-1 border-t">
+      <router-link to="/settings">
+        <button :title="$t('Settings')" class="bg-gray-300 hover:bg-gray-400 p-2 rounded max-w-[120px]">
+          <settings/>
         </button>
       </router-link>
-      <button @click="handleLogout" class="bg-red-500 text-white p-2 rounded w-full max-w-[120px] text-center">
-        {{ $t('Logout') }}
+      <button
+        @click="handleLogout" :title="$t('Logout')"
+        class="bg-gray-300 hover:bg-gray-400 p-2 rounded max-w-[120px] text-center">
+          <logout/>
       </button>
     </div>
   </aside>
@@ -48,6 +50,8 @@ import { computed, ref } from 'vue';
 import { useRouter } from 'vue-router'
 import { useAuthStore } from "@/stores/authStore";
 import axios from "axios";
+import logout from "./svg/logout.vue";
+import settings from "./svg/settings.vue";
 import { useLogout } from "@/utils/useLogout";
 
 const { handleLogout } = useLogout();

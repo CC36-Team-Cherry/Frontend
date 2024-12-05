@@ -43,6 +43,7 @@
                 v-model="formData.team_id" class="border rounded p-2 w-full">
                 <option value="" disabled>{{ $t('employeeDetails.placeholders.selectTeam') }}</option>
                 <option v-for="team in teams" :key="team.id" :value="team.id">{{ team.team_name }}</option>
+                <option :value="null">No team</option>
               </select>
               <input v-else disabled :value="selectedTeamName" class="border w-full rounded px-2 py-1" />
             </div>
@@ -98,8 +99,14 @@
             <div class="space-y-3">
               <div>
                 <label class="font-semibold block">{{ $t('employeeDetails.fields.pto') }}</label>
-                <input type="number" v-model="formData.remaining_pto" :placeholder="employee.PTO?.remaining_pto || 0"
-                  class="border w-full rounded px-2 py-1" />
+                <input 
+                  type="number" 
+                  min="0"
+                  v-model="formData.remaining_pto" 
+                  :placeholder="employee.PTO?.remaining_pto || 0"
+                  class="border w-full rounded px-2 py-1"
+                  @input="validateRemainingPto" 
+                />
               </div>
               <div>
                 <label class="font-semibold block">{{ $t('employeeDetails.fields.specialHolidays') }}</label>
@@ -343,6 +350,16 @@ const clearSupervisor = () => {
 
 // handle click outside of dropdown of supervisors
 onClickOutside(dropdown, closeDropdown);
+
+  const validateRemainingPto = () => {
+    // Ensure that the value is a valid non-negative number
+    let value = formData.remaining_pto;
+
+    // Check if the value is a valid number and greater than or equal to zero
+    if (value < 0 || isNaN(value)) {
+      formData.remaining_pto = 0;  // Reset to 0 if it's invalid
+    }
+  }
 
 onMounted(() => {
   formData.first_name = props.employee.first_name;

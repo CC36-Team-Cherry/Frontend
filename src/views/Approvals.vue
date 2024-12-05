@@ -38,7 +38,7 @@
                         <th>Message</th>
                         <th>Status</th>
                         <th>Action</th>
-                        <th>Date</th>
+                        <th>Last Updated</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -65,10 +65,10 @@
                         >{{  `${request.attendanceType}: ${request.date}` }}</td>
                         <td
                             v-if="request.attendanceType === 'PTO Request' || request.attendanceType === 'Half PTO Request'"
-                        >{{  `${request.attendanceType}: ${request.date}` }}</td>
+                        >{{  `${request.attendanceType}: ${format(new Date(request.date),'yyyy-MM-dd')}` }}</td>
                         <td
                             v-if="request.attendanceType === 'Special PTO Request'"
-                            >{{  `${request.attendanceType}: ${request.type} for ${request.date}` }}</td>                        
+                            >{{  `${request.attendanceType}: ${request.type} on ${format(new Date(request.date),'yyyy-MM-dd')}` }}</td>                        
                         <td
                             v-if="!request.isEditing"
                         >{{  request.memo }}</td>
@@ -107,7 +107,7 @@
                                 @click="deleteClick(request.id, request.attendanceType)"
                             >Delete</button>
                         </td>
-                        <td>{{  request.updated_at }}</td>
+                        <td>{{  `${format(new Date(request.updated_at), 'yyyy-MM-dd h:mm')}` }}</td>
                     </tr> 
                 </tbody>
             </table>
@@ -120,6 +120,7 @@ import { ref, computed, onMounted } from 'vue';
 import axios from 'axios';
 import { useAuthStore } from '@/stores/authStore';
 import LoopingRhombusesSpinner from '../modal/Loading.vue';
+import { format } from 'date-fns'
 
 const apiUrl = import.meta.env.VITE_API_URL;
 axios.defaults.withCredentials = true;
@@ -138,7 +139,11 @@ const activeTab = ref('sent');
 const filteredRequests = computed(() => {
         // Ensure requests and the current tab have valid data
         if (requests && requests[activeTab.value]) {
-        return requests[activeTab.value];
+            return requests[activeTab.value].sort((a, b) => {
+            const dateA = new Date(a.updated_at);
+            const dateB = new Date(b.updated_at);
+            return dateB - dateA;
+        });
     }
     return [];  // Return an empty array if data is not available
 })
@@ -154,8 +159,8 @@ const getApprovals = async () => {
         isLoading.value = true;
         const response = await axios.get(`${apiUrl}/accounts/${activeAccountId}/approvals`);
         
-        requests.sent = response.data.approvalsSentData;
-        requests.received = response.data.approvalsReceivedData;
+        requests.sent = response.data.approvalsSentData.sort((a, b) => new Date(b.updated_at) - new Date(a.updated_at));
+        requests.received = response.data.approvalsReceivedData.sort((a, b) => new Date(b.updated_at) - new Date(a.updated_at));
         isLoading.value = false;
         authStore.setApprovals(response.data.approvalsSentData, response.data.approvalsReceivedData);
     } catch (err) {
@@ -179,6 +184,7 @@ const statusClick = async (approvalsId, statusChange, requestType) => {
         if (requestIndex !== -1) {
             // Before making the API call, optimistically update the status locally
             tabRequests[requestIndex].status = statusChange; // Update the status in the local state
+            tabRequests[requestIndex].updated_at = new Date().toISOString(); // Update the updated date in the local state
         }
 
         const response = await axios.patch(`${apiUrl}/approvals/${requestType}/${approvalsId}`, 
@@ -205,7 +211,7 @@ const saveRemind = async (request) => {
     const newMessage = request.newMessage;
 
     try {
-        const response = await axios.patch(`${apiUrl}/approvals/${request.type}/${request.id}/remind`, {
+        const response = await axios.patch(`${apiUrl}/approvals/${request.attendanceType}/${request.id}/remind`, {
             newMessage,
         });
 
@@ -214,6 +220,8 @@ const saveRemind = async (request) => {
             request.updated_at = new Date().toISOString();
             request.isEditing = false;
         }
+
+        requests[activeTab.value].sort((a, b) => new Date(b.updated_at) - new Date(a.updated_at));
 
     } catch (err) {
         console.error('Error setting sending remind:', err)
