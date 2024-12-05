@@ -20,7 +20,9 @@
   import dayGridPlugin from "@fullcalendar/daygrid";
   import interactionPlugin from "@fullcalendar/interaction";
   import enLocale from "@fullcalendar/core/locales/en-gb";
+  import jaLocale from '@fullcalendar/core/locales/ja';
   import axios from "axios";
+  import { useI18n } from "vue-i18n";
   
   const apiUrl = import.meta.env.VITE_API_URL;
   axios.defaults.withCredentials = true;
@@ -44,6 +46,10 @@
       return {
         calendar: null,
         events: [],
+        locales: {
+        "en-US": enLocale,
+        "ja-JP": jaLocale,
+        },
       };
     },
     methods: {
@@ -90,13 +96,13 @@ getEventColor(record) {
   return "blue";
 },
 
-initializeCalendar() {
+initializeCalendar(locale) {
   const calendarEl = this.$refs.calendar;
 
   this.calendar = new Calendar(calendarEl, {
     plugins: [dayGridPlugin, interactionPlugin],
     initialView: "dayGridMonth",
-    locale: enLocale,
+    locale: locale,
     events: this.events,
     eventContent: (arg) => {
       if (arg.event.extendedProps.punch_in && arg.event.extendedProps.punch_out) {
@@ -135,9 +141,21 @@ initializeCalendar() {
       },
     },
     mounted() {
+      const { locale } = useI18n();
+
       console.log("Initializing calendar...");
-      this.initializeCalendar();
+      this.initializeCalendar(this.locales[locale.value]);
+      
       this.fetchAttendanceData();
+
+      this.$watch(
+        () => locale.value,
+        (newLocale) => {
+          if (this.calendar) {
+          this.calendar.setOption("locale", this.locales[newLocale]);
+          }
+        }
+      );
     },
     beforeUnmount() {
       if (this.calendar) {
