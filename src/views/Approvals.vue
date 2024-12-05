@@ -114,13 +114,23 @@ const activeTab = ref('sent');
 const filteredRequests = computed(() => {
     // Ensure requests and the current tab have valid data
     if (requests && requests[activeTab.value]) {
-        return requests[activeTab.value].sort((a, b) => {
-            const dateA = new Date(a.updated_at);
-            const dateB = new Date(b.updated_at);
-            return dateB - dateA;
-        });
+        return requests[activeTab.value]
+            .filter(request => {
+                // Apply any filtering logic here (e.g., filter by certain types, etc.)
+                return true; // Keep all requests (adjust if specific filtering is needed)
+            })
+            .sort((a, b) => {
+                // First, prioritize "Pending" status
+                if (a.status === 'Pending' && b.status !== 'Pending') return -1;
+                if (a.status !== 'Pending' && b.status === 'Pending') return 1;
+
+                // Then, sort by updated_at (newest first)
+                const dateA = new Date(a.updated_at);
+                const dateB = new Date(b.updated_at);
+                return dateB - dateA;
+            });
     }
-    return [];  // Return an empty array if data is not available
+    return []; // Return an empty array if data is not available
 });
 
 // helper function to switch tabs
