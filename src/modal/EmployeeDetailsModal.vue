@@ -56,10 +56,11 @@
                 @focus="showDropdown = true" 
                 type="text" 
                 :placeholder="supervisorPlaceholder"
-                class="border rounded p-2 w-ull">
+                class="border rounded p-2 w-11/12">
               <button 
                 v-if="formData.supervisor_id" 
                 @click="clearSupervisor"
+                class="border rounded p-2 bg-gray-50 w-1/12"
               >
                 ✕
               </button>
@@ -235,6 +236,7 @@ const getSpecialPto = async () => {
 
 // Add new special PTO 
 const addSpecialPto = async () => {
+  console.log("addspecialpto passing")
   try {
     // const newSpecialPto = newSpecialPto.value;
     const response = await axios.post(`${apiUrl}/accounts/${props.employee.id}/specialPto`,
