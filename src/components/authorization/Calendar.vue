@@ -67,6 +67,7 @@
               <select 
                 v-model="selectedSupervisorId" 
                 class="border border-gray-300 rounded p-1 text-xs w-full"
+                 :disabled="this.attendanceType === 'general'"
               >
                 <option value="" disabled>Select Supervisor</option>
                 <option 
