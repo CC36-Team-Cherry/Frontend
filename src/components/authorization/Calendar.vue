@@ -167,6 +167,7 @@ axios.defaults.withCredentials = true;
 
 const totalHours = ref(0);
 const selectedMonth = ref(null);
+const currentUserAtten = ref(null);
 
 export default {
   
@@ -510,6 +511,8 @@ async fetchAttendanceData(accountId) {
     const response = await axios.get(`${apiUrl}/accounts/${accountId}/attendance`);
     const response2 = await axios.get(`${apiUrl}/accounts/${accountId}/approvalsPTO`);
 
+    currentUserAtten.value = response;
+
     console.log("Response data:", response.data, response2.data);
 
     const currentDate = this.calendar.getDate(); 
@@ -641,7 +644,26 @@ getEventTypeFromColor(color) {
     const authStore = useAuthStore();
     const days = this.selectionRange.split(', ');
 
-    const attendancePromises = days.map((day) => {
+    const existingAttendance = currentUserAtten.value.data;
+
+    const filteredDays = days.filter((day) => {
+      const dayExists = existingAttendance.some(
+        (record) => record.day === `${day}T00:00:00.000Z`
+      );
+
+      if (dayExists) {
+        console.warn(`Attendance for ${day} already exists.`);
+      }
+
+      return !dayExists;
+    });
+
+    if (filteredDays.length === 0) {
+      alert('Attendance has already been logged for all selected days.');
+      return;
+    }
+
+    const attendancePromises = filteredDays.map((day) => {
     const punchIn = `${day}T${this.startTime}:00Z`;
     const punchOut = `${day}T${this.endTime}:00Z`;
 
