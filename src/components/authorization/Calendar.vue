@@ -14,7 +14,7 @@
           <div class="ml-2 text-right">
             <span class="text-xs font-medium text-slate-600">Hours/Month</span>
             <div class="text-xs text-slate-500 mt-1">
-              <span>  totalHours.value   / totalHours.value  </span>
+              <span> 0   / {{maxHours}}  </span>
             </div>
           </div>
         </div>
@@ -269,6 +269,7 @@ export default {
   const calendarEl = this.$refs.calendar;
   const { locale } = useI18n();
 
+  this.selectedDates = [];
   // Inizializzazione del calendario
   this.calendar = new Calendar(calendarEl, {
     plugins: [interactionPlugin, dayGridPlugin],
@@ -300,6 +301,14 @@ export default {
       this.selectionRange = dates
         .map((date) => date.toISOString().split('T')[0])
         .join(', ');
+
+        selectionInfo.jsEvent.target.style.backgroundColor = "rgba(0, 123, 255, 0.5)"; // Cambia colore di selezione (ad esempio blu)
+    },
+
+    unselect: (info) => {
+      // Rimuove il colore di selezione quando l'utente deseleziona
+      info.jsEvent.target.style.backgroundColor = ""; 
+      console.log("Unselected");
     },
     eventClick: (info) => {
       this.handleEventClick(info.event);
@@ -394,6 +403,18 @@ if (arg.event.extendedProps.status) {
     }
   },
   methods: {
+
+    highlightSelectedDates() {
+    // Evidenzia le date selezionate
+    if (this.selectedDates.length > 0) {
+      this.selectedDates.forEach(date => {
+        const event = this.calendar.getEventById(date.toISOString().split('T')[0]);
+        if (event) {
+          event.setProp("backgroundColor", "rgba(0, 123, 255, 0.5)"); 
+        }
+      });
+    }
+  },
      
   handleMonthChange(startDate) {
   console.log('Handling month change:', startDate);
@@ -476,7 +497,7 @@ setStartTimeFourHoursBefore() {
     return this.holidays.some((holiday) => holiday.start === formattedDate);
   },
     
-    initializeChart() {
+initializeChart() {
      const ctx = this.$refs.attendanceChart?.getContext('2d');
      if (!ctx) {
       console.error('Canvas element not found for attendance chart');
@@ -590,6 +611,7 @@ async fetchAttendanceData(accountId) {
           startTime,
           endTime,
           totalHours,
+          attendanceType: record.absence ? "absence" : "general",
         },
       };
     });
@@ -608,6 +630,7 @@ async fetchAttendanceData(accountId) {
         extendedProps: {
           status: pto.status,
           memo: pto.memo,
+          attendanceType: pto.type === "Special PTO" ? "Special PTO" : pto.type === "Half PTO" ? "halfpto" : "pto", // Aggiungi attendanceType
         },
       };
     });
@@ -617,10 +640,30 @@ async fetchAttendanceData(accountId) {
     this.events = [...attendanceEvents, ...ptoEvents];
 
     // Calcola il totale delle ore per le attendance
-    const calculatedTotalHours = this.events.reduce(
-      (sum, event) => sum + (event.extendedProps?.totalHours || 0),
-      0
-    );
+    const calculatedTotalHours = this.events.reduce((sum, event) => {
+
+      console.log("extendeProps",event.extendedProps);
+
+
+    const isAbsence = event.extendedProps?.attendanceType === 'absence';  // Verifica se l'evento è un'assenza
+    console.log("isAbsence", isAbsence);
+  const isPto = event.extendedProps?.attendanceType === 'pto';  // Verifica se l'evento è Full PTO
+  const isHalfPto = event.extendedProps?.attendanceType === 'halfpto';  // Verifica se l'evento è Half PTO
+  const isSpecialPto = event.extendedProps?.attendanceType === 'Special PTO';  // Verifica se l'evento è Special PTO
+
+  // Se è un'assenza, non aggiungere ore
+  if (isAbsence) return sum;
+
+  // Aggiungi 8 ore per Full PTO e Special PTO, 4 ore per Half PTO
+  if (isPto || isSpecialPto) {
+    return sum + 8;  // Aggiungi 8 ore per Full PTO o Special PTO
+  } else if (isHalfPto) {
+    return sum + 4;  // Aggiungi 4 ore per Half PTO
+  }
+
+  // Aggiungi le ore per altri tipi di eventi
+  return sum + (event.extendedProps?.totalHours || 0);
+}, 0);
 
     console.log("Calculated Total Hours:", calculatedTotalHours);
 
@@ -674,7 +717,7 @@ getEventTypeFromColor(color) {
       this.endTime = event.extendedProps.endTime || '';
       this.attendanceType = this.getEventTypeFromColor(event.backgroundColor);
 
-      console.log(attendanceType);
+      console.log("attendanceType",attendanceType);
     },
   logAttendance() {
     const authStore = useAuthStore();
