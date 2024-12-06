@@ -32,108 +32,146 @@
         <div ref="calendar" class="h-full"></div>
       </div>
     </div>
-
     <!-- Right Sidebar -->
-    <div class="bg-white shadow-sm border border-slate-200 rounded-lg p-2" style="width: 240px; max-width: 240px;">
-      <!-- Selection -->
-      <div>
-        <label class="block mb-1 font-bold text-xs">{{ $t('calendar.selection') }}</label>
-        <input
-          type="text"
-          placeholder="YYYY-MM-DD - YYYY-MM-DD"
-          v-model="selectionRange"
-          class="border border-gray-300 rounded p-1 text-xs w-full"
-          :disabled="isMonthSubmitSelected"
-        />
-      </div>
-      <!-- Type -->
-      <div>
-        <label class="block mb-1 font-bold text-xs">{{ $t('calendar.type') }}</label>
-        <select v-model="attendanceType" class="border border-gray-300 rounded p-1 text-xs w-full">
-          <option value="" disabled>Select Type</option>
-          <option value="monthSubmit">{{ "Month Submission" }}</option>
-          <option value="general">{{ $t('calendar.types.general') }}</option>
-          <option value="pto">{{ $t('calendar.types.pto') }}</option>
-          <option value="halfpto">{{ $t('calendar.types.halfPto') }}</option>
-          <optgroup v-if="specialPtos.length > 0" label="Special PTO">
-            <option
-              v-for="specialPto in specialPtos"
-              :key="specialPto.id"
-              :value="specialPto.attendanceType"
-            >
-              {{ specialPto.type }}
-            </option>
-          </optgroup>
-          <option value="absence">{{ $t('calendar.types.absence') }}</option>
-        </select>
-      </div>
-      <!-- Start Time -->
-      <div>
-        <label class="block mb-1 font-bold text-xs">{{ $t('calendar.startTime') }}</label>
-        <input
-          type="time"
-          v-model="startTime"
-          class="border border-gray-300 rounded p-1 text-xs w-full"
-          :disabled="isPtoSelected || isMonthSubmitSelected"
-        />
-      </div>
-      <!-- End Time -->
-      <div>
-        <label class="block mb-1 font-bold text-xs">{{ $t('calendar.endTime') }}</label>
-        <input
-          type="time"
-          v-model="endTime"
-          class="border border-gray-300 rounded p-1 text-xs w-full"
-          :disabled="isPtoSelected || isMonthSubmitSelected"
-        />
-      </div>
-      <!-- Supervisor -->
-      <div>
-        <label class="block mb-1 font-bold text-xs">Supervisor</label>
-        <select
-          v-model="selectedSupervisorId"
-          class="border border-gray-300 rounded p-1 text-xs w-full"
+    <div class="bg-white shadow-sm border border-slate-200 rounded-lg p-2 flex flex-col" style="width: 240px; max-width: 240px;">
+      <!-- Tabs -->
+      <div class="flex mb-3">
+        <button
+          @click="tab = 'attendance', attendanceType = 'general'"
+          :class="{'bg-blue-500 text-white': tab === 'attendance', 'text-blue-500': tab !== 'attendance'}"
+          class="px-4 py-2 text-sm font-bold flex-1"
         >
-          <option value="" disabled>Select Supervisor</option>
-          <option
-            v-for="supervisor in supervisors"
-            :key="supervisor.id"
-            :value="supervisor.id"
-          >
-            {{ supervisor.first_name + supervisor.last_name }}
-          </option>
-        </select>
+          Attendance
+        </button>
+        <button
+          @click="tab = 'pto', attendanceType = 'pto'"
+          :class="{'bg-blue-500 text-white': tab === 'pto', 'text-blue-500': tab !== 'pto'}"
+          class="px-4 py-2 text-sm font-bold flex-1"
+        >PTO</button>
       </div>
-      <!-- Memo -->
-      <div>
-        <label class="block mb-1 font-bold text-xs">Memo</label>
-        <input
-          v-model="memo"
-          type="text"
-          placeholder="Optional Memo"
-          class="border border-gray-300 rounded p-1 text-xs w-full"
-        />
-      </div>
-      <!-- Buttons -->
-      <div class="flex gap-2">
-        <!-- Log Attendance Button -->
+
+      <!-- Attendance Form Tab -->
+      <div v-if="tab === 'attendance'">
+        <div class="mb-3">
+          <label class="block mb-1 font-bold text-sm">{{ $t('calendar.selection') }}</label>
+          <input
+            type="text"
+            placeholder="YYYY-MM-DD - YYYY-MM-DD"
+            v-model="selectionRange"
+            class="border border-gray-300 rounded p-1 text-xs w-full"
+          />
+        </div>
+        <div class="mb-3">
+          <label class="block mb-1 font-bold text-sm">{{ $t('calendar.type') }}</label>
+          <select v-model="attendanceType" class="border border-gray-300 rounded p-1 text-xs w-full">
+            <option value="general">{{ $t('calendar.types.general') }}</option>
+            <option value="absence">{{  $t('calendar.types.absence') }}</option>
+          </select>
+        </div>
+        <div class="mb-3">
+          <label class="block mb-1 font-bold text-sm">{{  $t('calendar.startTime') }}</label>
+          <input
+            type="time"
+            v-model="startTime"
+            class="border border-gray-300 rounded p-1 text-xs w-full"
+          />
+        </div>
+        <div class="mb-3">
+          <label class="block mb-1 font-bold text-sm">{{ $t('calendar.endTime') }}</label>
+          <input
+            type="time"
+            v-model="endTime"
+            class="border border-gray-300 rounded p-1 text-xs w-full"
+          />
+        </div>
         <button
           @click="logAttendance"
-          class="bg-blue-500 text-white py-1 px-3 rounded hover:bg-blue-600 w-full text-xs"
+          class="bg-blue-500 text-white py-1 px-3 rounded hover:bg-blue-600 w-full text-base mb-3"
         >
-          {{ $t('calendar.logAttendance') }}
+          {{  $t('calendar.logAttendance') }}
         </button>
-        <!-- Submit Button -->
+      </div>
+
+      <!-- PTO Tab -->
+      <div v-if="tab === 'pto'">
+        <div>
+          <label class="block mb-1 font-bold text-sm">{{  $t('calendar.selection') }}</label>
+          <input
+            type="text"
+            placeholder="YYYY-MM-DD - YYYY-MM-DD"
+            v-model="selectionRange"
+            class="border border-gray-300 rounded p-1 text-xs w-full mb-3"
+          />
+        </div>
+        <div class="mb-3">
+          <label class="block mb-1 font-bold text-sm">{{ $t('calendar.type') }}</label>
+          <select v-model="attendanceType" class="border border-gray-300 rounded p-1 text-xs w-full">
+            <option value="pto">{{ $t('calendar.types.pto') }}</option>
+            <option value="halfpto">{{ $t('calendar.types.halfPto') }}</option>
+            <optgroup v-if="specialPtos.length > 0" label="Special PTO">
+              <option
+                v-for="specialPto in specialPtos"
+                :key="specialPto.id"
+                :value="specialPto.attendanceType"
+              >
+                {{ specialPto.type }}
+              </option>
+            </optgroup>
+          </select>
+        </div>
+        <div v-show="isHalfPtoSelected" class="mb-3">
+          <label class="block mb-1 font-bold text-sm">{{  $t('calendar.startTime') }}</label>
+          <input
+            type="time"
+            v-model="startTime"
+            class="border border-gray-300 rounded p-1 text-xs w-full"
+          />
+        </div>
+        <div v-show="isHalfPtoSelected" class="mb-3">
+          <label class="block mb-1 font-bold text-sm">{{ $t('calendar.endTime') }}</label>
+          <input
+            type="time"
+            v-model="endTime"
+            class="border border-gray-300 rounded p-1 text-xs w-full"
+            :disabled="isHalfPtoSelected"
+          />
+        </div>
+        <div class="mb-3">
+          <label class="block mb-1 font-bold text-sm">Supervisor</label>
+          <select
+            v-model="selectedSupervisorId"
+            class="border border-gray-300 rounded p-1 text-xs w-full"
+          >
+            <option value="" disabled>Select Supervisor</option>
+            <option
+              v-for="supervisor in supervisors"
+              :key="supervisor.id"
+              :value="supervisor.id"
+            >
+              {{ supervisor.first_name + supervisor.last_name }}
+            </option>
+          </select>
+        </div>
+        <div class="mb-3">
+          <label class="block mb-1 font-bold text-sm">Memo</label>
+          <input
+            v-model="memo"
+            type="text"
+            placeholder="Optional Memo"
+            class="border border-gray-300 rounded p-1 text-xs w-full"
+          />
+        </div>  
         <button
           @click="submitHandler"
-          class="bg-green-500 text-white py-1 px-3 rounded hover:bg-green-600 w-full text-xs"
+          class="bg-cyan-500 text-white py-1 rounded hover:bg-green-600 w-full text-base mb-3"
         >
           Submit
         </button>
       </div>
+
       <!-- Monthly Submit Button -->
       <button
-        class="bg-gray-500 text-white py-1 px-3 rounded hover:bg-gray-600 w-full text-xs"
+        class="bg-green-500 text-white py-1 px-3 rounded hover:bg-gray-600 w-full text-base mb-2 h-16 mt-auto"
         disabled
       >
         Monthly Submit
@@ -177,6 +215,7 @@ export default {
       selectionRange: '',
       extraHours: 0,
       attendanceType: '',
+
       startTime: '',
       endTime: '',
       calendar: null,
@@ -195,6 +234,7 @@ export default {
       specialPtos: [],
       selectedSpecialPtoType: '',
       remainingPto: null,
+      tab: 'attendance',
     };
   },
   computed: {

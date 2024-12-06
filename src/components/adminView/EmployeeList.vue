@@ -101,15 +101,14 @@
                 class="cursor-pointer w-5 h-5 min-w-5 bg-gray-400 rounded" @click="resetSort"></svg-icon>
             </div>
           </th>
-          <th v-if="authStore.user.PrivilegesPrivileges?.is_admin || authStore.user.Privileges?.is_supervisor"
-            class="border p-2">{{
-              $t('employeeList.tableHeaders.att') }}</th>
+          <th v-if="authStore.user.Privileges?.is_admin"
+            class="border p-2">{{$t('employeeList.tableHeaders.att') }}</th>
         </tr>
       </thead>
       <tbody>
         <template v-if="displayedEmployees.length > 0">
           <tr v-for="employee in displayedEmployees" :key="employee.id" @click="openEmployeeDetailsModal(employee)"
-            class="cursor-pointer hover:bg-gray-100">
+            class="cursor-pointer hover:bg-gray-200 even:bg-gray-100 odd:bg-white">
             <td class="border p-2">{{ employee.first_name + ' ' + employee.last_name }}</td>
             <td class="border p-2">{{ employee.team ? employee.team.team_name : 'NA' }}</td>
             <td class="border p-2">{{ employee.role }}</td>
@@ -130,7 +129,7 @@
               class="border p-2">{{
                 employee.last_login ? employee.last_login.split('T')[0] : 'Invite Sent' }}</td>
             <td class="border p-2">{{ employee.email }}</td>
-            <td v-if="authStore.user.Privileges?.is_admin || authStore.user.Privileges?.is_supervisor"
+            <td v-if="authStore.user.Privileges?.is_admin"
               class="border p-2">
               <button class="bg-green-500 text-white px-2 py-1 rounded" @click.stop="openCalendarModal(employee)">
                 {{ $t('employeeList.view') }}
