@@ -90,6 +90,14 @@
         >
           {{  $t('calendar.logAttendance') }}
         </button>
+        <button 
+          @click="deleteGeneralAttendance" 
+          :class="{'bg-gray-500 text-gray-300 py-1 px-3 rounded w-full text-base mb-3': !selectionRange,
+          'bg-red-500 text-white py-1 px-3 rounded hover:bg-red-600 w-full text-base mb-3': selectionRange}"
+          :disabled="!selectionRange"
+        >
+          Clear Attendance
+        </button>
       </div>
 
       <!-- PTO Tab -->
@@ -205,6 +213,7 @@ axios.defaults.withCredentials = true;
 
 const totalHours = ref(0);
 const selectedMonth = ref(null);
+const currentUserAtten = ref(null);
 
 export default {
   
@@ -547,7 +556,8 @@ async fetchAttendanceData(accountId) {
     const response = await axios.get(`${apiUrl}/accounts/${accountId}/attendance`);
     const response2 = await axios.get(`${apiUrl}/accounts/${accountId}/approvalsPTO`);
 
-  
+    // currentUserAtten.value = response;
+
     const currentDate = this.calendar.getDate(); 
     const currentMonth = currentDate.getMonth() + 1; 
     const currentYear = currentDate.getFullYear();
@@ -687,7 +697,26 @@ getEventTypeFromColor(color) {
     const authStore = useAuthStore();
     const days = this.selectionRange.split(', ');
 
-    const attendancePromises = days.map((day) => {
+    const existingAttendance = currentUserAtten.value.data;
+
+    const filteredDays = days.filter((day) => {
+      const dayExists = existingAttendance.some(
+        (record) => record.day === `${day}T00:00:00.000Z`
+      );
+
+      if (dayExists) {
+        console.warn(`Attendance for ${day} already exists.`);
+      }
+
+      return !dayExists;
+    });
+
+    if (filteredDays.length === 0) {
+      alert('Attendance has already been logged for all selected days.');
+      return;
+    }
+
+    const attendancePromises = filteredDays.map((day) => {
     const punchIn = `${day}T${this.startTime}:00Z`;
     const punchOut = `${day}T${this.endTime}:00Z`;
 
@@ -755,6 +784,40 @@ getEventTypeFromColor(color) {
     })
     .catch((error) => {
       console.error('Error logging attendance:', error.response?.data || error.message);
+    });
+},
+deleteGeneralAttendance() {
+  const authStore = useAuthStore();
+  const days = this.selectionRange.split(', ');
+
+  const existingAttendance = currentUserAtten.value.data;
+  const attendanceToDelete = existingAttendance.filter((record) => {
+  const isSelectedDay = days.some((day) => {
+    const formattedDay = new Date(`${day}T00:00:00.000Z`).toISOString();
+    return record.day === formattedDay;
+  });
+  return isSelectedDay && !record.absence && !record.full_pto && !record.half_pto && !record.special_pto;
+});
+
+  if (attendanceToDelete.length === 0) {
+    alert("No attendance to delete on selected days.");
+    return;
+  }
+
+  const deletePromises = attendanceToDelete.map((record) => {
+    return axios.delete(`${apiUrl}/accounts/attendance/${record.id}`);
+  });
+
+  Promise.all(deletePromises)
+    .then(() => {
+      alert('General attendance deleted on selected days.');
+
+      this.fetchAttendanceData(authStore.user.id);
+      this.updateChart();
+      this.clearForm();
+    })
+    .catch((err) => {
+      console.error('Error deleting attendance records:', err.response?.data || err.message)
     });
 },
     generateJapaneseHolidays(year) {
