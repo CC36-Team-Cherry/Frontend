@@ -1,6 +1,6 @@
 <template>
   <LoopingRhombusesSpinner v-if="isLoading" />
-  <div v-else class="bg-white shadow p-4 rounded max-h-full overflow-auto">
+  <div v-else class="bg-white shadow p-4 rounded">
     <div class="flex justify-between items-center mb-4">
       <input type="text" :placeholder="$t('employeeList.searchPlaceholder')" v-model="searchTerm"
         class="border rounded p-2 w-1/2" />
@@ -9,8 +9,8 @@
         {{ $t('employeeList.addUser') }}
       </button>
     </div>
-    <div class="overflow-y-scroll h-screen">
-    <table class="table-auto h-full w-full border-collapse border border-gray-300">
+    <div class="max-h-[90%] overflow-scroll">
+    <table class="table-auto w-full border-collapse border border-gray-300">
       <thead class="bg-gray-200 sticky top-0">
         <tr>
           <th class="border p-2 text-left">
