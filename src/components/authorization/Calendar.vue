@@ -294,6 +294,7 @@ export default {
     },
     events: [...this.holidays, ...this.events], 
     editable: true,
+    eventStartEditable: false,
     select: (selectionInfo) => {
       const startDate = new Date(selectionInfo.startStr);
       const endDate = new Date(selectionInfo.endStr);
