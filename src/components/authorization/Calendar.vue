@@ -12,9 +12,9 @@
           </div>
           <!-- Column per "Hours/Total Hours" -->
           <div class="ml-2 text-right">
-            <span class="text-xs font-medium text-slate-600">Hours/Month</span>
+            <span class="text-xs font-medium text-slate-600">Worked Hours / OT</span>
             <div class="text-xs text-slate-500 mt-1">
-              <span> 0   / {{maxHours}}  </span>
+              <span>{{  calculatedTotalHours }} / {{ extraHours }}</span>
             </div>
           </div>
         </div>
@@ -173,7 +173,9 @@ export default {
   name: 'FullCalendarComponent',
   data() {
     return {
+      calculatedTotalHours: totalHours,
       selectionRange: '',
+      extraHours: 0,
       attendanceType: '',
       startTime: '',
       endTime: '',
@@ -183,7 +185,7 @@ export default {
       selectedSupervisorId: '',
       memo: '',
       attendanceChart: null,          
-      maxHours: 160,         
+      maxHours: 0,         
       selectedEventId: null,
       holidays: [], 
       locales: {
@@ -262,14 +264,6 @@ export default {
       this.selectionRange = dates
         .map((date) => date.toISOString().split('T')[0])
         .join(', ');
-
-        selectionInfo.jsEvent.target.style.backgroundColor = "rgba(0, 123, 255, 0.5)"; // Cambia colore di selezione (ad esempio blu)
-    },
-
-    unselect: (info) => {
-      // Rimuove il colore di selezione quando l'utente deseleziona
-      info.jsEvent.target.style.backgroundColor = ""; 
-      console.log("Unselected");
     },
     eventClick: (info) => {
       this.handleEventClick(info.event);
@@ -310,7 +304,6 @@ if (arg.event.extendedProps.status) {
 },
 
     datesSet: (info) => {
-      
       console.log('Month changed:', info.start); 
       this.handleMonthChange(info.start); // Funzione per gestire il cambio mese
       selectedMonth.value = info.start;
@@ -364,37 +357,39 @@ if (arg.event.extendedProps.status) {
     }
   },
   methods: {
-
-    highlightSelectedDates() {
-    // Evidenzia le date selezionate
-    if (this.selectedDates.length > 0) {
-      this.selectedDates.forEach(date => {
-        const event = this.calendar.getEventById(date.toISOString().split('T')[0]);
-        if (event) {
-          event.setProp("backgroundColor", "rgba(0, 123, 255, 0.5)"); 
-        }
-      });
-    }
-  },
      
   handleMonthChange(startDate) {
-  console.log('Handling month change:', startDate);
-
-
+  
   const year = startDate.getFullYear();
-  const month = startDate.getMonth();
-  console.log(month);
+  const month = startDate.getMonth() + 2; //for now i put +2 because it looks 2 months before every time
+  console.log("year and month", year, month);
 
   this.maxHours = this.calculateMaxHours(year, month);
   console.log('Updated maxHours:', this.maxHours);
-
   
   totalHours.value = 0;
-
- 
   const authStore = useAuthStore();
   this.fetchAttendanceData(authStore.user.id);
 },
+
+calculateMaxHours(year, month) {
+    const daysInMonth = new Date(year, month, 0).getDate(); 
+    console.log(daysInMonth);
+    let workingDays = 0;
+
+    for (let day = 1; day <= daysInMonth; day++) {
+      const date = new Date(year, month - 1, day); 
+      const isWeekend = date.getDay() === 0 || date.getDay() === 6;
+      const isHoliday = this.isHoliday(date); 
+
+      if (!isWeekend && !isHoliday) {
+        workingDays++;
+      }
+    }
+
+    return workingDays * 8;
+},
+
 setEndTimeFourHoursAhead() {
 
   if (!this.startTime) return;
@@ -433,25 +428,6 @@ setStartTimeFourHoursBefore() {
     // Format start time in "HH:MM" format
     this.startTime = `${String(startHour).padStart(2, '0')}:${String(startMinute).padStart(2, '0')}`;
 },
-
-  
-  calculateMaxHours(year, month) {
-    const daysInMonth = new Date(year, month, 0).getDate(); 
-    let workingDays = 0;
-
-    for (let day = 1; day <= daysInMonth; day++) {
-      const date = new Date(year, month , day); 
-      const isWeekend = date.getDay() === 0 || date.getDay() === 6;
-      const isHoliday = this.isHoliday(date); 
-
-      if (!isWeekend && !isHoliday) {
-        workingDays++;
-      }
-    }
-
-    return workingDays * 8;
-  },
-
   
   isHoliday(date) {
     const formattedDate = date.toISOString().split('T')[0]; 
@@ -485,7 +461,6 @@ initializeChart() {
       },
     },
   });
-  console.log('Chart initialized successfully');
 },
 
 updateChart() {
@@ -497,6 +472,8 @@ updateChart() {
   const workedHours = totalHours.value;
   const extraHours = workedHours > this.maxHours ? workedHours - this.maxHours : 0; 
   const remainingHours = Math.max(this.maxHours - workedHours, 0); 
+
+  this.extraHours = extraHours;
 
   try {
     
@@ -527,12 +504,10 @@ updateChart() {
 },
 async fetchAttendanceData(accountId) {
   try {
-    // Chiamate API per attendance e PTO
     const response = await axios.get(`${apiUrl}/accounts/${accountId}/attendance`);
     const response2 = await axios.get(`${apiUrl}/accounts/${accountId}/approvalsPTO`);
 
-    console.log("Response data:", response.data, response2.data);
-
+  
     const currentDate = this.calendar.getDate(); 
     const currentMonth = currentDate.getMonth() + 1; 
     const currentYear = currentDate.getFullYear();
@@ -580,7 +555,6 @@ async fetchAttendanceData(accountId) {
     // Gestione delle PTO requests
     const ptoEvents = response2.data.approvalsSentData.map((pto) => {
       const title = `${pto.type}`;
-      console.log(title);
       const backgroundColor = this.getEventColor(pto); // Usa getEventColor per determinare il colore
 
       return {
@@ -602,35 +576,26 @@ async fetchAttendanceData(accountId) {
 
     // Calcola il totale delle ore per le attendance
     const calculatedTotalHours = this.events.reduce((sum, event) => {
+     const isAbsence = event.extendedProps?.attendanceType === 'absence';  // Verifica se l'evento è un'assenza
+     const isPto = event.extendedProps?.attendanceType === 'pto';  // Verifica se l'evento è Full PTO
+     const isHalfPto = event.extendedProps?.attendanceType === 'halfpto';  // Verifica se l'evento è Half PTO
+     const isSpecialPto = event.extendedProps?.attendanceType === 'Special PTO';  // Verifica se l'evento è Special PTO
 
-      console.log("extendeProps",event.extendedProps);
+    if (isAbsence) return sum;
 
+    if (isPto || isSpecialPto) {
+     return sum + 8;  
+    } else if (isHalfPto) {
+     return sum + 4;  
+    }
 
-    const isAbsence = event.extendedProps?.attendanceType === 'absence';  // Verifica se l'evento è un'assenza
-    console.log("isAbsence", isAbsence);
-  const isPto = event.extendedProps?.attendanceType === 'pto';  // Verifica se l'evento è Full PTO
-  const isHalfPto = event.extendedProps?.attendanceType === 'halfpto';  // Verifica se l'evento è Half PTO
-  const isSpecialPto = event.extendedProps?.attendanceType === 'Special PTO';  // Verifica se l'evento è Special PTO
-
-  // Se è un'assenza, non aggiungere ore
-  if (isAbsence) return sum;
-
-  // Aggiungi 8 ore per Full PTO e Special PTO, 4 ore per Half PTO
-  if (isPto || isSpecialPto) {
-    return sum + 8;  // Aggiungi 8 ore per Full PTO o Special PTO
-  } else if (isHalfPto) {
-    return sum + 4;  // Aggiungi 4 ore per Half PTO
-  }
-
-  // Aggiungi le ore per altri tipi di eventi
-  return sum + (event.extendedProps?.totalHours || 0);
-}, 0);
+     return sum + (event.extendedProps?.totalHours || 0);
+    }, 0);
 
     console.log("Calculated Total Hours:", calculatedTotalHours);
 
     if (!isNaN(calculatedTotalHours) && calculatedTotalHours >= 0) {
       totalHours.value = calculatedTotalHours;
-      console.log("Updated totalHours:", totalHours.value);
     } else {
       console.error("Invalid total hours data:", calculatedTotalHours);
     }
@@ -645,8 +610,6 @@ async fetchAttendanceData(accountId) {
 
 // Usa la tua funzione esistente per determinare il colore
 getEventColor(data) {
-  console.log("Data received in getEventColor:", data);
-
   if (data.absence) return 'red';  // Assenza
   if (data.status === "Approved") return 'blue';  // PTO completo
   if (data.special_pto) return 'green';  // PTO speciale
@@ -655,7 +618,7 @@ getEventColor(data) {
 },
 
 
-// Se necessario, puoi anche aggiungere la funzione getEventTypeFromColor per determinare il tipo di evento dal colore
+
 getEventTypeFromColor(color) {
   switch (color) {
     case 'red':
@@ -728,9 +691,6 @@ getEventTypeFromColor(color) {
       totalHours: totalHours, // Usa il valore calcolato per totalHours
     };
     
-    console.log('Attendance Data:', attendanceData);
-    console.log(totalHours);
-
     if (this.selectedEventId) {
       
       return axios.put(
@@ -846,7 +806,7 @@ getEventTypeFromColor(color) {
 
           try {
             const response = await axios.post(`${apiUrl}/approvals/monthAttendance`, generalApproval);
-            console.log(response.data);
+           
           } catch (err) {
             console.error('Error general attendance approval:', err);
           }
@@ -869,12 +829,9 @@ getEventTypeFromColor(color) {
               status: 'Pending',
               day: new Date(day).toISOString(), 
               all_day: true,
-              }
-
-              console.log("FE send ptoApproval: ", ptoApproval);
-              
+              }      
               const response = await axios.post(`${apiUrl}/approvals/pto`, ptoApproval);
-              console.log("BE receive sent pto Approval: ", response);
+              
             }
 
             // Update remainingPto after PTO request submission
@@ -904,9 +861,7 @@ getEventTypeFromColor(color) {
 
           try {
             const response = await axios.post(`${apiUrl}/approvals/pto`, halfPtoApproval);
-            console.log(response.data);
-
-            // Update remainingPto after half PTO request submission
+        
             this.remainingPto -= 0.5; // Subtract half a day for a half PTO request
 
           } catch (err) {
@@ -926,9 +881,7 @@ getEventTypeFromColor(color) {
             day: specialPtoDay, 
             type: this.selectedSpecialPtoType,
           }
-          
-          console.log(specialPtoApproval);
-          
+                
           try {
             await axios.post(`${apiUrl}/approvals/specialPto`, specialPtoApproval);
           } catch (err) {
