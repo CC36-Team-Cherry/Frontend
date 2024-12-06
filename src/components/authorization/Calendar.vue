@@ -90,6 +90,12 @@
         >
           {{  $t('calendar.logAttendance') }}
         </button>
+        <button 
+          @click="deleteGeneralAttendance" 
+          class="bg-red-500 text-white py-1 px-3 rounded hover:bg-red-600 w-full text-base mb-3"
+        >
+          Delete Attendance
+        </button>
       </div>
 
       <!-- PTO Tab -->
@@ -773,6 +779,40 @@ getEventTypeFromColor(color) {
     })
     .catch((error) => {
       console.error('Error logging attendance:', error.response?.data || error.message);
+    });
+},
+deleteGeneralAttendance() {
+  const authStore = useAuthStore();
+  const days = this.selectionRange.split(', ');
+
+  const existingAttendance = currentUserAtten.value.data;
+  const attendanceToDelete = existingAttendance.filter((record) => {
+  const isSelectedDay = days.some((day) => {
+    const formattedDay = new Date(`${day}T00:00:00.000Z`).toISOString();
+    return record.day === formattedDay;
+  });
+  return isSelectedDay && !record.absence && !record.full_pto && !record.half_pto && !record.special_pto;
+});
+
+  if (attendanceToDelete.length === 0) {
+    alert("No attendance to delete on selected days.");
+    return;
+  }
+
+  const deletePromises = attendanceToDelete.map((record) => {
+    return axios.delete(`${apiUrl}/accounts/attendance/${record.id}`);
+  });
+
+  Promise.all(deletePromises)
+    .then(() => {
+      alert('General attendance deleted on selected days.');
+
+      this.fetchAttendanceData(authStore.user.id);
+      this.updateChart();
+      this.clearForm();
+    })
+    .catch((err) => {
+      console.error('Error deleting attendance records:', err.response?.data || err.message)
     });
 },
     generateJapaneseHolidays(year) {
