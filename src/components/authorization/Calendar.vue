@@ -92,9 +92,11 @@
         </button>
         <button 
           @click="deleteGeneralAttendance" 
-          class="bg-red-500 text-white py-1 px-3 rounded hover:bg-red-600 w-full text-base mb-3"
+          :class="{'bg-gray-500 text-gray-300 py-1 px-3 rounded w-full text-base mb-3': !selectionRange,
+          'bg-red-500 text-white py-1 px-3 rounded hover:bg-red-600 w-full text-base mb-3': selectionRange}"
+          :disabled="!selectionRange"
         >
-          Delete Attendance
+          Clear Attendance
         </button>
       </div>
 
