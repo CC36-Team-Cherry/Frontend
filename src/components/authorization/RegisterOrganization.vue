@@ -166,6 +166,7 @@ const createUserFirebase = async () => {
   const email = formData.value.email;
   const password = formData.value.password;
 
+  
   //create the new user in Firebase
   const credential = await createUserWithEmailAndPassword(auth, email, password);
   const user = credential.user;

@@ -160,7 +160,7 @@
               $t('employeeList.modal.fields.email')
             }}</label>
             <input type="email" v-model="formData.email" class="border rounded p-2 w-full" />
-            <span v-if="duplicateEmail" class="text-red-500 italic">This email address is already in use.</span>
+            <span v-if="duplicateEmail" class="text-red-500 italic">$t('employeeList.emailInUse')</span>
           </div>
           <div>
             <label class="block mb-1"><span class="text-red-500 font-bold">*</span>{{
