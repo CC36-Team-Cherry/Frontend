@@ -952,13 +952,13 @@ deleteGeneralAttendance() {
         //     status: 'Pending',
         //   };
 
-          try {
-            const response = await axios.post(`${apiUrl}/approvals/monthAttendance`, generalApproval);
+        //   try {
+        //     const response = await axios.post(`${apiUrl}/approvals/monthAttendance`, generalApproval);
            
-          } catch (err) {
-            console.error('Error general attendance approval:', err);
-          }
-        break;
+        //   } catch (err) {
+        //     console.error('Error general attendance approval:', err);
+        //   }
+        // break;
 
         case "pto":
 
@@ -992,7 +992,7 @@ deleteGeneralAttendance() {
 
         case "halfpto":
 
-          const halfPtoDate = new Date(this.selectionRange)
+          const halfPtoDate = new Date(this.selectionRange);
           const halfPtoDay = halfPtoDate.toISOString();
           const halfPtoStartTime = new Date(`${this.selectionRange}T${this.startTime}:00.000Z`).toISOString();
           const halfPtoEndTime = new Date(`${this.selectionRange}T${this.endTime}:00.000Z`).toISOString();
