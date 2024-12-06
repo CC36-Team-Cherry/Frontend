@@ -19,7 +19,7 @@
     <div class="flex justify-center items-center flex-1">
       <div class="bg-white p-8 rounded shadow-md w-full max-w-lg">
         <h1 class="text-2xl font-bold mb-6 text-gray-800">{{ $t('register.title') }}</h1>
-        <form class="flex flex-col space-y-4">
+        <form @submit.prevent="handleSubmit" class="flex flex-col space-y-4">
           <div>
             <label class="block text-gray-700 font-medium mb-2">
               <span class="text-red-500 font-bold">*</span>{{ $t('login.email') }}:
@@ -27,6 +27,7 @@
             <input v-model="formData.email" type="email"
               class="w-full p-3 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-400"
               required />
+            <span v-if="duplicateEmail" class="text-red-500 italic">{{ $t('employeeList.emailInUse') }}</span>
           </div>
           <div>
             <label class="block text-gray-700 font-medium mb-2">
@@ -84,7 +85,7 @@
               class="w-full p-3 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-400"
               required />
           </div>
-          <button @click="handleSubmit()" type="button"
+          <button type="submit"
             class="bg-blue-500 text-white py-3 px-4 rounded hover:bg-blue-600 transition duration-200 font-semibold">
             {{ $t('register.submit') }}
           </button>
@@ -116,6 +117,7 @@ const apiUrl = import.meta.env.VITE_API_URL;
 axios.defaults.withCredentials = true;
 const authStore = useAuthStore();
 const isLoading = ref(false);
+const duplicateEmail = ref(false);
 const { locale } = useI18n();
 
 const formData = ref({
@@ -152,6 +154,17 @@ const handleSubmit = async () => {
       return;
     }
     isLoading.value = true;
+
+    //check if the entered email address is already associated with an account in the database
+    const doesAccountExist = await verifyAccount();
+    console.log(doesAccountExist);
+    isLoading.value = false;
+    if(doesAccountExist) {
+      duplicateEmail.value = true;
+      isLoading.value = false;
+      return;
+    }
+
     // create Firebase user with form data and fetch post to add to backend
     await createUserFirebase();
     router.push({ path: `/employee` });
@@ -166,6 +179,7 @@ const createUserFirebase = async () => {
   const email = formData.value.email;
   const password = formData.value.password;
 
+  
   //create the new user in Firebase
   const credential = await createUserWithEmailAndPassword(auth, email, password);
   const user = credential.user;
@@ -185,6 +199,15 @@ const createUserFirebase = async () => {
   const backendData = await axios.post(`${apiUrl}/login`, { email: email, token: token });
   authStore.login(backendData.data);
 };
+
+const verifyAccount = async () => {
+  try {
+    const exists = await axios.post(`${apiUrl}/email`, { email: formData.value.email });
+    return exists.data.exists;
+  } catch (err) {
+    console.error(err);
+  }
+}
 
 const switchLanguage = (lang : any) => {
   locale.value = lang;
