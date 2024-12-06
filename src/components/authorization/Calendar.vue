@@ -19,11 +19,12 @@
           </div>
         </div>
         <!-- PTO Card (ancora più piccola) -->
-        <div class="bg-white shadow-sm border border-slate-200 rounded-lg p-1">
-          <div class="border-b border-slate-200 pb-0.5 mb-0.5">
-            <span class="text-xs text-slate-600 font-medium">PTO</span>
+        <div class="bg-white shadow-sm border border-slate-200 rounded-lg p-1 flex flex-row justify-evenly items-center">
+          <div>
+            <span class="text-3xl text-slate-600">PTO</span>
+            <p class="text-xs">Total Remaining</p>
           </div>
-          <p class="text-xs text-slate-600">{{ remainingPto }}</p>
+          <p class="text-4xl text-slate-600">{{ remainingPto }}</p>
         </div>
       </div>
 
@@ -39,14 +40,14 @@
         <button
           @click="tab = 'attendance', attendanceType = 'general'"
           :class="{'bg-blue-500 text-white': tab === 'attendance', 'text-blue-500': tab !== 'attendance'}"
-          class="px-4 py-2 text-sm font-bold flex-1"
+          class="px-4 py-2 text-sm font-bold flex-1 rounded"
         >
           Attendance
         </button>
         <button
           @click="tab = 'pto', attendanceType = 'pto'"
           :class="{'bg-blue-500 text-white': tab === 'pto', 'text-blue-500': tab !== 'pto'}"
-          class="px-4 py-2 text-sm font-bold flex-1"
+          class="px-4 py-2 text-sm font-bold flex-1 rounded"
         >PTO</button>
       </div>
 
@@ -86,7 +87,10 @@
         </div>
         <button
           @click="logAttendance"
-          class="bg-blue-500 text-white py-1 px-3 rounded hover:bg-blue-600 w-full text-base mb-3"
+          :class="{'bg-blue-500 text-white py-1 px-3 rounded hover:bg-blue-600 w-full text-base mb-3' : isFormValid,
+            'bg-gray-300 text-gray-500 py-1 px-3 rounded w-full cursor-not-allowed text-base mb-3' : !isFormValid
+          }"
+          :disabled="!isFormValid"
         >
           {{  $t('calendar.logAttendance') }}
         </button>
@@ -156,7 +160,7 @@
               :key="supervisor.id"
               :value="supervisor.id"
             >
-              {{ supervisor.first_name + supervisor.last_name }}
+              {{ supervisor.first_name + " " + supervisor.last_name }}
             </option>
           </select>
         </div>
@@ -171,7 +175,10 @@
         </div>  
         <button
           @click="submitHandler"
-          class="bg-cyan-500 text-white py-1 rounded hover:bg-green-600 w-full text-base mb-3"
+          :class="{'bg-cyan-500 text-white py-1 rounded hover:bg-green-600 w-full text-base mb-3' : isSubmitFormValid, 
+            'bg-gray-300 text-gray-500 py-1 px-3 rounded w-full cursor-not-allowed text-base mb-3': !isSubmitFormValid
+          }"
+          :disabled="!isSubmitFormValid"
         >
           Submit
         </button>
@@ -180,10 +187,20 @@
       <!-- Monthly Submit Button -->
       <button
         class="bg-green-500 text-white py-1 px-3 rounded hover:bg-gray-600 w-full text-base mb-2 h-16 mt-auto"
-        disabled
+        @click.stop="openSubmitMonthModal"
       >
         Monthly Submit
       </button>
+
+      <SubmitMonthModal 
+        :isVisible="isSubmitMonthModalVisible"
+        :supervisors="supervisors"
+        :selectedSupervisorId="selectedSupervisorId"
+        :memo="memo"
+        @submit="submitMonthApproval"
+        @close="closeSubmitMonthModal"
+      />
+
     </div>
   </div>
 </template>
@@ -193,8 +210,6 @@
   height: 80px !important;
 }
 </style>
-
-
 
 <script>
 import { Calendar } from '@fullcalendar/core';
@@ -207,6 +222,7 @@ import { useI18n } from 'vue-i18n';
 import { useAuthStore } from '@/stores/authStore';
 import Chart from 'chart.js/auto';
 import { ref } from 'vue';
+import SubmitMonthModal from '../../modal/SubmitMonthModal.vue';
 
 const apiUrl = import.meta.env.VITE_API_URL;
 axios.defaults.withCredentials = true;
@@ -218,6 +234,9 @@ const currentUserAtten = ref(null);
 export default {
   
   name: 'FullCalendarComponent',
+  components: {
+    SubmitMonthModal,
+  },  
   data() {
     return {
       calculatedTotalHours: totalHours,
@@ -230,7 +249,7 @@ export default {
       calendar: null,
       events: [],
       supervisors: [],
-      selectedSupervisorId: '',
+      selectedSupervisorId: null,
       memo: '',
       attendanceChart: null,          
       maxHours: 0,         
@@ -244,6 +263,7 @@ export default {
       selectedSpecialPtoType: '',
       remainingPto: null,
       tab: 'attendance',
+      isSubmitMonthModalVisible: false,
     };
   },
   computed: {
@@ -255,6 +275,34 @@ export default {
     },
     isMonthSubmitSelected() {
       return this.attendanceType === 'monthSubmit'
+    },
+    isFormValid() {
+
+      const isDateSelected = this.selectionRange !== '';
+      const isAttendanceTypeSelected = this.attendanceType !== '';
+      const isStartTimeSelected = this.startTime !== ''
+      const isEndTimeSelected = this.endTime !== '';
+
+      // Ensure all fields are filled
+      return (
+        isDateSelected &&  // Date range is selected
+        isAttendanceTypeSelected &&  // Attendance type is selected
+        isStartTimeSelected && 
+        isEndTimeSelected 
+        // this.isEndTimeAfterStartTime()  // Optionally, check if end time is after start time
+      )
+    },
+    isSubmitFormValid() {
+
+      const isDateSelected = this.selectionRange !== '';
+      const isAttendanceTypeSelected = this.attendanceType !== '';
+      const isSupervisorSelected = this.selectedSupervisorId !== null;
+
+      return (
+        isDateSelected && 
+        isAttendanceTypeSelected &&
+        isSupervisorSelected
+      )
     }
   },
 
@@ -273,9 +321,11 @@ export default {
   this.holidays = this.generateJapaneseHolidays(new Date().getFullYear()); 
   
 
-  const activeAccountSupervisor = authStore.user.supervisor_id;
-  if (activeAccountSupervisor) {
-    this.selectedSupervisorId = activeAccountSupervisor;
+  const activeAccountSupervisorId = authStore.user.supervisor_id;
+  console.log("store values", authStore.user)
+  console.log("active account supervisor id", activeAccountSupervisorId)
+  if (activeAccountSupervisorId) {
+    this.selectedSupervisorId = activeAccountSupervisorId;
   }
 
   const calendarEl = this.$refs.calendar;
@@ -406,7 +456,6 @@ if (arg.event.extendedProps.status) {
     }
   },
   methods: {
-     
   handleMonthChange(startDate) {
   
   const year = startDate.getFullYear();
@@ -441,49 +490,46 @@ calculateMaxHours(year, month) {
 
 setEndTimeFourHoursAhead() {
 
-  if (!this.startTime) return;
+    if (!this.startTime) return;
 
-  // Parse the startTime into hours and minutes
-  const [startHour, startMinute] = this.startTime.split(':').map(Number);
+    // Parse the startTime into hours and minutes
+    const [startHour, startMinute] = this.startTime.split(':').map(Number);
+      
+    // Add 4 hours to the start time
+    let endHour = startHour + 4;
+    let endMinute = startMinute;
     
-  // Add 4 hours to the start time
-  let endHour = startHour + 4;
-  let endMinute = startMinute;
-  
-  // Handle overflow if the hour exceeds 24 (e.g., 23:30 + 4 hours becomes 03:30 next day)
-  if (endHour >= 24) {
-    endHour -= 24; // Wrap around to the next day
-  }
-
-  // Format end time in "HH:MM" format
-  this.endTime = `${String(endHour).padStart(2, '0')}:${String(endMinute).padStart(2, '0')}`;
-
-},  
-setStartTimeFourHoursBefore() {
-    if (!this.endTime) return;
-
-    // Parse the endTime into hours and minutes
-    const [endHour, endMinute] = this.endTime.split(':').map(Number);
-    
-    // Subtract 4 hours from the end time
-    let startHour = endHour - 4;
-    let startMinute = endMinute;
-
-    // Handle underflow if the hour is less than 0 (e.g., 03:00 - 4 hours becomes 23:00 the previous day)
-    if (startHour < 0) {
-      startHour += 24; // Wrap around to the previous day
+    // Handle overflow if the hour exceeds 24 (e.g., 23:30 + 4 hours becomes 03:30 next day)
+    if (endHour >= 24) {
+      endHour -= 24; // Wrap around to the next day
     }
 
-    // Format start time in "HH:MM" format
-    this.startTime = `${String(startHour).padStart(2, '0')}:${String(startMinute).padStart(2, '0')}`;
-},
-  
+    // Format end time in "HH:MM" format
+    this.endTime = `${String(endHour).padStart(2, '0')}:${String(endMinute).padStart(2, '0')}`;
+  },  
+  setStartTimeFourHoursBefore() {
+      if (!this.endTime) return;
+
+      // Parse the endTime into hours and minutes
+      const [endHour, endMinute] = this.endTime.split(':').map(Number);
+      
+      // Subtract 4 hours from the end time
+      let startHour = endHour - 4;
+      let startMinute = endMinute;
+
+      // Handle underflow if the hour is less than 0 (e.g., 03:00 - 4 hours becomes 23:00 the previous day)
+      if (startHour < 0) {
+        startHour += 24; // Wrap around to the previous day
+      }
+
+      // Format start time in "HH:MM" format
+      this.startTime = `${String(startHour).padStart(2, '0')}:${String(startMinute).padStart(2, '0')}`;
+  },
   isHoliday(date) {
     const formattedDate = date.toISOString().split('T')[0]; 
     return this.holidays.some((holiday) => holiday.start === formattedDate);
-  },
-    
-initializeChart() {
+  },  
+  initializeChart() {
      const ctx = this.$refs.attendanceChart?.getContext('2d');
      if (!ctx) {
       console.error('Canvas element not found for attendance chart');
@@ -491,17 +537,17 @@ initializeChart() {
     }
 
   this.attendanceChart = new Chart(ctx, {
-    type: 'doughnut',
-    data: {
-      
-      datasets: [
-        {
-          data: [totalHours.value, this.maxHours, this.extraHours], 
-          backgroundColor: ['#4caf50', '#e0e0e0', '#1b5e20'], 
-        },
-      ],
-    },
-    options: {
+  type: 'doughnut',
+  data: {
+    
+    datasets: [
+      {
+        data: [totalHours.value, this.maxHours, this.extraHours], 
+        backgroundColor: ['#4caf50', '#e0e0e0', '#1b5e20'], 
+      },
+    ],
+  },
+  options: {
       responsive: true,
       plugins: {
         legend: {
@@ -532,14 +578,12 @@ updateChart() {
       extraHours,               
     ];
 
-    
     this.attendanceChart.data.datasets[0].backgroundColor = [
       '#4caf50', 
       '#e0e0e0', 
       '#1b5e20', 
     ];
 
-    
     this.attendanceChart.update();
 
     console.log('Chart updated successfully with:', {
@@ -547,11 +591,11 @@ updateChart() {
       remainingHours,
       extraHours,
     });
-  } catch (err) {
-    console.error('Error updating chart:', err);
-  }
-},
-async fetchAttendanceData(accountId) {
+    } catch (err) {
+      console.error('Error updating chart:', err);
+    }
+  },
+  async fetchAttendanceData(accountId) {
   try {
     const response = await axios.get(`${apiUrl}/accounts/${accountId}/attendance`);
     const response2 = await axios.get(`${apiUrl}/accounts/${accountId}/approvalsPTO`);
@@ -620,9 +664,8 @@ async fetchAttendanceData(accountId) {
       };
     });
 
-
-    // Aggiungi gli eventi delle attendance e delle PTO al calendario
-    this.events = [...attendanceEvents, ...ptoEvents];
+      // Aggiungi gli eventi delle attendance e delle PTO al calendario
+      this.events = [...attendanceEvents, ...ptoEvents];
 
     // Calcola il totale delle ore per le attendance
     const calculatedTotalHours = this.events.reduce((sum, event) => {
@@ -642,7 +685,7 @@ async fetchAttendanceData(accountId) {
      return sum + (event.extendedProps?.totalHours || 0);
     }, 0);
 
-    console.log("Calculated Total Hours:", calculatedTotalHours);
+      console.log("Calculated Total Hours:", calculatedTotalHours);
 
     if (!isNaN(calculatedTotalHours) && calculatedTotalHours >= 0) {
       totalHours.value = calculatedTotalHours;
@@ -650,13 +693,13 @@ async fetchAttendanceData(accountId) {
       console.error("Invalid total hours data:", calculatedTotalHours);
     }
 
-    // Rimuove gli eventi esistenti e aggiunge quelli aggiornati
-    this.calendar.getEvents().forEach((event) => event.remove());
-    [...this.holidays, ...this.events].forEach((event) => this.calendar.addEvent(event));
-  } catch (error) {
-    console.error("Error fetching data:", error.response?.data || error.message);
-  }
-},
+      // Rimuove gli eventi esistenti e aggiunge quelli aggiornati
+      this.calendar.getEvents().forEach((event) => event.remove());
+      [...this.holidays, ...this.events].forEach((event) => this.calendar.addEvent(event));
+    } catch (error) {
+      console.error("Error fetching data:", error.response?.data || error.message);
+    }
+  },
 
 // Usa la tua funzione esistente per determinare il colore
 getEventColor(data) {
@@ -871,22 +914,23 @@ deleteGeneralAttendance() {
       const authStore = useAuthStore();
       const requests = authStore.approvals;
 
-      const selectedDate = new Date(selectedMonth.value);
-      const currentMonth = (selectedDate.getMonth() + 1);
-      const currentYear = selectedDate.getFullYear();
-      const nextMonth = currentMonth === 12 ? 12 : currentMonth + 1;
+      // TODO: Delete after completing submit month modal
+      // const selectedDate = new Date(selectedMonth.value);
+      // const currentMonth = (selectedDate.getMonth() + 1);
+      // const currentYear = selectedDate.getFullYear();
+      // const nextMonth = currentMonth === 12 ? 12 : currentMonth + 1;
 
-      // Check if a request already exists for the selected month and year
-      const existingRequest = requests.sent.find(request => {
-        const [month, year] = request.date.split(' / ').map(Number);  // Split date into month and year
-        return year === currentYear && month === nextMonth;
-      });
+      // // Check if a request already exists for the selected month and year
+      // const existingRequest = requests.sent.find(request => {
+      //   const [month, year] = request.date.split(' / ').map(Number);  // Split date into month and year
+      //   return year === currentYear && month === nextMonth;
+      // });
 
-      if (existingRequest) {
-        // If an approval request already exists, show a message and prevent submission
-        alert('A request for this month has already been submitted for approval.');
-        return; // Exit the function without submitting the new request
-      }
+      // if (existingRequest) {
+      //   // If an approval request already exists, show a message and prevent submission
+      //   alert('A request for this month has already been submitted for approval.');
+      //   return; // Exit the function without submitting the new request
+      // }
 
        // Check if PTO or HalfPTO is being requested and remainingPto is 0
       if ((this.attendanceType === "pto" || this.attendanceType === "halfpto") && this.remainingPto <= 0) {
@@ -896,24 +940,25 @@ deleteGeneralAttendance() {
 
       switch (this.attendanceType) {
 
-        case "monthSubmit":    
+        // TODO: Delete after completing submit month modal
+        // case "monthSubmit":    
 
-          const generalApproval = {
-            account_id: authStore.user.id,
-            supervisor_id: this.selectedSupervisorId,
-            month: nextMonth,
-            year: currentYear,
-            content: this.memo,
-            status: 'Pending',
-          };
+        //   const generalApproval = {
+        //     account_id: authStore.user.id,
+        //     supervisor_id: this.selectedSupervisorId,
+        //     month: nextMonth,
+        //     year: currentYear,
+        //     content: this.memo,
+        //     status: 'Pending',
+        //   };
 
-          try {
-            const response = await axios.post(`${apiUrl}/approvals/monthAttendance`, generalApproval);
+        //   try {
+        //     const response = await axios.post(`${apiUrl}/approvals/monthAttendance`, generalApproval);
            
-          } catch (err) {
-            console.error('Error general attendance approval:', err);
-          }
-        break;
+        //   } catch (err) {
+        //     console.error('Error general attendance approval:', err);
+        //   }
+        // break;
 
         case "pto":
 
@@ -946,10 +991,13 @@ deleteGeneralAttendance() {
         break;
 
         case "halfpto":
-          const halfPtoDate = new Date(this.selectionRange)
+
+          const halfPtoDate = new Date(this.selectionRange);
           const halfPtoDay = halfPtoDate.toISOString();
           const halfPtoStartTime = new Date(`${this.selectionRange}T${this.startTime}:00.000Z`).toISOString();
           const halfPtoEndTime = new Date(`${this.selectionRange}T${this.endTime}:00.000Z`).toISOString();
+
+          const selectedhalfPtoDates = this.selectionRange.split(', ');
 
           const halfPtoApproval = {
             account_id: authStore.user.id,
@@ -998,7 +1046,6 @@ deleteGeneralAttendance() {
       
       try {
         const response = await axios.get(`${apiUrl}/accounts/${authStore.user.id}/approvals`);
-        console.log("respose", response);
         requests.sent = response.data.approvalsSentData;
         requests.received = response.data.approvalsReceivedData;
         authStore.setApprovals(response.data.approvalsSentData, response.data.approvalsReceivedData);
@@ -1006,6 +1053,54 @@ deleteGeneralAttendance() {
         console.error('Error fetching approvals:', err);
       }
     },
+    // Submit handler for general attendance
+    async submitMonthApproval({ supervisorId, memo }) {
+
+      const authStore = useAuthStore();
+
+      const selectedDate = new Date(selectedMonth.value);
+      const currentMonth = selectedDate.getMonth() + 1;
+      const currentYear = selectedDate.getFullYear();
+      const nextMonth = currentMonth === 12 ? 12 : currentMonth + 1;
+
+      // Check if a request already exists for the selected month and year
+      const requests = authStore.approvals;
+      console.log("requests", requests)
+      const existingRequest = requests.sent.find(request => {
+        const [year, month] = request.date.split('-').map(Number); // Split date into month and year
+        return year === currentYear && month === nextMonth;
+      });
+
+      console.log("existing request: ", existingRequest)
+      if (existingRequest) {
+        alert('A request for this month has already been submitted for approval.');
+        return;
+      }
+
+      const generalApproval = {
+        account_id: authStore.user.id,
+        supervisor_id: supervisorId,
+        month: nextMonth,
+        year: currentYear,
+        content: memo,
+        status: 'Pending',
+      };
+
+    try {
+      await axios.post(`${apiUrl}/approvals/monthAttendance`, generalApproval);
+
+      authStore.approvals.sent.push(generalApproval);
+
+      // Close the modal on success
+      this.closeSubmitMonthModal();
+
+      // Optionally, show a success message or update the state
+      alert('Month attendance approval request submitted successfully.');
+    } catch (err) {
+      console.error('Error submitting month approval request:', err);
+      alert('Failed to submit month approval request.');
+    }
+  },
     async getSpecialPto() {
 
       const authStore = useAuthStore();
@@ -1031,8 +1126,29 @@ deleteGeneralAttendance() {
     } catch(err) {
       console.error('Error fetching remaining PTO: ', err);
     }
+  },
+  openSubmitMonthModal() {
+    console.log("passing")
+    this.isSubmitMonthModalVisible = true;
+    this.fetchSupervisors();
+  },
+  closeSubmitMonthModal() {
+    this.isSubmitMonthModalVisible = false;
+    this.memo = '';
+  },
+  // Optional: Ensure end time is after start time
+  isEndTimeAfterStartTime() {
+  if (this.startTime && this.endTime) {
+    return this.endTime > this.startTime;
+    }
+    return true; // If times are not filled yet, assume it's valid
+  },
+  logAttendance() {
+    // Handle log attendance logic here
+    console.log("Attendance logged");
   }
- }
+ },
+
 };
 
 </script>
