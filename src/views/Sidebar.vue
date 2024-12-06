@@ -15,7 +15,7 @@
           {{ $t('Sidebar.Approvals') }}
         </router-link>
         <span v-if="pendingApprovalsCount > 0"
-          class="bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center absolute right-24" active-class="bg-blue-500 text-white">
+          class="bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center absolute right-28" active-class="bg-blue-500 text-white">
           {{ pendingApprovalsCount }}
         </span>
       </div>

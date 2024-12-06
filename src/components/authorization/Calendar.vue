@@ -35,7 +35,7 @@
     </div>
     <!-- Right Sidebar -->
     <div class="bg-white shadow-sm border border-slate-200 rounded-lg p-2 flex flex-col" style="width: 240px; max-width: 240px;">
-      <!-- Tabs -->
+      <!-- Tabs --> 
       <div class="flex mb-3">
         <button
           @click="tab = 'attendance', attendanceType = 'general'"
@@ -319,7 +319,6 @@ export default {
   this.initializeChart();
   this.fetchSupervisors();
   this.holidays = this.generateJapaneseHolidays(new Date().getFullYear()); 
-  
 
   const activeAccountSupervisorId = authStore.user.supervisor_id;
   console.log("store values", authStore.user)
@@ -401,7 +400,6 @@ if (arg.event.extendedProps.status) {
 }
 
 },
-
     datesSet: (info) => {
       console.log('Month changed:', info.start); 
       this.handleMonthChange(info.start); // Funzione per gestire il cambio mese
@@ -484,7 +482,6 @@ calculateMaxHours(year, month) {
         workingDays++;
       }
     }
-
     return workingDays * 8;
 },
 
@@ -927,7 +924,6 @@ deleteGeneralAttendance() {
           const selectedPtoDates = this.selectionRange.split(', ');
 
           // const ptoDay = new Date(this.selectionRange).toISOString();
-          // console.log(ptoDay)
 
           try {
 
@@ -955,6 +951,13 @@ deleteGeneralAttendance() {
         case "halfpto":
 
           //TODO: Allow for multiple half PTO input
+          const selectedHalfPtoDates = this.selectionRange.split(', ');
+
+          if (selectedHalfPtoDates.length > 1) {
+            alert("You cannot submit a Half PTO request for multiple dates");
+            console.error("Half PTO request cannot be submitted for multiple dates");
+            return
+}
 
           const halfPtoDate = new Date(this.selectionRange);
           const halfPtoDay = halfPtoDate.toISOString();
