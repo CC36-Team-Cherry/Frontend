@@ -101,15 +101,14 @@
                 class="cursor-pointer w-5 h-5 min-w-5 bg-gray-400 rounded" @click="resetSort"></svg-icon>
             </div>
           </th>
-          <th v-if="authStore.user.PrivilegesPrivileges?.is_admin || authStore.user.Privileges?.is_supervisor"
-            class="border p-2">{{
-              $t('employeeList.tableHeaders.att') }}</th>
+          <th v-if="authStore.user.Privileges?.is_admin"
+            class="border p-2">{{$t('employeeList.tableHeaders.att') }}</th>
         </tr>
       </thead>
       <tbody>
         <template v-if="displayedEmployees.length > 0">
           <tr v-for="employee in displayedEmployees" :key="employee.id" @click="openEmployeeDetailsModal(employee)"
-            class="cursor-pointer hover:bg-gray-100">
+            class="cursor-pointer hover:bg-gray-200 even:bg-gray-100 odd:bg-white">
             <td class="border p-2">{{ employee.first_name + ' ' + employee.last_name }}</td>
             <td class="border p-2">{{ employee.team ? employee.team.team_name : 'NA' }}</td>
             <td class="border p-2">{{ employee.role }}</td>
@@ -130,7 +129,7 @@
               class="border p-2">{{
                 employee.last_login ? employee.last_login.split('T')[0] : 'Invite Sent' }}</td>
             <td class="border p-2">{{ employee.email }}</td>
-            <td v-if="authStore.user.Privileges?.is_admin || authStore.user.Privileges?.is_supervisor"
+            <td v-if="authStore.user.Privileges?.is_admin"
               class="border p-2">
               <button class="bg-green-500 text-white px-2 py-1 rounded" @click.stop="openCalendarModal(employee)">
                 {{ $t('employeeList.view') }}
@@ -142,7 +141,8 @@
     </table>
     <!-- Modal for Adding User -->
     <Modal :isVisible="isAddUserModalVisible" @close="closeAddUserModal">
-      <h2 class="text-xl font-bold mb-4">{{ $t('employeeList.modal.modalTitle') }}</h2>
+      <LoopingRhombusesSpinner v-if="modalLoading"/>
+      <h2 v-else class="text-xl font-bold mb-4">{{ $t('employeeList.modal.modalTitle') }}</h2>
       <form>
         <div>
           <div>
@@ -160,6 +160,7 @@
               $t('employeeList.modal.fields.email')
             }}</label>
             <input type="email" v-model="formData.email" class="border rounded p-2 w-full" />
+            <span v-if="duplicateEmail" class="text-red-500 italic">$t('employeeList.emailInUse')</span>
           </div>
           <div>
             <label class="block mb-1"><span class="text-red-500 font-bold">*</span>{{
@@ -261,6 +262,7 @@ const isEmployeeDetailsModalVisible = ref(false);
 const isCalendarModalVisible = ref(false);
 const isConfirmModalVisible = ref(false);
 const isLoading = ref(true);
+const modalLoading = ref(false);
 
 const fetchedEmployees = ref([]);
 const fetchedTeams = ref([]);
@@ -271,6 +273,7 @@ const supervisorSearch = ref('');
 const filteredSupervisors = ref([]);
 const dropdown = ref(null);
 const showDropdown = ref(false);
+const duplicateEmail = ref(false);
 
 const path = mdiSort;
 
@@ -315,6 +318,7 @@ const openAddUserModal = () => {
 
 const closeAddUserModal = () => {
   isAddUserModalVisible.value = false;
+  duplicateEmail.value = false;
   resetFormData();
 };
 
@@ -328,10 +332,17 @@ const handleSubmit = async () => {
     alert('Please fill out all required fields.');
     return;
   }
+  modalLoading.value = true;
   const email = formData.email;
   // post new user to backend
-  await addUserBackend();
-  // close the modal
+  const newUser = await addUserBackend();
+  // if the user already exists, newUser will be undefined and we cancel the rest of the function
+  if (!newUser) {
+    duplicateEmail.value = true;
+    modalLoading.value = false;
+    return;
+  }
+  modalLoading.value = false;
   closeAddUserModal();
   // send email to the new user, delayed by two seconds to allow time for new account to post to Firebase
   await new Promise(resolve => { setTimeout(resolve, 2000) });
@@ -364,7 +375,7 @@ const addUserBackend = async () => {
       );
     })
   );
-  await axios.post(`${apiUrl}/accounts`, cleanedData).catch((err) => { console.log(err) });
+  return await axios.post(`${apiUrl}/accounts`, cleanedData).catch((err) => { console.log(err.response.data.error) });
 }
 const sendFirebaseEmail = (email) => {
   sendPasswordResetEmail(auth, email)

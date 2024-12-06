@@ -31,6 +31,7 @@
                     class="w-full p-2 border border-gray-300 rounded"
                     required
                     />
+                    <span v-if="!accountExists" class="text-red-500 italic">{{ $t('login.accountDNE') }}</span>
                 </div>
                 <button
                     type="submit"
@@ -62,14 +63,23 @@ import axios from "axios";
 import LoopingRhombusesSpinner from '../../modal/Loading.vue';
 axios.defaults.withCredentials = true;
 
+const apiUrl = import.meta.env.VITE_API_URL;
+
 const email = ref('')
 const router = useRouter();
 const { locale } = useI18n();
 const authStore = useAuthStore();
 const isLoading = ref(false);
+const accountExists = ref(true);
 
 const handleSubmit = async () => {
   isLoading.value = true;
+  const doesAccountExist = await verifyAccount();
+  if(!doesAccountExist) {
+    accountExists.value = false;
+    isLoading.value = false;
+    return;
+  }
   await resetEmail();
   router.push({ path: `/login` });
   isLoading.value = false;
@@ -88,6 +98,15 @@ const resetEmail = async () => {
     console.error(err);
   }
 };
+
+const verifyAccount = async () => {
+  try {
+    const exists = await axios.post(`${apiUrl}/email`, { email: email.value });
+    return exists.data.exists;
+  } catch (err) {
+    console.error(err);
+  }
+}
 
 const switchLanguage = (lang : any) => {
     locale.value = lang;

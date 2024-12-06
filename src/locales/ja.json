@@ -41,6 +41,7 @@
     "return": "ログインに戻る",
     "resetPassword": "パスワードをリセットする",
     "sendEmail": "送信",
+    "accountDNE": "アカウントが見つかりません",
     "placeholders": {
       "email": "メールアドレスを入力してください",
       "password": "パスワードを入力してください",
@@ -77,6 +78,7 @@
     "title": "従業員リスト",
     "searchPlaceholder": "従業員を検索",
     "addUser": "ユーザーを追加",
+    "emailInUse": "このメールアドレスはすでに使用されています",
     "tableHeaders": {
       "name": "名前",
       "team": "チーム",

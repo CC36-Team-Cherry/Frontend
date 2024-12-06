@@ -41,6 +41,7 @@
     "return": "Return to login",
     "resetPassword": "Reset your password",
     "sendEmail": "Submit",
+    "accountDNE": "Account not found",
     "placeholders": {
       "email": "Enter your email address",
       "password": "Enter your password",
@@ -77,6 +78,7 @@
     "title": "Employee List",
     "searchPlaceholder": "Search Employees",
     "addUser": "Add User",
+    "emailInUse": "This email address is already in use",
     "tableHeaders": {
       "name": "Name",
       "team": "Team",
@@ -155,7 +157,7 @@
     }
   },
   "calendar": {
-    "selection": "YYYY-MM-DD",
+    "selection": "Date Selection",
     "type": "Type",
     "startTime": "Start Time",
     "endTime": "End Time",
