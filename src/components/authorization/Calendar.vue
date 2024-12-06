@@ -525,31 +525,11 @@ setEndTimeFourHoursAhead() {
       // Format start time in "HH:MM" format
       this.startTime = `${String(startHour).padStart(2, '0')}:${String(startMinute).padStart(2, '0')}`;
   },
-  calculateMaxHours(year, month) {
-    const daysInMonth = new Date(year, month, 0).getDate(); 
-    let workingDays = 0;
-
-    for (let day = 1; day <= daysInMonth; day++) {
-      const date = new Date(year, month , day); 
-      const isWeekend = date.getDay() === 0 || date.getDay() === 6;
-      const isHoliday = this.isHoliday(date); 
-
-      if (!isWeekend && !isHoliday) {
-        workingDays++;
-      }
-    }
-    return workingDays * 8;
-  },
-    // Format start time in "HH:MM" format
-    this.startTime = `${String(startHour).padStart(2, '0')}:${String(startMinute).padStart(2, '0')}`;
-},
-  
   isHoliday(date) {
     const formattedDate = date.toISOString().split('T')[0]; 
     return this.holidays.some((holiday) => holiday.start === formattedDate);
-  },
-    
-initializeChart() {
+  },  
+  initializeChart() {
      const ctx = this.$refs.attendanceChart?.getContext('2d');
      if (!ctx) {
       console.error('Canvas element not found for attendance chart');
