@@ -288,13 +288,14 @@ export default {
     initialView: 'dayGridMonth',
     locale: this.locales[locale.value],
     selectable: true,
-    //showNonCurrentDates: false,
+    // showNonCurrentDates: false,
     businessHours: {
       daysOfWeek: [1, 2, 3, 4, 5], 
     },
     events: [...this.holidays, ...this.events], 
     editable: true,
     eventStartEditable: false,
+    eventDurationEditable: false,
     select: (selectionInfo) => {
       const startDate = new Date(selectionInfo.startStr);
       const endDate = new Date(selectionInfo.endStr);
@@ -557,7 +558,7 @@ async fetchAttendanceData(accountId) {
     const response = await axios.get(`${apiUrl}/accounts/${accountId}/attendance`);
     const response2 = await axios.get(`${apiUrl}/accounts/${accountId}/approvalsPTO`);
 
-    // currentUserAtten.value = response;
+    currentUserAtten.value = response;
 
     const currentDate = this.calendar.getDate(); 
     const currentMonth = currentDate.getMonth() + 1; 
