@@ -19,11 +19,12 @@
           </div>
         </div>
         <!-- PTO Card (ancora più piccola) -->
-        <div class="bg-white shadow-sm border border-slate-200 rounded-lg p-1">
-          <div class="border-b border-slate-200 pb-0.5 mb-0.5">
-            <span class="text-xs text-slate-600 font-medium">PTO</span>
+        <div class="bg-white shadow-sm border border-slate-200 rounded-lg p-1 flex flex-row justify-evenly items-center">
+          <div>
+            <span class="text-3xl text-slate-600">PTO</span>
+            <p class="text-xs">Total Remaining</p>
           </div>
-          <p class="text-xs text-slate-600">{{ remainingPto }}</p>
+          <p class="text-4xl text-slate-600">{{ remainingPto }}</p>
         </div>
       </div>
 
@@ -39,14 +40,14 @@
         <button
           @click="tab = 'attendance', attendanceType = 'general'"
           :class="{'bg-blue-500 text-white': tab === 'attendance', 'text-blue-500': tab !== 'attendance'}"
-          class="px-4 py-2 text-sm font-bold flex-1"
+          class="px-4 py-2 text-sm font-bold flex-1 rounded"
         >
           Attendance
         </button>
         <button
           @click="tab = 'pto', attendanceType = 'pto'"
           :class="{'bg-blue-500 text-white': tab === 'pto', 'text-blue-500': tab !== 'pto'}"
-          class="px-4 py-2 text-sm font-bold flex-1"
+          class="px-4 py-2 text-sm font-bold flex-1 rounded"
         >PTO</button>
       </div>
 
@@ -86,7 +87,10 @@
         </div>
         <button
           @click="logAttendance"
-          class="bg-blue-500 text-white py-1 px-3 rounded hover:bg-blue-600 w-full text-base mb-3"
+          :class="{'bg-blue-500 text-white py-1 px-3 rounded hover:bg-blue-600 w-full text-base mb-3' : isFormValid,
+            'bg-gray-300 text-gray-500 py-1 px-3 rounded w-full cursor-not-allowed text-base mb-3' : !isFormValid
+          }"
+          :disabled="!isFormValid"
         >
           {{  $t('calendar.logAttendance') }}
         </button>
@@ -148,7 +152,7 @@
               :key="supervisor.id"
               :value="supervisor.id"
             >
-              {{ supervisor.first_name + supervisor.last_name }}
+              {{ supervisor.first_name + " " + supervisor.last_name }}
             </option>
           </select>
         </div>
@@ -163,7 +167,10 @@
         </div>  
         <button
           @click="submitHandler"
-          class="bg-cyan-500 text-white py-1 rounded hover:bg-green-600 w-full text-base mb-3"
+          :class="{'bg-cyan-500 text-white py-1 rounded hover:bg-green-600 w-full text-base mb-3' : isSubmitFormValid, 
+            'bg-gray-300 text-gray-500 py-1 px-3 rounded w-full cursor-not-allowed text-base mb-3': !isSubmitFormValid
+          }"
+          :disabled="!isSubmitFormValid"
         >
           Submit
         </button>
@@ -207,30 +214,20 @@ import { useI18n } from 'vue-i18n';
 import { useAuthStore } from '@/stores/authStore';
 import Chart from 'chart.js/auto';
 import { ref } from 'vue';
-import SubmitMonthModal from '@/modal/SubmitMonthModal.vue';
+import SubmitMonthModal from '../../modal/SubmitMonthModal.vue';
 
 const apiUrl = import.meta.env.VITE_API_URL;
 axios.defaults.withCredentials = true;
 
 const totalHours = ref(0);
 const selectedMonth = ref(null);
-const isSubmitMonthModalVisible = ref(false);
-
-const openSubmitMonthModal = () => {
-    console.log("passing")
-    isSubmitMonthModalVisible.value = true;
-    fetchSupervisors();
-  }
-
-const closeSubmitMonthModal = () => {
-    isSubmitMonthModalVisible.value = false;
-    selectedSupervisorId = null;
-    memo = '';
-  }
 
 export default {
   
   name: 'FullCalendarComponent',
+  components: {
+    SubmitMonthModal,
+  },  
   data() {
     return {
       selectionRange: '',
@@ -240,7 +237,7 @@ export default {
       calendar: null,
       events: [],
       supervisors: [],
-      selectedSupervisorId: '',
+      selectedSupervisorId: null,
       memo: '',
       attendanceChart: null,          
       maxHours: 160,         
@@ -254,6 +251,7 @@ export default {
       selectedSpecialPtoType: '',
       remainingPto: null,
       tab: 'attendance',
+      isSubmitMonthModalVisible: false,
     };
   },
   computed: {
@@ -265,6 +263,34 @@ export default {
     },
     isMonthSubmitSelected() {
       return this.attendanceType === 'monthSubmit'
+    },
+    isFormValid() {
+
+      const isDateSelected = this.selectionRange !== '';
+      const isAttendanceTypeSelected = this.attendanceType !== '';
+      const isStartTimeSelected = this.startTime !== ''
+      const isEndTimeSelected = this.endTime !== '';
+
+      // Ensure all fields are filled
+      return (
+        isDateSelected &&  // Date range is selected
+        isAttendanceTypeSelected &&  // Attendance type is selected
+        isStartTimeSelected && 
+        isEndTimeSelected 
+        // this.isEndTimeAfterStartTime()  // Optionally, check if end time is after start time
+      )
+    },
+    isSubmitFormValid() {
+
+      const isDateSelected = this.selectionRange !== '';
+      const isAttendanceTypeSelected = this.attendanceType !== '';
+      const isSupervisorSelected = this.selectedSupervisorId !== null;
+
+      return (
+        isDateSelected && 
+        isAttendanceTypeSelected &&
+        isSupervisorSelected
+      )
     }
   },
 
@@ -283,9 +309,11 @@ export default {
   this.holidays = this.generateJapaneseHolidays(new Date().getFullYear()); 
   
 
-  const activeAccountSupervisor = authStore.user.supervisor_id;
-  if (activeAccountSupervisor) {
-    this.selectedSupervisorId = activeAccountSupervisor;
+  const activeAccountSupervisorId = authStore.user.supervisor_id;
+  console.log("store values", authStore.user)
+  console.log("active account supervisor id", activeAccountSupervisorId)
+  if (activeAccountSupervisorId) {
+    this.selectedSupervisorId = activeAccountSupervisorId;
   }
 
   const calendarEl = this.$refs.calendar;
@@ -416,7 +444,6 @@ if (arg.event.extendedProps.status) {
     }
   },
   methods: {
-     
   handleMonthChange(startDate) {
   console.log('Handling month change:', startDate);
 
@@ -434,47 +461,44 @@ if (arg.event.extendedProps.status) {
  
   const authStore = useAuthStore();
   this.fetchAttendanceData(authStore.user.id);
-},
-setEndTimeFourHoursAhead() {
+  },
+  setEndTimeFourHoursAhead() {
 
-  if (!this.startTime) return;
+    if (!this.startTime) return;
 
-  // Parse the startTime into hours and minutes
-  const [startHour, startMinute] = this.startTime.split(':').map(Number);
+    // Parse the startTime into hours and minutes
+    const [startHour, startMinute] = this.startTime.split(':').map(Number);
+      
+    // Add 4 hours to the start time
+    let endHour = startHour + 4;
+    let endMinute = startMinute;
     
-  // Add 4 hours to the start time
-  let endHour = startHour + 4;
-  let endMinute = startMinute;
-  
-  // Handle overflow if the hour exceeds 24 (e.g., 23:30 + 4 hours becomes 03:30 next day)
-  if (endHour >= 24) {
-    endHour -= 24; // Wrap around to the next day
-  }
-
-  // Format end time in "HH:MM" format
-  this.endTime = `${String(endHour).padStart(2, '0')}:${String(endMinute).padStart(2, '0')}`;
-
-},  
-setStartTimeFourHoursBefore() {
-    if (!this.endTime) return;
-
-    // Parse the endTime into hours and minutes
-    const [endHour, endMinute] = this.endTime.split(':').map(Number);
-    
-    // Subtract 4 hours from the end time
-    let startHour = endHour - 4;
-    let startMinute = endMinute;
-
-    // Handle underflow if the hour is less than 0 (e.g., 03:00 - 4 hours becomes 23:00 the previous day)
-    if (startHour < 0) {
-      startHour += 24; // Wrap around to the previous day
+    // Handle overflow if the hour exceeds 24 (e.g., 23:30 + 4 hours becomes 03:30 next day)
+    if (endHour >= 24) {
+      endHour -= 24; // Wrap around to the next day
     }
 
-    // Format start time in "HH:MM" format
-    this.startTime = `${String(startHour).padStart(2, '0')}:${String(startMinute).padStart(2, '0')}`;
-},
+    // Format end time in "HH:MM" format
+    this.endTime = `${String(endHour).padStart(2, '0')}:${String(endMinute).padStart(2, '0')}`;
+  },  
+  setStartTimeFourHoursBefore() {
+      if (!this.endTime) return;
 
-  
+      // Parse the endTime into hours and minutes
+      const [endHour, endMinute] = this.endTime.split(':').map(Number);
+      
+      // Subtract 4 hours from the end time
+      let startHour = endHour - 4;
+      let startMinute = endMinute;
+
+      // Handle underflow if the hour is less than 0 (e.g., 03:00 - 4 hours becomes 23:00 the previous day)
+      if (startHour < 0) {
+        startHour += 24; // Wrap around to the previous day
+      }
+
+      // Format start time in "HH:MM" format
+      this.startTime = `${String(startHour).padStart(2, '0')}:${String(startMinute).padStart(2, '0')}`;
+  },
   calculateMaxHours(year, month) {
     const daysInMonth = new Date(year, month, 0).getDate(); 
     let workingDays = 0;
@@ -488,35 +512,30 @@ setStartTimeFourHoursBefore() {
         workingDays++;
       }
     }
-
     return workingDays * 8;
   },
-
-  
   isHoliday(date) {
     const formattedDate = date.toISOString().split('T')[0]; 
     return this.holidays.some((holiday) => holiday.start === formattedDate);
   },
-    
-    initializeChart() {
-     const ctx = this.$refs.attendanceChart?.getContext('2d');
-     if (!ctx) {
-      console.error('Canvas element not found for attendance chart');
-      return;
-    }
-
+  initializeChart() {
+    const ctx = this.$refs.attendanceChart?.getContext('2d');
+    if (!ctx) {
+    console.error('Canvas element not found for attendance chart');
+    return;
+  }
   this.attendanceChart = new Chart(ctx, {
-    type: 'doughnut',
-    data: {
-      
-      datasets: [
-        {
-          data: [totalHours.value, this.maxHours, this.extraHours], 
-          backgroundColor: ['#4caf50', '#e0e0e0', '#1b5e20'], 
-        },
-      ],
-    },
-    options: {
+  type: 'doughnut',
+  data: {
+    
+    datasets: [
+      {
+        data: [totalHours.value, this.maxHours, this.extraHours], 
+        backgroundColor: ['#4caf50', '#e0e0e0', '#1b5e20'], 
+      },
+    ],
+  },
+  options: {
       responsive: true,
       plugins: {
         legend: {
@@ -525,19 +544,16 @@ setStartTimeFourHoursBefore() {
       },
     },
   });
-  console.log('Chart initialized successfully');
-},
-
-updateChart() {
-  if (!this.attendanceChart) {
-    console.error('Attendance chart is not initialized');
-    return;
-  }
-
-  const workedHours = totalHours.value;
-  const extraHours = workedHours > this.maxHours ? workedHours - this.maxHours : 0; 
-  const remainingHours = Math.max(this.maxHours - workedHours, 0); 
-
+    console.log('Chart initialized successfully');
+  },
+  updateChart() {
+    if (!this.attendanceChart) {
+      console.error('Attendance chart is not initialized');
+      return;
+    }
+      const workedHours = totalHours.value;
+      const extraHours = workedHours > this.maxHours ? workedHours - this.maxHours : 0; 
+      const remainingHours = Math.max(this.maxHours - workedHours, 0); 
   try {
     
     this.attendanceChart.data.datasets[0].data = [
@@ -546,14 +562,12 @@ updateChart() {
       extraHours,               
     ];
 
-    
     this.attendanceChart.data.datasets[0].backgroundColor = [
       '#4caf50', 
       '#e0e0e0', 
       '#1b5e20', 
     ];
 
-    
     this.attendanceChart.update();
 
     console.log('Chart updated successfully with:', {
@@ -561,11 +575,11 @@ updateChart() {
       remainingHours,
       extraHours,
     });
-  } catch (err) {
-    console.error('Error updating chart:', err);
-  }
-},
-async fetchAttendanceData(accountId) {
+    } catch (err) {
+      console.error('Error updating chart:', err);
+    }
+  },
+  async fetchAttendanceData(accountId) {
   try {
     // Chiamate API per attendance e PTO
     const response = await axios.get(`${apiUrl}/accounts/${accountId}/attendance`);
@@ -634,70 +648,69 @@ async fetchAttendanceData(accountId) {
       };
     });
 
+      // Aggiungi gli eventi delle attendance e delle PTO al calendario
+      this.events = [...attendanceEvents, ...ptoEvents];
 
-    // Aggiungi gli eventi delle attendance e delle PTO al calendario
-    this.events = [...attendanceEvents, ...ptoEvents];
+      // Calcola il totale delle ore per le attendance
+      const calculatedTotalHours = this.events.reduce(
+        (sum, event) => sum + (event.extendedProps?.totalHours || 0),
+        0
+      );
 
-    // Calcola il totale delle ore per le attendance
-    const calculatedTotalHours = this.events.reduce(
-      (sum, event) => sum + (event.extendedProps?.totalHours || 0),
-      0
-    );
+      console.log("Calculated Total Hours:", calculatedTotalHours);
 
-    console.log("Calculated Total Hours:", calculatedTotalHours);
+      if (!isNaN(calculatedTotalHours) && calculatedTotalHours >= 0) {
+        totalHours.value = calculatedTotalHours;
+        console.log("Updated totalHours:", totalHours.value);
+      } else {
+        console.error("Invalid total hours data:", calculatedTotalHours);
+      }
 
-    if (!isNaN(calculatedTotalHours) && calculatedTotalHours >= 0) {
-      totalHours.value = calculatedTotalHours;
-      console.log("Updated totalHours:", totalHours.value);
-    } else {
-      console.error("Invalid total hours data:", calculatedTotalHours);
+      // Rimuove gli eventi esistenti e aggiunge quelli aggiornati
+      this.calendar.getEvents().forEach((event) => event.remove());
+      [...this.holidays, ...this.events].forEach((event) => this.calendar.addEvent(event));
+    } catch (error) {
+      console.error("Error fetching data:", error.response?.data || error.message);
     }
+  },
 
-    // Rimuove gli eventi esistenti e aggiunge quelli aggiornati
-    this.calendar.getEvents().forEach((event) => event.remove());
-    [...this.holidays, ...this.events].forEach((event) => this.calendar.addEvent(event));
-  } catch (error) {
-    console.error("Error fetching data:", error.response?.data || error.message);
-  }
-},
+  // Usa la tua funzione esistente per determinare il colore
+  getEventColor(data) {
+    console.log("Data received in getEventColor:", data);
 
-// Usa la tua funzione esistente per determinare il colore
-getEventColor(data) {
-  console.log("Data received in getEventColor:", data);
+    if (data.absence) return 'red';  // Assenza
+    if (data.status === "Approved") return 'blue';  // PTO completo
+    if (data.special_pto) return 'green';  // PTO speciale
+    if (data.status === "Pending") return 'gray';  // PTO parziale
+    return 'lightblue';  // Colore di default
+  },
 
-  if (data.absence) return 'red';  // Assenza
-  if (data.status === "Approved") return 'blue';  // PTO completo
-  if (data.special_pto) return 'green';  // PTO speciale
-  if (data.status === "Pending") return 'gray';  // PTO parziale
-  return 'lightblue';  // Colore di default
-},
+  // Se necessario, puoi anche aggiungere la funzione getEventTypeFromColor per determinare il tipo di evento dal colore
+  getEventTypeFromColor(color) {
+    switch (color) {
+      case 'red':
+        return 'absence';
+      case 'orange':
+        return 'pto';
+      case 'green':
+        return 'specialPto';
+      case 'yellow':
+        return 'halfpto';
+      default:
+        return 'general';
+    }
+  },
+  handleEventClick(event) {
+    if (event.extendedProps.isHoliday) return; 
+    this.selectedEventId = event.id;
+    this.selectionRange = event.start.toISOString().split('T')[0];
+    this.startTime = event.extendedProps.startTime || '';
+    this.endTime = event.extendedProps.endTime || '';
+    this.attendanceType = this.getEventTypeFromColor(event.backgroundColor);
 
+    console.log("attendance type in handle event click: ", attendanceType)
 
-// Se necessario, puoi anche aggiungere la funzione getEventTypeFromColor per determinare il tipo di evento dal colore
-getEventTypeFromColor(color) {
-  switch (color) {
-    case 'red':
-      return 'absence';
-    case 'orange':
-      return 'pto';
-    case 'green':
-      return 'specialPto';
-    case 'yellow':
-      return 'halfpto';
-    default:
-      return 'general';
-  }
-},
-    handleEventClick(event) {
-      if (event.extendedProps.isHoliday) return; 
-      this.selectedEventId = event.id;
-      this.selectionRange = event.start.toISOString().split('T')[0];
-      this.startTime = event.extendedProps.startTime || '';
-      this.endTime = event.extendedProps.endTime || '';
-      this.attendanceType = this.getEventTypeFromColor(event.backgroundColor);
-
-      console.log(attendanceType);
-    },
+  },
   logAttendance() {
     const authStore = useAuthStore();
     const days = this.selectionRange.split(', ');
@@ -774,7 +787,7 @@ getEventTypeFromColor(color) {
     .catch((error) => {
       console.error('Error logging attendance:', error.response?.data || error.message);
     });
-},
+  },  
     generateJapaneseHolidays(year) {
       return [
         { title: "New Year's Day", start: `${year}-01-01`, isHoliday: true },
@@ -890,8 +903,6 @@ getEventTypeFromColor(color) {
               day: new Date(day).toISOString(), 
               all_day: true,
               }
-
-              console.log("FE send ptoApproval: ", ptoApproval);
               
               const response = await axios.post(`${apiUrl}/approvals/pto`, ptoApproval);
               console.log("BE receive sent pto Approval: ", response);
@@ -906,10 +917,13 @@ getEventTypeFromColor(color) {
         break;
 
         case "halfpto":
+
           const halfPtoDate = new Date(this.selectionRange)
           const halfPtoDay = halfPtoDate.toISOString();
           const halfPtoStartTime = new Date(`${this.selectionRange}T${this.startTime}:00.000Z`).toISOString();
           const halfPtoEndTime = new Date(`${this.selectionRange}T${this.endTime}:00.000Z`).toISOString();
+
+          const selectedhalfPtoDates = this.selectionRange.split(', ');
 
           const halfPtoApproval = {
             account_id: authStore.user.id,
@@ -962,7 +976,6 @@ getEventTypeFromColor(color) {
       
       try {
         const response = await axios.get(`${apiUrl}/accounts/${authStore.user.id}/approvals`);
-        console.log("respose", response);
         requests.sent = response.data.approvalsSentData;
         requests.received = response.data.approvalsReceivedData;
         authStore.setApprovals(response.data.approvalsSentData, response.data.approvalsReceivedData);
@@ -982,11 +995,13 @@ getEventTypeFromColor(color) {
 
       // Check if a request already exists for the selected month and year
       const requests = authStore.approvals;
+      console.log("requests", requests)
       const existingRequest = requests.sent.find(request => {
-        const [month, year] = request.date.split(' / ').map(Number); // Split date into month and year
+        const [year, month] = request.date.split('-').map(Number); // Split date into month and year
         return year === currentYear && month === nextMonth;
       });
 
+      console.log("existing request: ", existingRequest)
       if (existingRequest) {
         alert('A request for this month has already been submitted for approval.');
         return;
@@ -1002,11 +1017,12 @@ getEventTypeFromColor(color) {
       };
 
     try {
-      const response = await axios.post(`${apiUrl}/approvals/monthAttendance`, generalApproval);
-      console.log(response.data);
+      await axios.post(`${apiUrl}/approvals/monthAttendance`, generalApproval);
+
+      authStore.approvals.sent.push(generalApproval);
 
       // Close the modal on success
-      closeModal();
+      this.closeSubmitMonthModal();
 
       // Optionally, show a success message or update the state
       alert('Month attendance approval request submitted successfully.');
@@ -1040,6 +1056,26 @@ getEventTypeFromColor(color) {
     } catch(err) {
       console.error('Error fetching remaining PTO: ', err);
     }
+  },
+  openSubmitMonthModal() {
+    console.log("passing")
+    this.isSubmitMonthModalVisible = true;
+    this.fetchSupervisors();
+  },
+  closeSubmitMonthModal() {
+    this.isSubmitMonthModalVisible = false;
+    this.memo = '';
+  },
+  // Optional: Ensure end time is after start time
+  isEndTimeAfterStartTime() {
+  if (this.startTime && this.endTime) {
+    return this.endTime > this.startTime;
+    }
+    return true; // If times are not filled yet, assume it's valid
+  },
+  logAttendance() {
+    // Handle log attendance logic here
+    console.log("Attendance logged");
   }
  },
 

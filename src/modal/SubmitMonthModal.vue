@@ -1,6 +1,6 @@
 <template>
     <div v-if="isVisible" class="fixed inset-0 bg-gray-800 bg-opacity-50 flex justify-center items-center z-50">
-        <div class="bg-white p-4 rounded-lg shadow-md w-96">
+        <div class="bg-white p-6 rounded-lg shadow-md w-96 max-w-ful">
             <div class="mb-3">
                 <label class="block mb-1 font-bold text-sm">Supervisor</label>
                 <select 
@@ -15,31 +15,42 @@
                     >
                         {{  supervisor.first_name + " " + supervisor.last_name }}
                     </option>
-            </select>
+                </select>
             </div>
-        </div>
-        <div class="flex justify-end gap-2">
-            <button
-                @click="closeSubmitMonthModal"
-                class=""bg-gray-300 text-black py-1 px-3 rounded hover:bg-gray-400
-            >
-                Cancel
-            </button>
-            <button
+
+            <div class="mb-3">
+                <label class="block mb-1 font-bold text-sm">Memo</label>
+                <input
+                    v-model="localMemo"
+                    type="text"
+                    placeholder="Optional Memo"
+                    class="border border-gray-300 rounded p-1 text-xs w-full"
+                />
+            </div>
+
+            <div class="flex justify-end gap-2">
+                <button
                 @click="submitMonthApproval"
                 class="bg-blue-500 text-white py-1 px-3 rounded hover:bg-blue-600"
                 :disabled="!localSelectedSupervisorId"
-            >
+                >
                 Submit
+                </button>
+                <button
+                @click="closeSubmitMonthModal"
+                class=""bg-gray-300 text-black py-1 px-3 rounded hover:bg-gray-400
+                >
+                Cancel
             </button>
         </div>
+    </div>
     </div>
 </template>
 
 <script setup>
 import { ref, watch, defineProps, defineEmits } from 'vue';
 
-defineProps({
+const props = defineProps({
     isVisible: Boolean,
     supervisors: Array,
     selectedSupervisorId: Number,
