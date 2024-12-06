@@ -434,21 +434,22 @@ setStartTimeFourHoursBefore() {
     return this.holidays.some((holiday) => holiday.start === formattedDate);
   },
     
-initializeChart() {
-     const ctx = this.$refs.attendanceChart?.getContext('2d');
-     if (!ctx) {
-      console.error('Canvas element not found for attendance chart');
-      return;
-    }
+  initializeChart() {
+  const ctx = this.$refs.attendanceChart?.getContext("2d");
+  if (!ctx) {
+    console.error("Canvas element not found for attendance chart");
+    return;
+  }
+
+  console.log("Initializing chart with maxHours:", this.maxHours);
 
   this.attendanceChart = new Chart(ctx, {
-    type: 'doughnut',
+    type: "doughnut",
     data: {
-      
       datasets: [
         {
-          data: [totalHours.value, this.maxHours, this.extraHours], 
-          backgroundColor: ['#4caf50', '#e0e0e0', '#1b5e20'], 
+          data: [0, this.maxHours], // Inizialmente: ore lavorate = 0, ore rimanenti = maxHours
+          backgroundColor: ["#4caf50", "#e0e0e0"], // Verde chiaro per ore lavorate, grigio per ore rimanenti
         },
       ],
     },
@@ -456,7 +457,7 @@ initializeChart() {
       responsive: true,
       plugins: {
         legend: {
-          position: 'top',
+          position: "top",
         },
       },
     },
@@ -465,43 +466,43 @@ initializeChart() {
 
 updateChart() {
   if (!this.attendanceChart) {
-    console.error('Attendance chart is not initialized');
+    console.error("Attendance chart is not initialized");
     return;
   }
 
-  const workedHours = totalHours.value;
-  const extraHours = workedHours > this.maxHours ? workedHours - this.maxHours : 0; 
-  const remainingHours = Math.max(this.maxHours - workedHours, 0); 
+  const workedHours = totalHours.value; // Ore lavorate
+  const extraHours = workedHours > this.maxHours ? workedHours - this.maxHours : 0; // Ore extra (non nel grafico)
+  const remainingHours = Math.max(this.maxHours - workedHours, 0); // Ore rimanenti
 
-  this.extraHours = extraHours;
+  console.log("Updating chart with data:", {
+    workedHours,
+    remainingHours,
+    extraHours,
+    maxHours: this.maxHours,
+  });
 
   try {
-    
+    // Aggiorna i dati del grafico
     this.attendanceChart.data.datasets[0].data = [
-      workedHours - extraHours, 
-      remainingHours,           
-      extraHours,               
+      workedHours,    // Ore lavorate
+      remainingHours, // Ore rimanenti
     ];
 
-    
+    // Aggiorna i colori del grafico
     this.attendanceChart.data.datasets[0].backgroundColor = [
-      '#4caf50', 
-      '#e0e0e0', 
-      '#1b5e20', 
+      "#4caf50", // Verde chiaro per ore lavorate
+      "#e0e0e0", // Grigio per ore rimanenti
     ];
 
-    
+    this.extraHours = extraHours; // Mantieni la variabile per l'uso nella card
     this.attendanceChart.update();
-
-    console.log('Chart updated successfully with:', {
-      workedHours,
-      remainingHours,
-      extraHours,
-    });
+    console.log("Chart updated successfully.");
   } catch (err) {
-    console.error('Error updating chart:', err);
+    console.error("Error updating chart:", err);
   }
 },
+
+
 async fetchAttendanceData(accountId) {
   try {
     const response = await axios.get(`${apiUrl}/accounts/${accountId}/attendance`);
