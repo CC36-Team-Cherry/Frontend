@@ -1,5 +1,6 @@
 <template>
-  <aside class="w-60 bg-gray-100 h-full shadow-md flex flex-col">
+  <div class="flex">
+  <aside class="w-64 bg-gray-100 h-full shadow-md flex flex-col fixed top-0 left-0">
     <div class="p-4 flex justify-center items-center"><img src="/favicon.png" alt="Breeze logo" width="80" height="80">
     </div>
     <div class="text-center"> {{ authStore.user.company.name }} </div>
@@ -43,6 +44,7 @@
       </button>
     </div>
   </aside>
+</div>
 </template>
 
 <script setup>

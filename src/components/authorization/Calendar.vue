@@ -600,7 +600,7 @@ updateChart() {
     const response = await axios.get(`${apiUrl}/accounts/${accountId}/attendance`);
     const response2 = await axios.get(`${apiUrl}/accounts/${accountId}/approvalsPTO`);
 
-    // currentUserAtten.value = response;
+    currentUserAtten.value = response;
 
     const currentDate = this.calendar.getDate(); 
     const currentMonth = currentDate.getMonth() + 1; 
@@ -914,24 +914,6 @@ deleteGeneralAttendance() {
       const authStore = useAuthStore();
       const requests = authStore.approvals;
 
-      // TODO: Delete after completing submit month modal
-      // const selectedDate = new Date(selectedMonth.value);
-      // const currentMonth = (selectedDate.getMonth() + 1);
-      // const currentYear = selectedDate.getFullYear();
-      // const nextMonth = currentMonth === 12 ? 12 : currentMonth + 1;
-
-      // // Check if a request already exists for the selected month and year
-      // const existingRequest = requests.sent.find(request => {
-      //   const [month, year] = request.date.split(' / ').map(Number);  // Split date into month and year
-      //   return year === currentYear && month === nextMonth;
-      // });
-
-      // if (existingRequest) {
-      //   // If an approval request already exists, show a message and prevent submission
-      //   alert('A request for this month has already been submitted for approval.');
-      //   return; // Exit the function without submitting the new request
-      // }
-
        // Check if PTO or HalfPTO is being requested and remainingPto is 0
       if ((this.attendanceType === "pto" || this.attendanceType === "halfpto") && this.remainingPto <= 0) {
         alert("Not enough PTO remaining to submit");
@@ -939,26 +921,6 @@ deleteGeneralAttendance() {
       }
 
       switch (this.attendanceType) {
-
-        // TODO: Delete after completing submit month modal
-        // case "monthSubmit":    
-
-        //   const generalApproval = {
-        //     account_id: authStore.user.id,
-        //     supervisor_id: this.selectedSupervisorId,
-        //     month: nextMonth,
-        //     year: currentYear,
-        //     content: this.memo,
-        //     status: 'Pending',
-        //   };
-
-        //   try {
-        //     const response = await axios.post(`${apiUrl}/approvals/monthAttendance`, generalApproval);
-           
-        //   } catch (err) {
-        //     console.error('Error general attendance approval:', err);
-        //   }
-        // break;
 
         case "pto":
 
@@ -992,6 +954,8 @@ deleteGeneralAttendance() {
 
         case "halfpto":
 
+          //TODO: Allow for multiple half PTO input
+
           const halfPtoDate = new Date(this.selectionRange);
           const halfPtoDay = halfPtoDate.toISOString();
           const halfPtoStartTime = new Date(`${this.selectionRange}T${this.startTime}:00.000Z`).toISOString();
@@ -1011,6 +975,7 @@ deleteGeneralAttendance() {
           }
 
           try {
+            
             const response = await axios.post(`${apiUrl}/approvals/pto`, halfPtoApproval);
         
             this.remainingPto -= 0.5; // Subtract half a day for a half PTO request
@@ -1022,6 +987,15 @@ deleteGeneralAttendance() {
         break;
 
         case "Special PTO":
+          
+          const selectedSpecialPtoDates = this.selectionRange.split(', ');
+
+          if (selectedSpecialPtoDates.length > 1) {
+            alert("You cannot submit a Special PTO request for multiple dates");
+            console.error("Special PTO request cannot be submitted for multiple dates");
+            return
+          }
+
           const specialPtoDay = new Date(this.selectionRange).toISOString();
           
           const specialPtoApproval = {
