@@ -3,13 +3,13 @@
     <div v-else>
         <div class="border-2 flex flex-row justify-evenly">
             <button 
-                class="w-full h-8" 
+                class="w-full h-8 hover:bg-blue-600 hover:text-white" 
                 :class="{'bg-blue-500 text-white': activeTab === 'sent',
                         'bg-gray-200 text-black': activeTab !== 'sent'
             }" @click="switchTab('sent')">
                 Approval Requests Sent
             </button>
-            <button class="w-full h-8" :class="{
+            <button class="w-full h-8 hover:bg-blue-600 hover:text-white" :class="{
                 'bg-blue-500 text-white': activeTab === 'received',
                 'bg-gray-200 text-black': activeTab !== 'received'
             }" @click="switchTab('received')">
@@ -37,7 +37,7 @@
                         </td>
                     </tr>
                     <tr v-for="(request, index) in filteredRequests" :key="index"
-                        class="even:bg-gray-100 odd:bg-white">
+                        class="hover:bg-gray-300 even:bg-gray-100 odd:bg-white">
                         <td v-if="activeTab === 'sent'" class="border p-2">{{ request.supervisorName }}</td>
                         <td v-if="activeTab === 'received'" class="border p-2">{{ request.employeeName }}</td>
                         <td class="border p-2" v-if="request.attendanceType === 'Month Attendance Request'">
