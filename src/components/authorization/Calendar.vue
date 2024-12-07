@@ -3,28 +3,39 @@
     <!-- Left Section: Chart and Calendar -->
     <div class="flex-1 flex flex-col p-2">
       <!-- Chart and PTO Card -->
-      <div class="grid grid-cols-2 gap-2 p-2">
-        <!-- Chart Section (con larghezza maggiore) -->
-        <div class="bg-white shadow-sm border border-slate-200 rounded-lg p-1 flex items-center">
-          <!-- Aggiunta del titolo sopra la chart -->
+      <div class="grid grid-cols-3 justify-items-stretch gap-2 mb-2">
+        <!-- Total Hours Worked Card -->
+        <div class="bg-white shadow-sm border border-slate-200 rounded-lg p-2 pr-3 flex flex-row justify-evenly items-center ">
+          <!-- Chart -->
           <div class="flex-1">
             <canvas ref="attendanceChart" class="w-full custom-chart-height" style="height: 80px;"></canvas>
           </div>
-          <!-- Column per "Hours/Total Hours" -->
-          <div class="ml-2 text-right">
-            <span class="text-xs font-medium text-slate-600">Worked Hours / OT</span>
-            <div class="text-xs text-slate-500 mt-1">
-              <span>{{  calculatedTotalHours }} / {{ extraHours }}</span>
-            </div>
-          </div>
-        </div>
-        <!-- PTO Card (ancora più piccola) -->
-        <div class="bg-white shadow-sm border border-slate-200 rounded-lg p-1 flex flex-row justify-evenly items-center">
+          <!-- Hours Worked Title -->
           <div>
-            <span class="text-3xl text-slate-600">PTO</span>
-            <p class="text-xs">Total Remaining</p>
+            <div class="text-3xl text-slate-600">Total Worked</div>
+            <div class="text-xs">Current Month</div>
           </div>
-          <p class="text-4xl text-slate-600">{{ remainingPto }}</p>
+          <hr class="w-px h-10 border-l border-slate-300 mx-4">
+          <!-- Hours Worked -->
+          <div class="text-3xl text-slate-600"> {{ calculatedTotalHours }} Hrs</div>
+        </div>
+        <!-- OT Card -->
+        <div class="bg-white shadow-sm border border-slate-200 rounded-lg p-2 flex flex-row justify-evenly items-center">
+          <div>
+            <div class="text-3xl text-slate-600">Overtime</div>
+            <div class="text-xs">Current Month</div>
+          </div>
+          <hr class="w-px h-10 border-l border-slate-300 mx-4">
+          <div class="text-3xl text-slate-600"> {{ extraHours }} Hrs</div>
+        </div>
+        <!-- PTO Card -->
+        <div class="bg-white shadow-sm border border-slate-200 rounded-lg p-2 flex flex-row justify-evenly items-center">
+          <div>
+            <div class="text-3xl text-slate-600">Paid Time Off</div>
+            <div class="text-xs">Total Remaining</div>
+          </div>
+          <hr class="w-px h-10 border-l border-slate-300 mx-4">
+          <div class="text-3xl text-slate-600">{{ remainingPto }} Days</div>
         </div>
       </div>
 
@@ -35,7 +46,7 @@
     </div>
     <!-- Right Sidebar -->
     <div class="bg-white shadow-sm border border-slate-200 rounded-lg p-2 flex flex-col" style="width: 240px; max-width: 240px;">
-      <!-- Tabs -->
+      <!-- Tabs --> 
       <div class="flex mb-3">
         <button
           @click="tab = 'attendance', attendanceType = 'general'"
@@ -319,7 +330,6 @@ export default {
   this.initializeChart();
   this.fetchSupervisors();
   this.holidays = this.generateJapaneseHolidays(new Date().getFullYear()); 
-  
 
   const activeAccountSupervisorId = authStore.user.supervisor_id;
   console.log("store values", authStore.user)
@@ -338,12 +348,13 @@ export default {
     initialView: 'dayGridMonth',
     locale: this.locales[locale.value],
     selectable: true,
-    //showNonCurrentDates: false,
     businessHours: {
       daysOfWeek: [1, 2, 3, 4, 5], 
     },
     events: [...this.holidays, ...this.events], 
     editable: true,
+    eventStartEditable: false,
+    eventDurationEditable: false,
     select: (selectionInfo) => {
       const startDate = new Date(selectionInfo.startStr);
       const endDate = new Date(selectionInfo.endStr);
@@ -371,7 +382,7 @@ export default {
       if (arg.event.extendedProps.isHoliday) {
   return {
     html: `
-      <div style="text-align: center; font-size: 1.2em; color: black; background-color: rgba(255, 0, 0, 0.2); padding: 12px; border-radius: 4px;">
+      <div style="text-align: left; font-size: 1vw; color: black; background-color: rgba(255, 0, 0, 0.2); padding: .5vw; border-radius: 4px; width: 100%; word-wrap: break-word; white-space: normal;">
         <b>${arg.event.title}</b>
       </div>
     `,
@@ -382,7 +393,7 @@ export default {
 if (arg.event.extendedProps.startTime && arg.event.extendedProps.endTime) {
   return {
     html: `
-      <div style="text-align: center; font-size: 1.1em; color: black; background-color: ${arg.event.backgroundColor}; padding: 10px; border-radius: 4px;">
+      <div style="text-align: left; font-size: 1vw; color: black; background-color: ${arg.event.backgroundColor}; padding: .5vw; border-radius: 4px; width: 100%; word-wrap: break-word; white-space: normal;">
         <b>${arg.event.extendedProps.startTime} - ${arg.event.extendedProps.endTime}</b>
       </div>
     `,
@@ -393,7 +404,7 @@ if (arg.event.extendedProps.startTime && arg.event.extendedProps.endTime) {
 if (arg.event.extendedProps.status) {
   return {
     html: `
-      <div style="text-align: center; font-size: 1.1em; color: white; background-color: ${arg.event.backgroundColor}; padding: 12px; border-radius: 4px;">
+      <div style="text-align: center; font-size: 1vw; color: white; background-color: ${arg.event.backgroundColor}; padding: .5vw; border-radius: 4px; width: 100%; word-wrap: break-word; white-space: normal;">
         <b>${arg.event.title}</b><br><i>${arg.event.extendedProps.status}</i>
       </div>
     `,
@@ -401,7 +412,6 @@ if (arg.event.extendedProps.status) {
 }
 
 },
-
     datesSet: (info) => {
       console.log('Month changed:', info.start); 
       this.handleMonthChange(info.start); // Funzione per gestire il cambio mese
@@ -484,7 +494,6 @@ calculateMaxHours(year, month) {
         workingDays++;
       }
     }
-
     return workingDays * 8;
 },
 
@@ -603,7 +612,7 @@ async fetchAttendanceData(accountId) {
     const response = await axios.get(`${apiUrl}/accounts/${accountId}/attendance`);
     const response2 = await axios.get(`${apiUrl}/accounts/${accountId}/approvalsPTO`);
 
-    // currentUserAtten.value = response;
+    currentUserAtten.value = response;
 
     const currentDate = this.calendar.getDate(); 
     const currentMonth = currentDate.getMonth() + 1; 
@@ -917,24 +926,6 @@ deleteGeneralAttendance() {
       const authStore = useAuthStore();
       const requests = authStore.approvals;
 
-      // TODO: Delete after completing submit month modal
-      // const selectedDate = new Date(selectedMonth.value);
-      // const currentMonth = (selectedDate.getMonth() + 1);
-      // const currentYear = selectedDate.getFullYear();
-      // const nextMonth = currentMonth === 12 ? 12 : currentMonth + 1;
-
-      // // Check if a request already exists for the selected month and year
-      // const existingRequest = requests.sent.find(request => {
-      //   const [month, year] = request.date.split(' / ').map(Number);  // Split date into month and year
-      //   return year === currentYear && month === nextMonth;
-      // });
-
-      // if (existingRequest) {
-      //   // If an approval request already exists, show a message and prevent submission
-      //   alert('A request for this month has already been submitted for approval.');
-      //   return; // Exit the function without submitting the new request
-      // }
-
        // Check if PTO or HalfPTO is being requested and remainingPto is 0
       if ((this.attendanceType === "pto" || this.attendanceType === "halfpto") && this.remainingPto <= 0) {
         alert("Not enough PTO remaining to submit");
@@ -943,32 +934,11 @@ deleteGeneralAttendance() {
 
       switch (this.attendanceType) {
 
-        // TODO: Delete after completing submit month modal
-        // case "monthSubmit":    
-
-        //   const generalApproval = {
-        //     account_id: authStore.user.id,
-        //     supervisor_id: this.selectedSupervisorId,
-        //     month: nextMonth,
-        //     year: currentYear,
-        //     content: this.memo,
-        //     status: 'Pending',
-        //   };
-
-        //   try {
-        //     const response = await axios.post(`${apiUrl}/approvals/monthAttendance`, generalApproval);
-           
-        //   } catch (err) {
-        //     console.error('Error general attendance approval:', err);
-        //   }
-        // break;
-
         case "pto":
 
           const selectedPtoDates = this.selectionRange.split(', ');
 
           // const ptoDay = new Date(this.selectionRange).toISOString();
-          // console.log(ptoDay)
 
           try {
 
@@ -995,6 +965,15 @@ deleteGeneralAttendance() {
 
         case "halfpto":
 
+          //TODO: Allow for multiple half PTO input
+          const selectedHalfPtoDates = this.selectionRange.split(', ');
+
+          if (selectedHalfPtoDates.length > 1) {
+            alert("You cannot submit a Half PTO request for multiple dates");
+            console.error("Half PTO request cannot be submitted for multiple dates");
+            return
+}
+
           const halfPtoDate = new Date(this.selectionRange);
           const halfPtoDay = halfPtoDate.toISOString();
           const halfPtoStartTime = new Date(`${this.selectionRange}T${this.startTime}:00.000Z`).toISOString();
@@ -1014,6 +993,7 @@ deleteGeneralAttendance() {
           }
 
           try {
+            
             const response = await axios.post(`${apiUrl}/approvals/pto`, halfPtoApproval);
         
             this.remainingPto -= 0.5; // Subtract half a day for a half PTO request
@@ -1025,6 +1005,15 @@ deleteGeneralAttendance() {
         break;
 
         case "Special PTO":
+          
+          const selectedSpecialPtoDates = this.selectionRange.split(', ');
+
+          if (selectedSpecialPtoDates.length > 1) {
+            alert("You cannot submit a Special PTO request for multiple dates");
+            console.error("Special PTO request cannot be submitted for multiple dates");
+            return
+          }
+
           const specialPtoDay = new Date(this.selectionRange).toISOString();
           
           const specialPtoApproval = {

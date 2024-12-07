@@ -1,15 +1,16 @@
 <template>
     <LoopingRhombusesSpinner v-if="isLoading" />
     <div v-else>
+        <!-- Tabs -->
         <div class="border-2 flex flex-row justify-evenly">
             <button 
-                class="w-full h-8" 
+                class="w-full h-8 hover:bg-blue-600 hover:text-white" 
                 :class="{'bg-blue-500 text-white': activeTab === 'sent',
                         'bg-gray-200 text-black': activeTab !== 'sent'
             }" @click="switchTab('sent')">
                 Approval Requests Sent
             </button>
-            <button class="w-full h-8" :class="{
+            <button class="w-full h-8 hover:bg-blue-600 hover:text-white" :class="{
                 'bg-blue-500 text-white': activeTab === 'received',
                 'bg-gray-200 text-black': activeTab !== 'received'
             }" @click="switchTab('received')">
@@ -17,39 +18,48 @@
             </button>
         </div>
 
-        <div class="flex flex-col flex-grow overflow-y-auto mt-5">
+        <!-- Content -->
+        <div class="max-h-[90%] overflow-scroll mt-5">
+            <!-- Team Table -->
             <table class="w-full border-collapse border border-gray-300">
-                <thead class="bg-gray-200">
+                <thead class="bg-gray-200 sticky top-0 shadow-[0_0px_0.5px_1px_rgba(229,231,235,1)]">
                     <tr>
                         <th v-if="activeTab === 'sent'" class="border p-2 text-left">Sent To</th>
                         <th v-if="activeTab === 'received'" class="border p-2 text-left">From</th>
-                        <th class="border p-2 text-left">Details</th>
-                        <th class="border p-2 text-left">Message</th>
+                        <th class="border p-2 text-left">Type</th>
+                        <th class="border p-2 text-left">Requested Date</th>
+                        <th class="border p-2 text-left">Memo</th>
                         <th class="border p-2 text-left">Status</th>
                         <th class="border p-2 text-left">Action</th>
                         <th class="border p-2 text-left">Last Updated</th>
                     </tr>
                 </thead>
-                <tbody>
+                <tbody class="m-0">
                     <tr v-if="filteredRequests.length === 0">
                         <td colspan="7" class="text-center text-xl text-gray-500 p-10">
                             No approvals to show.
                         </td>
                     </tr>
                     <tr v-for="(request, index) in filteredRequests" :key="index"
-                        class="even:bg-gray-100 odd:bg-white">
+                        class="hover:bg-gray-300 even:bg-gray-100 odd:bg-white">
                         <td v-if="activeTab === 'sent'" class="border p-2">{{ request.supervisorName }}</td>
                         <td v-if="activeTab === 'received'" class="border p-2">{{ request.employeeName }}</td>
-                        <td class="border p-2" v-if="request.attendanceType === 'Month Attendance Request'">
-                            {{ `${request.attendanceType}: ${request.date}` }}
+                        <td class="border p-2" v-if="request.attendanceType === 'Month Attendance'">
+                            <div> {{ `${request.attendanceType}` }} </div>
+                            
                         </td>
                         <td class="border p-2"
-                            v-if="request.attendanceType === 'PTO Request' || request.attendanceType === 'Half PTO Request'">
-                            {{ `${request.attendanceType}: ${format(new Date(request.date), 'yyyy-MM-dd')}` }}
+                            v-if="request.attendanceType === 'PTO' || request.attendanceType === 'Half PTO'">
+                            <div>{{ `${request.attendanceType}` }}</div>
                         </td>
-                        <td class="border p-2" v-if="request.attendanceType === 'Special PTO Request'">
-                            {{ `${request.attendanceType}: ${request.type} on ${format(new Date(request.date),
-                            'yyyy-MM-dd')}` }}
+                        <td class="border p-2" v-if="request.attendanceType === 'Special PTO'">
+                            <div> {{ `${request.attendanceType} | ${request.type}` }}</div>
+                        </td>
+                        <td class="border p-2">
+                            <div v-if="request.attendanceType === 'PTO' || request.attendanceType === 'Special PTO'">{{  `${new Date(request.date).toLocaleString('en-US', { month: 'short' })} ${getDayWithSuffix(new Date(request.date).getDate())}, ${new Date(request.date).getFullYear()}` }}</div>
+                            <div v-if="request.attendanceType === 'Half PTO'">{{  `${new Date(request.date).toLocaleString('en-US', { month: 'short' })} ${getDayWithSuffix(new Date(request.date).getDate())}, ${new Date(request.date).getFullYear()}` }}</div>
+                            <div v-if="request.attendanceType === 'Half PTO'">{{  `${new Date(request.hour_start).toLocaleTimeString('en-US', {hour12: false, hour: 'numeric', minute: '2-digit'})}-${new Date(request.hour_end).toLocaleTimeString('en-US', {hour12: false, hour: 'numeric', minute: '2-digit'})}` }}</div>
+                            <div v-if="request.attendanceType === 'Month Attendance'"> {{ `${formatMonthYearMonthRequest(request.date)}` }} </div>
                         </td>
                         <td v-if="!request.isEditing" class="border p-2">{{ request.memo }}</td>
                         <td v-if="request.isEditing" class="border p-2">
@@ -60,27 +70,29 @@
                         <td class="border p-2 flex flex-col space-y-2">
                             <button v-if="activeTab === 'received'" class="bg-green-500 text-white px-2 py-1 rounded"
                                 @click="statusClick(request.id, 'Approved', request.attendanceType)">
-                                Approve
+                                <i class="fa-solid fa-check"></i>
                             </button>
                             <button v-if="activeTab === 'received'" class="bg-red-500 text-white px-2 py-1 rounded"
                                 @click="statusClick(request.id, 'Denied', request.attendanceType)">
-                                Deny
+                                <i class="fas fa-times"></i>
                             </button>
                             <button v-if="activeTab === 'received'" class="bg-blue-500 text-white px-2 py-1 rounded"
                                 @click="seeAttendanceClick(request.id)">
-                                See Attendance
+                                <i class="fas fa-calendar-alt"></i>
                             </button>
                             <button v-if="activeTab === 'sent'" class="bg-yellow-500 text-white px-2 py-1 rounded"
                                 @click="remindClick(request)">
-                                Remind
+                                <i class="fas fa-bell"></i>
                             </button>
                             <button class="bg-gray-500 text-white px-2 py-1 rounded"
                                 @click="deleteClick(request.id, request.attendanceType)">
-                                Delete
+                                <i class="fas fa-trash-alt"></i>
                             </button>
                         </td>
                         <td class="border p-2">
-                            {{ `${format(new Date(request.updated_at), 'yyyy-MM-dd h:mm')}` }}
+                            {{ 
+                                `${new Date(request.updated_at).toLocaleString('en-US', { month: 'short' })} ${getDayWithSuffix(new Date(request.updated_at).getDate())}, ${new Date(request.updated_at).getFullYear()} @ ${new Date(request.updated_at).getHours()}:${new Date(request.updated_at).getMinutes().toString().padStart(2, '0')}`
+                            }}
                         </td>
                     </tr>
                 </tbody>
@@ -94,7 +106,6 @@ import { ref, computed, onMounted } from 'vue';
 import axios from 'axios';
 import { useAuthStore } from '@/stores/authStore';
 import LoopingRhombusesSpinner from '../modal/Loading.vue';
-import { format } from 'date-fns'
 
 const apiUrl = import.meta.env.VITE_API_URL;
 axios.defaults.withCredentials = true;
@@ -132,6 +143,24 @@ const filteredRequests = computed(() => {
     return []; // Return an empty array if data is not available
 });
 
+const getDayWithSuffix = (day) => {
+    if (day >= 11 && day <= 13) return day + 'th';
+    switch (day % 10) {
+        case 1: return day + 'st';
+        case 2: return day + 'nd';
+        case 3: return day + 'th';
+        default: return day + 'th'
+    }
+}
+
+function formatMonthYearMonthRequest(input) {
+  const [month, year] = input.split('-');
+  const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "Octocber", "November", "December"];
+  const monthName = monthNames[parseInt(month) - 1];  // Subtract 1 because array is 0-indexed
+
+  return `${monthName}, ${year}`;
+}
+
 // helper function to switch tabs
 const switchTab = (tab) => {
     activeTab.value = tab;
@@ -139,6 +168,7 @@ const switchTab = (tab) => {
 
 
 const getApprovals = async () => {
+
     try {
         isLoading.value = true;
         const response = await axios.get(`${apiUrl}/accounts/${activeAccountId}/approvals`);
@@ -147,13 +177,13 @@ const getApprovals = async () => {
         requests.received = response.data.approvalsReceivedData.sort((a, b) => new Date(b.updated_at) - new Date(a.updated_at));
         isLoading.value = false;
         authStore.setApprovals(response.data.approvalsSentData, response.data.approvalsReceivedData);
+
     } catch (err) {
         console.error('Error fetching approvals:', err);
     }
 }
 
 // Button click to change status to approved or denied
-// TODO: Set reactive state to change status immediately on click without refresh
 const statusClick = async (approvalsId, statusChange, requestType) => {
     try {
 
@@ -245,6 +275,7 @@ const deleteClick = async (approvalsId, requestType) => {
 // Fetch approvals when the component is mounted
 onMounted(() => {
     getApprovals();
+    console.log("request approvals", requests)
 });
 
 </script>
