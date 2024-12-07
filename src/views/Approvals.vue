@@ -17,9 +17,9 @@
             </button>
         </div>
 
-        <div class="flex flex-col flex-grow overflow-y-auto mt-5">
-            <table class="w-full border-collapse border border-gray-300">
-                <thead class="bg-gray-200">
+        <div class="max-h-[90%] overflow-scroll mt-5">
+            <table class="table-auto w-full border-collapse border border-gray-300">
+                <thead class="bg-gray-200 sticky top-0">
                     <tr>
                         <th v-if="activeTab === 'sent'" class="border p-2 text-left">Sent To</th>
                         <th v-if="activeTab === 'received'" class="border p-2 text-left">From</th>
