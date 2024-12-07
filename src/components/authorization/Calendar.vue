@@ -337,12 +337,13 @@ export default {
     initialView: 'dayGridMonth',
     locale: this.locales[locale.value],
     selectable: true,
-    //showNonCurrentDates: false,
     businessHours: {
       daysOfWeek: [1, 2, 3, 4, 5], 
     },
     events: [...this.holidays, ...this.events], 
     editable: true,
+    eventStartEditable: false,
+    eventDurationEditable: false,
     select: (selectionInfo) => {
       const startDate = new Date(selectionInfo.startStr);
       const endDate = new Date(selectionInfo.endStr);
@@ -370,7 +371,7 @@ export default {
       if (arg.event.extendedProps.isHoliday) {
   return {
     html: `
-      <div style="text-align: center; font-size: 1.2em; color: black; background-color: rgba(255, 0, 0, 0.2); padding: 12px; border-radius: 4px;">
+      <div style="text-align: left; font-size: 1vw; color: black; background-color: rgba(255, 0, 0, 0.2); padding: .5vw; border-radius: 4px; width: 100%; word-wrap: break-word; white-space: normal;">
         <b>${arg.event.title}</b>
       </div>
     `,
@@ -381,7 +382,7 @@ export default {
 if (arg.event.extendedProps.startTime && arg.event.extendedProps.endTime) {
   return {
     html: `
-      <div style="text-align: center; font-size: 1.1em; color: black; background-color: ${arg.event.backgroundColor}; padding: 10px; border-radius: 4px;">
+      <div style="text-align: left; font-size: 1vw; color: black; background-color: ${arg.event.backgroundColor}; padding: .5vw; border-radius: 4px; width: 100%; word-wrap: break-word; white-space: normal;">
         <b>${arg.event.extendedProps.startTime} - ${arg.event.extendedProps.endTime}</b>
       </div>
     `,
@@ -392,7 +393,7 @@ if (arg.event.extendedProps.startTime && arg.event.extendedProps.endTime) {
 if (arg.event.extendedProps.status) {
   return {
     html: `
-      <div style="text-align: center; font-size: 1.1em; color: white; background-color: ${arg.event.backgroundColor}; padding: 12px; border-radius: 4px;">
+      <div style="text-align: center; font-size: 1vw; color: white; background-color: ${arg.event.backgroundColor}; padding: .5vw; border-radius: 4px; width: 100%; word-wrap: break-word; white-space: normal;">
         <b>${arg.event.title}</b><br><i>${arg.event.extendedProps.status}</i>
       </div>
     `,
