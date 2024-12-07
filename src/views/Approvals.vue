@@ -24,7 +24,7 @@
                         <th v-if="activeTab === 'sent'" class="border p-2 text-left">Sent To</th>
                         <th v-if="activeTab === 'received'" class="border p-2 text-left">From</th>
                         <th class="border p-2 text-left">Details</th>
-                        <th class="border p-2 text-left">Message</th>
+                        <th class="border p-2 text-left">Memo</th>
                         <th class="border p-2 text-left">Status</th>
                         <th class="border p-2 text-left">Action</th>
                         <th class="border p-2 text-left">Last Updated</th>
@@ -40,16 +40,19 @@
                         class="hover:bg-gray-300 even:bg-gray-100 odd:bg-white">
                         <td v-if="activeTab === 'sent'" class="border p-2">{{ request.supervisorName }}</td>
                         <td v-if="activeTab === 'received'" class="border p-2">{{ request.employeeName }}</td>
-                        <td class="border p-2" v-if="request.attendanceType === 'Month Attendance Request'">
-                            {{ `${request.attendanceType}: ${request.date}` }}
+                        <td class="border p-2" v-if="request.attendanceType === 'Month Attendance'">
+                            <div> {{ `Type: ${request.attendanceType}` }} </div>
+                            <div> {{ `Date: ${formatMonthYear(request.date)}` }} </div>
                         </td>
                         <td class="border p-2"
-                            v-if="request.attendanceType === 'PTO Request' || request.attendanceType === 'Half PTO Request'">
-                            {{ `${request.attendanceType}: ${format(new Date(request.date), 'yyyy-MM-dd')}` }}
+                            v-if="request.attendanceType === 'PTO' || request.attendanceType === 'Half PTO'">
+                            <div>{{ `Type: ${request.attendanceType}` }}</div>
+                            <div>{{  `Date: ${new Date(request.date).toLocaleString('en-US', { month: 'short' })} ${getDayWithSuffix(new Date(request.date).getDate())}, ${new Date(request.date).getFullYear()}` }}</div>
                         </td>
-                        <td class="border p-2" v-if="request.attendanceType === 'Special PTO Request'">
-                            {{ `${request.attendanceType}: ${request.type} on ${format(new Date(request.date),
-                            'yyyy-MM-dd')}` }}
+                        <td class="border p-2" v-if="request.attendanceType === 'Special PTO'">
+                            <div> {{ `Type: ${request.attendanceType}` }}</div>
+                            <div> {{ `Reason: ${request.type}` }}</div>
+                            <div> {{ `Date: ${new Date(request.date).toLocaleString('en-US', { month: 'short' })} ${getDayWithSuffix(new Date(request.date).getDate())}, ${new Date(request.date).getFullYear()}` }}</div>
                         </td>
                         <td v-if="!request.isEditing" class="border p-2">{{ request.memo }}</td>
                         <td v-if="request.isEditing" class="border p-2">
@@ -80,7 +83,9 @@
                             </button>
                         </td>
                         <td class="border p-2">
-                            {{ `${format(new Date(request.updated_at), 'yyyy-MM-dd h:mm')}` }}
+                            {{ 
+                                `${new Date(request.updated_at).toLocaleString('en-US', { month: 'short' })} ${getDayWithSuffix(new Date(request.updated_at).getDate())}, ${new Date(request.updated_at).getFullYear()} @ ${new Date(request.updated_at).getHours()}:${new Date(request.updated_at).getMinutes().toString().padStart(2, '0')}`
+                            }}
                         </td>
                     </tr>
                 </tbody>
@@ -132,6 +137,30 @@ const filteredRequests = computed(() => {
     return []; // Return an empty array if data is not available
 });
 
+const getDayWithSuffix = (day) => {
+    if (day >= 11 && day <= 13) return day + 'th';
+    switch (day % 10) {
+        case 1: return day + 'st';
+        case 2: return day + 'nd';
+        case 3: return day + 'th';
+        default: return day + 'th'
+    }
+}
+
+function formatMonthYear(input) {
+  // Split the input string by the hyphen
+  const [month, year] = input.split('-');
+
+  // Array of month names (abbreviated)
+  const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+
+  // Convert the month to the corresponding abbreviated name
+  const monthName = monthNames[parseInt(month) - 1];  // Subtract 1 because array is 0-indexed
+
+  // Return the formatted string
+  return `${monthName}, ${year}`;
+}
+
 // helper function to switch tabs
 const switchTab = (tab) => {
     activeTab.value = tab;
@@ -139,6 +168,7 @@ const switchTab = (tab) => {
 
 
 const getApprovals = async () => {
+
     try {
         isLoading.value = true;
         const response = await axios.get(`${apiUrl}/accounts/${activeAccountId}/approvals`);
@@ -147,13 +177,13 @@ const getApprovals = async () => {
         requests.received = response.data.approvalsReceivedData.sort((a, b) => new Date(b.updated_at) - new Date(a.updated_at));
         isLoading.value = false;
         authStore.setApprovals(response.data.approvalsSentData, response.data.approvalsReceivedData);
+
     } catch (err) {
         console.error('Error fetching approvals:', err);
     }
 }
 
 // Button click to change status to approved or denied
-// TODO: Set reactive state to change status immediately on click without refresh
 const statusClick = async (approvalsId, statusChange, requestType) => {
     try {
 
@@ -245,6 +275,7 @@ const deleteClick = async (approvalsId, requestType) => {
 // Fetch approvals when the component is mounted
 onMounted(() => {
     getApprovals();
+    console.log("request approvals", requests)
 });
 
 </script>
