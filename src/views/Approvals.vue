@@ -1,6 +1,7 @@
 <template>
     <LoopingRhombusesSpinner v-if="isLoading" />
     <div v-else>
+        <!-- Tabs -->
         <div class="border-2 flex flex-row justify-evenly">
             <button 
                 class="w-full h-8 hover:bg-blue-600 hover:text-white" 
@@ -17,13 +18,16 @@
             </button>
         </div>
 
+        <!-- Content -->
         <div class="max-h-[90%] overflow-scroll mt-5">
+            <!-- Team Table -->
             <table class="w-full border-collapse border border-gray-300">
                 <thead class="bg-gray-200 sticky top-0 shadow-[0_0px_0.5px_1px_rgba(229,231,235,1)]">
                     <tr>
                         <th v-if="activeTab === 'sent'" class="border p-2 text-left">Sent To</th>
                         <th v-if="activeTab === 'received'" class="border p-2 text-left">From</th>
-                        <th class="border p-2 text-left">Details</th>
+                        <th class="border p-2 text-left">Type</th>
+                        <th class="border p-2 text-left">Requested Date</th>
                         <th class="border p-2 text-left">Memo</th>
                         <th class="border p-2 text-left">Status</th>
                         <th class="border p-2 text-left">Action</th>
@@ -41,18 +45,21 @@
                         <td v-if="activeTab === 'sent'" class="border p-2">{{ request.supervisorName }}</td>
                         <td v-if="activeTab === 'received'" class="border p-2">{{ request.employeeName }}</td>
                         <td class="border p-2" v-if="request.attendanceType === 'Month Attendance'">
-                            <div> {{ `Type: ${request.attendanceType}` }} </div>
-                            <div> {{ `Date: ${formatMonthYear(request.date)}` }} </div>
+                            <div> {{ `${request.attendanceType}` }} </div>
+                            
                         </td>
                         <td class="border p-2"
                             v-if="request.attendanceType === 'PTO' || request.attendanceType === 'Half PTO'">
-                            <div>{{ `Type: ${request.attendanceType}` }}</div>
-                            <div>{{  `Date: ${new Date(request.date).toLocaleString('en-US', { month: 'short' })} ${getDayWithSuffix(new Date(request.date).getDate())}, ${new Date(request.date).getFullYear()}` }}</div>
+                            <div>{{ `${request.attendanceType}` }}</div>
                         </td>
                         <td class="border p-2" v-if="request.attendanceType === 'Special PTO'">
-                            <div> {{ `Type: ${request.attendanceType}` }}</div>
-                            <div> {{ `Reason: ${request.type}` }}</div>
-                            <div> {{ `Date: ${new Date(request.date).toLocaleString('en-US', { month: 'short' })} ${getDayWithSuffix(new Date(request.date).getDate())}, ${new Date(request.date).getFullYear()}` }}</div>
+                            <div> {{ `${request.attendanceType} | ${request.type}` }}</div>
+                        </td>
+                        <td class="border p-2">
+                            <div v-if="request.attendanceType === 'PTO' || request.attendanceType === 'Special PTO'">{{  `${new Date(request.date).toLocaleString('en-US', { month: 'short' })} ${getDayWithSuffix(new Date(request.date).getDate())}, ${new Date(request.date).getFullYear()}` }}</div>
+                            <div v-if="request.attendanceType === 'Half PTO'">{{  `${new Date(request.date).toLocaleString('en-US', { month: 'short' })} ${getDayWithSuffix(new Date(request.date).getDate())}, ${new Date(request.date).getFullYear()}` }}</div>
+                            <div v-if="request.attendanceType === 'Half PTO'">{{  `${new Date(request.hour_start).toLocaleTimeString('en-US', {hour12: false, hour: 'numeric', minute: '2-digit'})}-${new Date(request.hour_end).toLocaleTimeString('en-US', {hour12: false, hour: 'numeric', minute: '2-digit'})}` }}</div>
+                            <div v-if="request.attendanceType === 'Month Attendance'"> {{ `${formatMonthYearMonthRequest(request.date)}` }} </div>
                         </td>
                         <td v-if="!request.isEditing" class="border p-2">{{ request.memo }}</td>
                         <td v-if="request.isEditing" class="border p-2">
@@ -63,23 +70,23 @@
                         <td class="border p-2 flex flex-col space-y-2">
                             <button v-if="activeTab === 'received'" class="bg-green-500 text-white px-2 py-1 rounded"
                                 @click="statusClick(request.id, 'Approved', request.attendanceType)">
-                                Approve
+                                <i class="fa-solid fa-check"></i>
                             </button>
                             <button v-if="activeTab === 'received'" class="bg-red-500 text-white px-2 py-1 rounded"
                                 @click="statusClick(request.id, 'Denied', request.attendanceType)">
-                                Deny
+                                <i class="fas fa-times"></i>
                             </button>
                             <button v-if="activeTab === 'received'" class="bg-blue-500 text-white px-2 py-1 rounded"
                                 @click="seeAttendanceClick(request.id)">
-                                See Attendance
+                                <i class="fas fa-calendar-alt"></i>
                             </button>
                             <button v-if="activeTab === 'sent'" class="bg-yellow-500 text-white px-2 py-1 rounded"
                                 @click="remindClick(request)">
-                                Remind
+                                <i class="fas fa-bell"></i>
                             </button>
                             <button class="bg-gray-500 text-white px-2 py-1 rounded"
                                 @click="deleteClick(request.id, request.attendanceType)">
-                                Delete
+                                <i class="fas fa-trash-alt"></i>
                             </button>
                         </td>
                         <td class="border p-2">
@@ -99,7 +106,6 @@ import { ref, computed, onMounted } from 'vue';
 import axios from 'axios';
 import { useAuthStore } from '@/stores/authStore';
 import LoopingRhombusesSpinner from '../modal/Loading.vue';
-import { format } from 'date-fns'
 
 const apiUrl = import.meta.env.VITE_API_URL;
 axios.defaults.withCredentials = true;
@@ -147,17 +153,11 @@ const getDayWithSuffix = (day) => {
     }
 }
 
-function formatMonthYear(input) {
-  // Split the input string by the hyphen
+function formatMonthYearMonthRequest(input) {
   const [month, year] = input.split('-');
-
-  // Array of month names (abbreviated)
-  const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-
-  // Convert the month to the corresponding abbreviated name
+  const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "Octocber", "November", "December"];
   const monthName = monthNames[parseInt(month) - 1];  // Subtract 1 because array is 0-indexed
 
-  // Return the formatted string
   return `${monthName}, ${year}`;
 }
 

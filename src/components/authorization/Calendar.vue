@@ -3,28 +3,39 @@
     <!-- Left Section: Chart and Calendar -->
     <div class="flex-1 flex flex-col p-2">
       <!-- Chart and PTO Card -->
-      <div class="grid grid-cols-2 gap-2 p-2">
-        <!-- Chart Section (con larghezza maggiore) -->
-        <div class="bg-white shadow-sm border border-slate-200 rounded-lg p-1 flex items-center">
-          <!-- Aggiunta del titolo sopra la chart -->
+      <div class="grid grid-cols-3 justify-items-stretch gap-2 mb-2">
+        <!-- Total Hours Worked Card -->
+        <div class="bg-white shadow-sm border border-slate-200 rounded-lg p-2 pr-3 flex flex-row justify-evenly items-center ">
+          <!-- Chart -->
           <div class="flex-1">
             <canvas ref="attendanceChart" class="w-full custom-chart-height" style="height: 80px;"></canvas>
           </div>
-          <!-- Column per "Hours/Total Hours" -->
-          <div class="ml-2 text-right">
-            <span class="text-xs font-medium text-slate-600">Worked Hours / OT</span>
-            <div class="text-xs text-slate-500 mt-1">
-              <span>{{  calculatedTotalHours }} / {{ extraHours }}</span>
-            </div>
-          </div>
-        </div>
-        <!-- PTO Card (ancora più piccola) -->
-        <div class="bg-white shadow-sm border border-slate-200 rounded-lg p-1 flex flex-row justify-evenly items-center">
+          <!-- Hours Worked Title -->
           <div>
-            <span class="text-3xl text-slate-600">PTO</span>
-            <p class="text-xs">Total Remaining</p>
+            <div class="text-3xl text-slate-600">Total Worked</div>
+            <div class="text-xs">Current Month</div>
           </div>
-          <p class="text-4xl text-slate-600">{{ remainingPto }}</p>
+          <hr class="w-px h-10 border-l border-slate-300 mx-4">
+          <!-- Hours Worked -->
+          <div class="text-3xl text-slate-600"> {{ calculatedTotalHours }} Hrs</div>
+        </div>
+        <!-- OT Card -->
+        <div class="bg-white shadow-sm border border-slate-200 rounded-lg p-2 flex flex-row justify-evenly items-center">
+          <div>
+            <div class="text-3xl text-slate-600">Overtime</div>
+            <div class="text-xs">Current Month</div>
+          </div>
+          <hr class="w-px h-10 border-l border-slate-300 mx-4">
+          <div class="text-3xl text-slate-600"> {{ extraHours }} Hrs</div>
+        </div>
+        <!-- PTO Card -->
+        <div class="bg-white shadow-sm border border-slate-200 rounded-lg p-2 flex flex-row justify-evenly items-center">
+          <div>
+            <div class="text-3xl text-slate-600">Paid Time Off</div>
+            <div class="text-xs">Total Remaining</div>
+          </div>
+          <hr class="w-px h-10 border-l border-slate-300 mx-4">
+          <div class="text-3xl text-slate-600">{{ remainingPto }} Days</div>
         </div>
       </div>
 
