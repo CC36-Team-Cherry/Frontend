@@ -11,7 +11,7 @@
     </div>
     <div class="max-h-[90%] overflow-scroll">
     <table class="table-auto w-full border-collapse border border-gray-300">
-      <thead class="bg-gray-400 sticky top-0">
+      <thead class="bg-gray-400 sticky top-0 shadow-[0_0px_0.5px_1px_rgba(229,231,235,1)]">
         <tr>
           <th class="border p-2 text-left">
             <div class="inline-flex items-center space-x-2">

@@ -18,8 +18,8 @@
         </div>
 
         <div class="max-h-[90%] overflow-scroll mt-5">
-            <table class="table-auto w-full border-collapse border border-gray-300">
-                <thead class="bg-gray-200 sticky top-0">
+            <table class="w-full border-collapse border border-gray-300">
+                <thead class="bg-gray-200 sticky top-0 shadow-[0_0px_0.5px_1px_rgba(229,231,235,1)]">
                     <tr>
                         <th v-if="activeTab === 'sent'" class="border p-2 text-left">Sent To</th>
                         <th v-if="activeTab === 'received'" class="border p-2 text-left">From</th>
@@ -30,7 +30,7 @@
                         <th class="border p-2 text-left">Last Updated</th>
                     </tr>
                 </thead>
-                <tbody>
+                <tbody class="m-0">
                     <tr v-if="filteredRequests.length === 0">
                         <td colspan="7" class="text-center text-xl text-gray-500 p-10">
                             No approvals to show.
