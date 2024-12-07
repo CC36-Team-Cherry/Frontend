@@ -3,13 +3,13 @@
     <div v-else>
         <div class="border-2 flex flex-row justify-evenly">
             <button 
-                class="w-full h-8" 
+                class="w-full h-8 hover:bg-blue-600 hover:text-white" 
                 :class="{'bg-blue-500 text-white': activeTab === 'sent',
                         'bg-gray-200 text-black': activeTab !== 'sent'
             }" @click="switchTab('sent')">
                 Approval Requests Sent
             </button>
-            <button class="w-full h-8" :class="{
+            <button class="w-full h-8 hover:bg-blue-600 hover:text-white" :class="{
                 'bg-blue-500 text-white': activeTab === 'received',
                 'bg-gray-200 text-black': activeTab !== 'received'
             }" @click="switchTab('received')">
@@ -17,9 +17,9 @@
             </button>
         </div>
 
-        <div class="flex flex-col flex-grow overflow-y-auto mt-5">
+        <div class="max-h-[90%] overflow-scroll mt-5">
             <table class="w-full border-collapse border border-gray-300">
-                <thead class="bg-gray-200">
+                <thead class="bg-gray-200 sticky top-0 shadow-[0_0px_0.5px_1px_rgba(229,231,235,1)]">
                     <tr>
                         <th v-if="activeTab === 'sent'" class="border p-2 text-left">Sent To</th>
                         <th v-if="activeTab === 'received'" class="border p-2 text-left">From</th>
@@ -30,14 +30,14 @@
                         <th class="border p-2 text-left">Last Updated</th>
                     </tr>
                 </thead>
-                <tbody>
+                <tbody class="m-0">
                     <tr v-if="filteredRequests.length === 0">
                         <td colspan="7" class="text-center text-xl text-gray-500 p-10">
                             No approvals to show.
                         </td>
                     </tr>
                     <tr v-for="(request, index) in filteredRequests" :key="index"
-                        class="even:bg-gray-100 odd:bg-white">
+                        class="hover:bg-gray-300 even:bg-gray-100 odd:bg-white">
                         <td v-if="activeTab === 'sent'" class="border p-2">{{ request.supervisorName }}</td>
                         <td v-if="activeTab === 'received'" class="border p-2">{{ request.employeeName }}</td>
                         <td class="border p-2" v-if="request.attendanceType === 'Month Attendance Request'">
