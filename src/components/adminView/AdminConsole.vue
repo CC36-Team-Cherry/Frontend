@@ -3,47 +3,75 @@
     <div v-else class="p-8 bg-gray-50 h-screen">
         <h1 class="text-2xl font-bold">{{ $t('adminConsole.title') }}</h1>
         <h2 class="text-xl font-bold"> {{ organizationName }}</h2>
-        <div class="text-xl text-center my-5">{{ $t('adminConsole.fields.teamList') }}</div>
-        <div>
-            <ul class="flex flex-col">
-                <li v-for="(team, index) in teams" :key="team.id" class="grid grid-cols-3">
-                    <input v-if="editingIndex === index" v-model="teams[index].team_name" @blur="stopEditing"
-                        @keyup.enter="stopEditing" />
-                    <span v-else class="border-2">
-                        {{ team.team_name }}</span>
-                    <button @click="startEditing(index)" v-if="editingIndex !== index" class="border-2">
-                        Edit
-                    </button>
-                    <button @click="deleteTeam(team.id)" class="border-2">
-                        Delete
-                    </button>
-                </li>
-            </ul>
-            <div class="flex justify-around">
-                <input v-model="newTeam" type="text" placeholder="Enter Team Name" class="border-2" />
-                <button @click="addTeam(newTeam)" class="border-2">
+
+        <!-- Team List -->
+        <div class="text-2xl font-bold text-center my-5">{{ $t('adminConsole.fields.teamList') }}</div>
+
+                    <!-- Add Team  -->
+            <div class="flex justify-center space-x-4 m-6">
+                <input v-model="newTeam" type="text" placeholder="Enter Team Name" class="border-2 rounded p-2 w-64" />
+                <button @click="addTeam(newTeam)" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-1 rounded">
                     Add
                 </button>
             </div>
+
+        <div class="overflow-x-auto flex justify-center">
+            <table class="w-8/12 table-auto border-collapse">
+                <thead class="bg-gray-200">
+                    <tr>
+                        <th class="border p-2 text-left w-2/3">Team Name</th>
+                        <th class="border p-2 text-left w-1/3">Actions</th>
+                    </tr>
+                </thead>
+                <tr v-for="(team, index) in teams" :key="team.id" class="hover:bg-gray-100 even:bg-gray-50">
+                    <td class="border p-2">
+                        <div v-if="editingIndex === index">
+                            <input v-model="teams[index].team_name" @blur="stopEditing" @keyup.enter="stopEditing" class="border rounded p-2 w-48"/>
+                        </div>   
+                        <span v-else class="p-2">
+                            {{ team.team_name }}
+                        </span>
+                    </td>
+                    <td class="border p-2 flex space-x-2 justify-center">
+                        <button @click="startEditing(index)" v-if="editingIndex !== index" class="bg-yellow-500 hover:bg-yellow-600 text-white px-4 py-2 rounded mr-2">
+                            Edit
+                        </button>
+                        <button @click="deleteTeam(team.id)" class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded">
+                            Delete
+                        </button>
+                    </td>
+                </tr>
+            </table>
         </div>
-        <div class="text-xl text-center my-5">{{ $t('adminConsole.fields.adminSettings') }}</div>
+
+        <!-- Minimum Work Hours Per Day -->
+        <!-- <div class="text-xl text-center my-5">{{ $t('adminConsole.fields.adminSettings') }}</div>
         <div class="grid grid-cols-2">
             <label class="font-medium text-center">{{ $t('adminConsole.fields.minimumWorkHours') }}</label>
             <input type="text" class="border rounded p-2" />
-        </div>
-        <div class="text-xl text-center my-5">{{ $t('adminConsole.fields.organizationSettings') }}</div>
-        <div class="grid grid-cols-2">
-            <label class="font-medium text-center">{{ $t('adminConsole.fields.organizationName') }}</label>
-            <input type="text" v-model="formData.organizationName" class="border rounded p-2" />
-        </div>
-        <div class="flex flex-col items-center my-5">
-            <button @click="saveSettings" class="my-1 w-1/2 py-1 px-3 rounded bg-blue-500 hover:bg-blue-600 transition text-white">
+        </div> -->
+
+        <!-- Organization Setting -->
+        <div class="text-2xl text-center font-bold my-5">{{ $t('adminConsole.fields.organizationSettings') }}</div>
+        <div class="flex flex-row justify-center items-center gap-8">
+            <!-- <label class="font-medium text-left">{{ $t('adminConsole.fields.organizationName') }}</label> -->
+            <input type="text" v-model="formData.organizationName" class="border rounded p-2 w-1/6" placeholder="Enter New Organization Name" />
+                    <!-- Save and Delete buttons -->
+            <button @click="saveSettings" class="my-1 w-1/6 py-2 px-3 rounded bg-blue-500 hover:bg-blue-600 transition text-white">
                 {{ $t('adminConsole.buttons.save') }}
             </button>
-            <button @click="openConfirmModal" class="my-6 w-1/2 py-1 rounded bg-red-500 hover:bg-red-600 transition text-white">
+            <button @click="openConfirmModal" class="my-4 w-1/6 py-2 rounded bg-red-500 hover:bg-red-600 transition text-white">
                 {{ $t('adminConsole.buttons.deleteOrganization') }}
             </button>
         </div>
+
+        <!-- <div class="flex justify-center space-x-4 m-6">
+                <input v-model="newTeam" type="text" placeholder="Enter Team Name" class="border-2 rounded p-2 w-64" />
+                <button @click="addTeam(newTeam)" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-1 rounded">
+                    Add
+                </button>
+            </div> -->
+
         <ConfirmModal :isVisible="isConfirmModalVisible" :confirmFunc="deleteOrg" confirmString="Yes, delete"
             @close="isConfirmModalVisible = false">
             <p>Are you sure you want to delete your organization?</p>
