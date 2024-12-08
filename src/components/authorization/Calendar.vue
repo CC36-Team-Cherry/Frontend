@@ -1065,8 +1065,9 @@ deleteGeneralAttendance() {
       const authStore = useAuthStore();
 
       const selectedDate = new Date(selectedMonth.value);
-      const currentMonth = (selectedDate.getMonth() + 1) === 12 ? 1 : (selectedDate.getMonth() + 1) + 1
-      const currentYear = currentMonth === 1 ? selectedDate.getFullYear() + 1 : selectedDate.getFullYear();
+      selectedDate.setDate(selectedDate.getDate() + 7);
+      const currentMonth = selectedDate.getMonth() === 0 ? selectedDate.getMonth() + 1 : selectedDate.getMonth() + 1;
+      const currentYear = selectedDate.getFullYear();
 
         // Log for debugging
         console.log("Selected Month: ", selectedDate.getMonth())
