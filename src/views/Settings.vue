@@ -69,8 +69,12 @@
       </div>
       <div v-if="authStore.user.Privileges.is_admin" class="flex flex-col">
         <label class="font-medium">{{ 'Privileges' }}</label>
-        <input type="checkbox" v-model="formData.is_supervisor" />{{ $t('employeeList.modal.userType.supervisor') }}
-        <input type="checkbox" v-model="formData.is_admin" />{{ $t('employeeList.modal.userType.admin') }}
+        <div class="flex items-center space-x-2 text left">
+          <input type="checkbox" v-model="formData.is_supervisor" class="scale-150 m-5" />{{ $t('employeeList.modal.userType.supervisor') }}
+        </div>
+        <div class="flex items-center space-x-2 text left">
+          <input type="checkbox" v-model="formData.is_admin" class="scale-150 m-5" />{{ $t('employeeList.modal.userType.admin') }}
+        </div>
       </div>
       <div v-else>
         <label class="font-medium">{{ 'Privileges' }}</label>
