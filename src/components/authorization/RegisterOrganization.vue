@@ -158,8 +158,6 @@ const handleSubmit = async () => {
 
     //check if the entered email address is already associated with an account in the database
     const doesAccountExist = await verifyAccount();
-    console.log(doesAccountExist);
-    isLoading.value = false;
     if(doesAccountExist) {
       duplicateEmail.value = true;
       isLoading.value = false;
@@ -169,7 +167,8 @@ const handleSubmit = async () => {
     // create Firebase user with form data and fetch post to add to backend
     await createUserFirebase();
     router.push({ path: `/employee` });
-    alert(t('register.success'));
+    isLoading.value = false;
+    toast.success(t('register.success'))
 
   } catch (err) {
     console.error(err);
