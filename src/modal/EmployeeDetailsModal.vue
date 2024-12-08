@@ -110,30 +110,35 @@
                   @input="validateRemainingPto" 
                 />
               </div>
+              <!-- Special Holidays List -->
               <div>
                 <label class="font-semibold block">{{ $t('employeeDetails.fields.specialHolidays') }}</label>
-                <div>
-                  <ul class="flex flex-col">
-                    <li v-for="(specialPto, index) in specialPtos" :key="specialPto.id" class="flex justify-around">
+                <div class="flex justify-center items-center space-x-4 mb-6">
+                    <input v-model="newSpecialPto" type="text" placeholder="Enter Special PTO" class="border-2 border-gray-300 rounded-lg p-2 w-72" />
+                    <button @click="addSpecialPto" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-1 rounded" type="button">
+                      Add
+                    </button>
+                </div>
+                <div class="overflow-x-auto flex justify-center">
+                  <ul class="space-y-4 w-full max-w-3xl">
+                    <li v-for="(specialPto, index) in specialPtos" :key="specialPto.id" class="flex items-center justify-between bg-gray-100 p-4 rounded-lg shadow-sm hover:bg-gray-200">
                       <input v-if="editingSpecialPtoIndex === index" v-model="specialPtos[index].type"
                         @keyup.enter="stopEditing" />
                       <span v-else>
                         {{ specialPto.type }}</span>
                       <button @click="startEditingSpecialPto(index)" v-if="editingSpecialPtoIndex !== index"
-                        class="border-2">
+                        class="bg-yellow-500 hover:bg-yellow-600 text-white px-4 py-2 rounded mr-2">
                         Edit
                       </button>
-                      <button @click="deleteSpecialPto(specialPto.id)" class="border-2">
+                      <button @click="stopEditing" v-if="editingSpecialPtoIndex === index"
+                        class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded mr-2">
+                        Save
+                      </button>
+                      <button @click="deleteSpecialPto(specialPto.id)" class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded">
                         Delete
                       </button>
                     </li>
                   </ul>
-                  <div class="flex justify-around">
-                    <input v-model="newSpecialPto" type="text" placeholder="Enter Special PTO" class="border-2" />
-                    <button @click="addSpecialPto" class="border-2" type="button">
-                      Add
-                    </button>
-                  </div>
                 </div>
               </div>
             </div>

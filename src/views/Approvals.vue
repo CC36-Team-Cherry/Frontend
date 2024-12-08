@@ -57,8 +57,7 @@
                         </td>
                         <td class="border p-2">
                             <div v-if="request.attendanceType === 'PTO' || request.attendanceType === 'Special PTO'">{{  `${new Date(request.date).toLocaleString('en-US', { month: 'short' })} ${getDayWithSuffix(new Date(request.date).getDate())}, ${new Date(request.date).getFullYear()}` }}</div>
-                            <div v-if="request.attendanceType === 'Half PTO'">{{  `${new Date(request.date).toLocaleString('en-US', { month: 'short' })} ${getDayWithSuffix(new Date(request.date).getDate())}, ${new Date(request.date).getFullYear()}` }}</div>
-                            <div v-if="request.attendanceType === 'Half PTO'">{{  `${new Date(request.hour_start).toLocaleTimeString('en-US', {hour12: false, hour: 'numeric', minute: '2-digit'})}-${new Date(request.hour_end).toLocaleTimeString('en-US', {hour12: false, hour: 'numeric', minute: '2-digit'})}` }}</div>
+                            <div v-if="request.attendanceType === 'Half PTO'">{{  `${new Date(request.date).toLocaleString('en-US', { month: 'short' })} ${getDayWithSuffix(new Date(request.date).getDate())}, ${new Date(request.date).getFullYear()} | ${new Date(request.hour_start).toLocaleTimeString('en-US', {hour12: false, hour: 'numeric', minute: '2-digit'})}-${new Date(request.hour_end).toLocaleTimeString('en-US', {hour12: false, hour: 'numeric', minute: '2-digit'})}` }}</div>
                             <div v-if="request.attendanceType === 'Month Attendance'"> {{ `${formatMonthYearMonthRequest(request.date)}` }} </div>
                         </td>
                         <td v-if="!request.isEditing" class="border p-2">{{ request.memo }}</td>
