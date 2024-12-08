@@ -51,14 +51,15 @@
   },
   "register": {
     "title": "Register New Organization",
-    "firstName": "First Name",
-    "lastName": "Last Name",
-    "organizationName": "Organization Name",
+    "firstName": "Enter your first name",
+    "lastName": "Enter your last name",
+    "organizationName": "Enter the name of your organization",
     "organizationDetails": "Organization Details",
     "submit": "Submit",
     "success": "Registration successful",
     "errorFillAllFields": "Please fill all required fields",
-    "goBack": "Go back"
+    "goBack": "Go back",
+    "role": "Enter your user role"
   },
   "adminConsole": {
     "title": "Admin Console",
