@@ -251,8 +251,7 @@ export default {
       calculatedTotalHours: totalHours,
       selectionRange: '',
       extraHours: 0,
-      attendanceType: '',
-
+      attendanceType: 'general',
       startTime: '',
       endTime: '',
       calendar: null,
