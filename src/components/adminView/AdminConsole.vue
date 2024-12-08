@@ -87,6 +87,7 @@ import axios from 'axios';
 import LoopingRhombusesSpinner from '../../modal/Loading.vue';
 import ConfirmModal from '@/modal/ConfirmModal.vue';
 import { useLogout } from "@/utils/useLogout";
+import { useToast } from "vue-toastification";
 
 const { handleLogout } = useLogout();
 
@@ -98,6 +99,7 @@ const activeCompanyId = authStore.user.company_id;
 const isLoading = ref(true);
 const isConfirmModalVisible = ref(false);
 const router = useRouter();
+const toast = useToast();
 
 const formData = ref({
     organizationName: '',
