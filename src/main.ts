@@ -16,7 +16,7 @@ const pinia = createPinia();
 pinia.use(piniaPluginPersistedState);
 
 const options: PluginOptions = {
-    // You can set your default options here
+    // Default options go here if we want to change anything
 };
 
 app.use(pinia);
