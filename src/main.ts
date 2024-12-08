@@ -3,6 +3,8 @@ import './assets/style.css';
 import { createApp } from 'vue';
 import { createPinia } from 'pinia';
 import piniaPluginPersistedState from 'pinia-plugin-persistedstate';
+import Toast, { type PluginOptions } from "vue-toastification";
+import "vue-toastification/dist/index.css";
 
 import App from './App.vue';
 import router from './router';
@@ -13,9 +15,14 @@ const pinia = createPinia();
 
 pinia.use(piniaPluginPersistedState);
 
+const options: PluginOptions = {
+    // You can set your default options here
+};
+
 app.use(pinia);
 app.use(router);
 app.use(i18n); 
+app.use(Toast, options);
 
 app.mount('#app');
 

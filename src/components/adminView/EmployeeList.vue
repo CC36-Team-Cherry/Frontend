@@ -251,12 +251,15 @@ import { onClickOutside } from '@vueuse/core';
 import SvgIcon from '@jamescoyle/vue-icon';
 import { mdiSort } from '@mdi/js';
 import LoopingRhombusesSpinner from '../../modal/Loading.vue';
+import { useToast } from "vue-toastification";
 
 const apiUrl = import.meta.env.VITE_API_URL;
 
 axios.defaults.withCredentials = true;
 
 const authStore = useAuthStore();
+
+const toast = useToast();
 
 const searchTerm = ref('');
 const isAddUserModalVisible = ref(false);
@@ -331,7 +334,7 @@ const openConfirmModal = () => {
 //adding a new user
 const handleSubmit = async () => {
   if (!formData.email || !formData.first_name || !formData.last_name || !formData.birthdate || !formData.join_date || !formData.role) {
-    alert('Please fill out all required fields.');
+    toast.warning('Please fill out all required fields');
     return;
   }
   modalLoading.value = true;
