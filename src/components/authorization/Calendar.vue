@@ -3,28 +3,39 @@
     <!-- Left Section: Chart and Calendar -->
     <div class="flex-1 flex flex-col p-2">
       <!-- Chart and PTO Card -->
-      <div class="grid grid-cols-2 gap-2 p-2">
-        <!-- Chart Section (con larghezza maggiore) -->
-        <div class="bg-white shadow-sm border border-slate-200 rounded-lg p-1 flex items-center">
-          <!-- Aggiunta del titolo sopra la chart -->
+      <div class="grid grid-cols-3 justify-items-stretch gap-2 mb-2">
+        <!-- Total Hours Worked Card -->
+        <div class="bg-white shadow-sm border border-slate-200 rounded-lg p-2 pr-3 flex flex-row justify-evenly items-center ">
+          <!-- Chart -->
           <div class="flex-1">
             <canvas ref="attendanceChart" class="w-full custom-chart-height" style="height: 80px;"></canvas>
           </div>
-          <!-- Column per "Hours/Total Hours" -->
-          <div class="ml-2 text-right">
-            <span class="text-xs font-medium text-slate-600">Worked Hours / OT</span>
-            <div class="text-xs text-slate-500 mt-1">
-              <span>{{  calculatedTotalHours }} / {{ extraHours }}</span>
-            </div>
-          </div>
-        </div>
-        <!-- PTO Card (ancora più piccola) -->
-        <div class="bg-white shadow-sm border border-slate-200 rounded-lg p-1 flex flex-row justify-evenly items-center">
+          <!-- Hours Worked Title -->
           <div>
-            <span class="text-3xl text-slate-600">PTO</span>
-            <p class="text-xs">Total Remaining</p>
+            <div class="text-3xl text-slate-600">Total Worked</div>
+            <div class="text-xs">Current Month</div>
           </div>
-          <p class="text-4xl text-slate-600">{{ remainingPto }}</p>
+          <hr class="w-px h-10 border-l border-slate-300 mx-4">
+          <!-- Hours Worked -->
+          <div class="text-3xl text-slate-600"> {{ calculatedTotalHours }} Hrs</div>
+        </div>
+        <!-- OT Card -->
+        <div class="bg-white shadow-sm border border-slate-200 rounded-lg p-2 flex flex-row justify-evenly items-center">
+          <div>
+            <div class="text-3xl text-slate-600">Overtime</div>
+            <div class="text-xs">Current Month</div>
+          </div>
+          <hr class="w-px h-10 border-l border-slate-300 mx-4">
+          <div class="text-3xl text-slate-600"> {{ extraHours }} Hrs</div>
+        </div>
+        <!-- PTO Card -->
+        <div class="bg-white shadow-sm border border-slate-200 rounded-lg p-2 flex flex-row justify-evenly items-center">
+          <div>
+            <div class="text-3xl text-slate-600">Paid Time Off</div>
+            <div class="text-xs">Total Remaining</div>
+          </div>
+          <hr class="w-px h-10 border-l border-slate-300 mx-4">
+          <div class="text-3xl text-slate-600">{{ remainingPto }} Days</div>
         </div>
       </div>
 
@@ -281,12 +292,7 @@ const totalHours = ref(0);
 const selectedMonth = ref(null);
 const currentUserAtten = ref(null);
 
-export default {
-  
-  name: 'FullCalendarComponent',
-  components: {
-    SubmitMonthModal,
-  },  
+export default {  
   data() {
     return {
       calculatedTotalHours: totalHours,
@@ -516,7 +522,7 @@ if (arg.event.extendedProps.status) {
   handleMonthChange(startDate) {
   
   const year = startDate.getFullYear();
-  const month = startDate.getMonth() + 2; //for now i put +2 because it looks 2 months before every time
+  const month = startDate.getMonth() + 1; //for now i put +2 because it looks 2 months before every time
   console.log("year and month", year, month);
 
   this.maxHours = this.calculateMaxHours(year, month);
@@ -592,22 +598,23 @@ setEndTimeFourHoursAhead() {
       return;
     }
 
+  console.log("Initializing chart with maxHours:", this.maxHours);
+
   this.attendanceChart = new Chart(ctx, {
-  type: 'doughnut',
-  data: {
-    
-    datasets: [
-      {
-        data: [totalHours.value, this.maxHours, this.extraHours], 
-        backgroundColor: ['#4caf50', '#e0e0e0', '#1b5e20'], 
-      },
-    ],
-  },
-  options: {
+    type: "doughnut",
+    data: {
+      datasets: [
+        {
+          data: [0, this.maxHours], // Inizialmente: ore lavorate = 0, ore rimanenti = maxHours
+          backgroundColor: ["#4caf50", "#e0e0e0"], // Verde chiaro per ore lavorate, grigio per ore rimanenti
+        },
+      ],
+    },
+    options: {
       responsive: true,
       plugins: {
         legend: {
-          position: 'top',
+          position: "top",
         },
       },
     },
@@ -616,7 +623,7 @@ setEndTimeFourHoursAhead() {
 
 updateChart() {
   if (!this.attendanceChart) {
-    console.error('Attendance chart is not initialized');
+    console.error("Attendance chart is not initialized");
     return;
   }
 
@@ -624,34 +631,37 @@ updateChart() {
   const extraHours = workedHours > this.maxHours ? workedHours - this.maxHours : 0; 
   const remainingHours = Math.max(this.maxHours - workedHours, 0); 
 
-  this.extraHours = extraHours;
+  console.log("Updating chart with data:", {
+    workedHours,
+    remainingHours,
+    extraHours,
+    maxHours: this.maxHours,
+  });
 
   try {
-    
+    // Aggiorna i dati del grafico
     this.attendanceChart.data.datasets[0].data = [
       Math.max(workedHours - extraHours, 0), 
       remainingHours,           
       extraHours,               
     ];
 
+    // Aggiorna i colori del grafico
     this.attendanceChart.data.datasets[0].backgroundColor = [
-      '#4caf50', 
-      '#e0e0e0', 
-      '#1b5e20', 
+      "#4caf50", // Verde chiaro per ore lavorate
+      "#e0e0e0", // Grigio per ore rimanenti
     ];
 
+    this.extraHours = extraHours; // Mantieni la variabile per l'uso nella card
     this.attendanceChart.update();
+    console.log("Chart updated successfully.");
+  } catch (err) {
+    console.error("Error updating chart:", err);
+  }
+},
 
-    console.log('Chart updated successfully with:', {
-      workedHours,
-      remainingHours,
-      extraHours,
-    });
-    } catch (err) {
-      console.error('Error updating chart:', err);
-    }
-  },
-  async fetchAttendanceData(accountId) {
+
+async fetchAttendanceData(accountId) {
   try {
     const response = await axios.get(`${apiUrl}/accounts/${accountId}/attendance`);
     const response2 = await axios.get(`${apiUrl}/accounts/${accountId}/approvalsPTO`);

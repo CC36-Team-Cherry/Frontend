@@ -9,8 +9,9 @@
         {{ $t('employeeList.addUser') }}
       </button>
     </div>
-    <table class="w-full border-collapse border border-gray-300">
-      <thead class="bg-gray-200">
+    <div class="max-h-[90%] overflow-scroll">
+    <table class="table-auto w-full border-collapse border border-gray-300">
+      <thead class="bg-gray-400 sticky top-0 shadow-[0_0px_0.5px_1px_rgba(229,231,235,1)]">
         <tr>
           <th class="border p-2 text-left">
             <div class="inline-flex items-center space-x-2">
@@ -108,7 +109,7 @@
       <tbody>
         <template v-if="displayedEmployees.length > 0">
           <tr v-for="employee in displayedEmployees" :key="employee.id" @click="openEmployeeDetailsModal(employee)"
-            class="cursor-pointer hover:bg-gray-200 even:bg-gray-100 odd:bg-white">
+            class="cursor-pointer hover:bg-gray-300 even:bg-gray-200 odd:bg-white">
             <td class="border p-2">{{ employee.first_name + ' ' + employee.last_name }}</td>
             <td class="border p-2">{{ employee.team ? employee.team.team_name : 'NA' }}</td>
             <td class="border p-2">{{ employee.role }}</td>
@@ -139,6 +140,7 @@
         </template>
       </tbody>
     </table>
+  </div>
     <!-- Modal for Adding User -->
     <Modal :isVisible="isAddUserModalVisible" @close="closeAddUserModal">
       <LoopingRhombusesSpinner v-if="modalLoading"/>
