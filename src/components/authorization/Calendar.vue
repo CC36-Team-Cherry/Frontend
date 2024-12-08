@@ -242,12 +242,7 @@ const totalHours = ref(0);
 const selectedMonth = ref(null);
 const currentUserAtten = ref(null);
 
-export default {
-  
-  name: 'FullCalendarComponent',
-  components: {
-    SubmitMonthModal,
-  },  
+export default {  
   data() {
     return {
       calculatedTotalHours: totalHours,
