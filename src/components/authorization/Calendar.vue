@@ -233,7 +233,7 @@ import { useI18n } from 'vue-i18n';
 import { useAuthStore } from '@/stores/authStore';
 import Chart from 'chart.js/auto';
 import { ref } from 'vue';
-import SubmitMonthModal from '../../modal/SubmitMonthModal.vue';
+import SubmitMonthModal from '@/modal/SubmitMonthModal.vue';
 
 const apiUrl = import.meta.env.VITE_API_URL;
 axios.defaults.withCredentials = true;
@@ -243,6 +243,9 @@ const selectedMonth = ref(null);
 const currentUserAtten = ref(null);
 
 export default {  
+  components: {
+    SubmitMonthModal,
+  },  
   data() {
     return {
       calculatedTotalHours: totalHours,
