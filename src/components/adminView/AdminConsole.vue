@@ -33,11 +33,12 @@
                         </span>
                     </td>
                     <td class="border p-2 flex space-x-2 justify-center">
-                        <button @click="startEditing(index)" v-if="editingIndex !== index" class="bg-yellow-500 hover:bg-yellow-600 text-white px-4 py-2 rounded mr-2">
-                            Edit
+                        <button @click="startEditing(index)" v-if="editingIndex !== index" class="bg-yellow-500 hover:bg-yellow-600 text-white px-5 py-2 rounded mr-2">
+                            {{ $t('adminConsole.buttons.edit') }}
                         </button>
+                        <button @click="stopEditing" v-else class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded mr-2">{{ $t('adminConsole.buttons.save') }}</button>
                         <button @click="deleteTeam(team.id)" class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded">
-                            Delete
+                            {{ $t('adminConsole.buttons.delete') }}
                         </button>
                     </td>
                 </tr>
@@ -55,10 +56,10 @@
         <div class="text-2xl text-center font-bold my-5">{{ $t('adminConsole.fields.organizationSettings') }}</div>
         <div class="flex flex-row justify-center items-center gap-8">
             <!-- <label class="font-medium text-left">{{ $t('adminConsole.fields.organizationName') }}</label> -->
-            <input type="text" v-model="formData.organizationName" class="border rounded p-2 w-1/6" placeholder="Enter New Organization Name" />
+            <input type="text" v-model="formData.organizationName" class="border rounded p-2 w-1/6" :placeholder=authStore.user.company.name />
                     <!-- Save and Delete buttons -->
             <button @click="saveSettings" class="my-1 w-1/6 py-2 px-3 rounded bg-blue-500 hover:bg-blue-600 transition text-white">
-                {{ $t('adminConsole.buttons.save') }}
+                {{ $t('adminConsole.buttons.saveName') }}
             </button>
             <button @click="openConfirmModal" class="my-4 w-1/6 py-2 rounded bg-red-500 hover:bg-red-600 transition text-white">
                 {{ $t('adminConsole.buttons.deleteOrganization') }}
@@ -129,7 +130,6 @@ const getTeams = async () => {
     try {
         const response = await axios.get(`${apiUrl}/organizations/${activeCompanyId}/teams`);
         // Store the fetched teams in state
-        console.log(response.data);
         teams.value = response.data;
     } catch (err) {
         console.error('Error fetching teams:', err);
@@ -154,39 +154,35 @@ const stopEditing = async () => {
 
         if (response.status === 200) {
             // Update the team name in the teams array (local state)
-            console.log(updatedTeamName);
             teams.value[editingIndex.value].team_name = updatedTeamName;
 
             // Stop editing after successful update
             editingIndex.value = null;
-            alert('Team name updated successfully!');
+            toast.success('Team name updated successfully');
         } else {
-            alert('Failed to update the team name.');
+            toast.warning('Failed to update team name');
         }
     } catch (err) {
         console.error('Error updating team name:', err);
-        alert('An error occurred while updating the team name.');
+        //toast.error('An error occurred while updating the team name');
     }
 };
 
 // Add new team
 const addTeam = async () => {
     try {
-        console.log(newTeam.value);
         const newTeamName = newTeam.value;
         const response = await axios.post(`${apiUrl}/organizations/${activeCompanyId}/teams`, {
             newTeamName
         });
-
         if (response.data) {
             teams.value.push(response.data);
             newTeam.value = '';
         }
-
-        console.log('New team saved:', toRaw(response));
-        alert('New team saved successfully!');
+        toast.success('New team saved successfully');
     } catch (err) {
-        console.error(err);
+        //console.error(err);
+        toast.error('Error adding team');
     }
 };
 
@@ -203,13 +199,14 @@ const deleteTeam = async (teamId) => {
         if (response.status !== 200) {
             // If the deletion fails, revert the change
             teams.value = originalTeams;
-            console.error('Failed to delete the team.');
+            toast.warning('Failed to delete the team');
         } else {
-            console.error('Team deleted successfully!');
+            toast.info('Team deleted successfully');
         }
 
     } catch (err) {
-        console.error(err);
+        //console.error(err);
+        toast.error('Error deleting team');
     }
 }
 
@@ -220,6 +217,7 @@ const deleteOrg = async () => {
             await axios.delete(`${apiUrl}/organizations/${authStore.user.company_id}`);
             isConfirmModalVisible.value = false;
             handleLogout();
+            toast.info("Organization deleted. Goodbye!");
         } else {
             console.error('Company id not defined in authStore');
         }
@@ -248,8 +246,7 @@ const saveSettings = async () => {
 
         if (response.status === 200) {
             authStore.user.company.name = organizationName.value;
-            console.log('Settings saved:', toRaw(formData.value));
-            alert('Settings saved successfully!');
+            toast.success("Organization name updated successfully")
         }
 
     } catch (err) {

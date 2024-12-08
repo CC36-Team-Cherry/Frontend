@@ -70,7 +70,10 @@
       "organizationName": "Organization Name"
     },
     "buttons": {
+      "edit": "Edit",
+      "delete": "Delete",
       "save": "Save",
+      "saveName": "Save New Name",
       "deleteOrganization": "Delete Organization"
     }
   },
