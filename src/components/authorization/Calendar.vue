@@ -467,7 +467,7 @@ if (arg.event.extendedProps.status) {
   handleMonthChange(startDate) {
   
   const year = startDate.getFullYear();
-  const month = startDate.getMonth() + 2; //for now i put +2 because it looks 2 months before every time
+  const month = startDate.getMonth() + 1; //for now i put +2 because it looks 2 months before every time
   console.log("year and month", year, month);
 
   this.maxHours = this.calculateMaxHours(year, month);
