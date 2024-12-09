@@ -65,6 +65,8 @@
   },
   "adminConsole": {
     "title": "Admin Console",
+    "teamName": "Team Name",
+    "actions": "Actions",
     "fields": {
       "teamList": "Team List",
       "adminSettings": "Admin Settings",
@@ -73,6 +75,8 @@
       "organizationName": "Organization Name"
     },
     "buttons": {
+      "add": "Add",
+      "addPlaceholder": "Enter Team Name",
       "edit": "Edit",
       "delete": "Delete",
       "save": "Save",

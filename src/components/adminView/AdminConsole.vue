@@ -9,9 +9,9 @@
 
                     <!-- Add Team  -->
             <div class="flex justify-center space-x-4 m-6">
-                <input v-model="newTeam" type="text" placeholder="Enter Team Name" class="border-2 rounded p-2 w-64" />
+                <input v-model="newTeam" type="text" :placeholder="$t('adminConsole.buttons.addPlaceholder')" class="border-2 rounded p-2 w-64" />
                 <button @click="addTeam(newTeam)" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-1 rounded">
-                    Add
+                    {{$t('adminConsole.buttons.add')}}
                 </button>
             </div>
 
@@ -19,8 +19,8 @@
             <table class="w-8/12 table-auto border-collapse">
                 <thead class="bg-gray-200">
                     <tr>
-                        <th class="border p-2 text-left w-2/3">Team Name</th>
-                        <th class="border p-2 text-left w-1/3">Actions</th>
+                        <th class="border p-2 text-left w-2/3">{{$t('adminConsole.teamName')}}</th>
+                        <th class="border p-2 text-left w-1/3">{{$t('adminConsole.actions')}}</th>
                     </tr>
                 </thead>
                 <tr v-for="(team, index) in teams" :key="team.id" class="hover:bg-gray-100 even:bg-gray-50">

@@ -65,6 +65,8 @@
   },
   "adminConsole": {
     "title": "管理コンソール",
+    "teamName": "チーム名",
+    "actions": "アクション",
     "fields": {
       "teamList": "チームリスト",
       "adminSettings": "管理者設定",
@@ -73,6 +75,8 @@
       "organizationName": "組織名"
     },
     "buttons": {
+      "add": "追加",
+      "addPlaceholder": "チーム名を入力してください",
       "edit": "編集",
       "delete": "削除",
       "save": "保存",
