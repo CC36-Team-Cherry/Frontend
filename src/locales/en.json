@@ -243,26 +243,33 @@
       "土曜日"
     ]
   },
-  "Approval": {
-    "TabSent": "Approval Requests Sent",
-    "TabReceived": "Approval Requests Received",
-    "SentTo": "Sent To",
-    "From": "From",
-    "Type": "Type",
-    "Message": "Message",
-    "Status": "Status",
-    "Action": "Action",
-    "Date": "Date",
-    "NoApprovals": "No approvals to show.",
-    "MonthlyAttendance": "Monthly Attendance for",
-    "Approve": "Approve",
-    "Deny": "Deny",
-    "SeeAttendance": "See Attendance",
-    "Remind": "Remind",
-    "Delete": "Delete"
+  "approval": {
+    "tabSent": "Approval Requests Sent",
+    "tabReceived": "Approval Requests Received",
+    "sentTo": "Sent To",
+    "from": "From",
+    "type": "Type",
+    "message": "Message",
+    "status": "Status",
+    "action": "Action",
+    "date": "Date",
+    "requestedDate": "Requested Date",
+    "memo": "Memo",
+    "lastUpdated": "Last Updated",
+    "noApprovals": "No approvals to show.",
+    "monthlyAttendance": "Monthly Attendance for",
+    "approve": "Approve",
+    "deny": "Deny",
+    "seeAttendance": "See Attendance",
+    "remind": "Remind",
+    "delete": "Delete",
+    "messages": {
+      "approved": "Request has been approved",
+      "denied": "Request has been denied"
+    }
   },
-  "SupervisorCalendar": {
-    "Title": "Supervisor Calendar",
-    "SelectPlaceholder": "Select a team member"
+  "supervisorCalendar": {
+    "title": "Supervisor Calendar",
+    "selectPlaceholder": "Select a team member"
   }
 }

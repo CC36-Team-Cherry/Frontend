@@ -8,13 +8,13 @@
                 :class="{'bg-blue-500 text-white': activeTab === 'sent',
                         'bg-gray-200 text-black': activeTab !== 'sent'
             }" @click="switchTab('sent')">
-                Approval Requests Sent
+                {{$t('approval.tabSent')}}
             </button>
             <button class="w-full h-8 hover:bg-blue-600 hover:text-white" :class="{
                 'bg-blue-500 text-white': activeTab === 'received',
                 'bg-gray-200 text-black': activeTab !== 'received'
             }" @click="switchTab('received')">
-                Approval Requests Received
+                {{$t('approval.tabReceived')}}
             </button>
         </div>
 
@@ -24,20 +24,20 @@
             <table class="w-full border-collapse border border-gray-300 table-fixed">
                 <thead class="bg-gray-200 sticky top-0 shadow-[0_0px_0.5px_1px_rgba(229,231,235,1)]">
                     <tr>
-                        <th v-if="activeTab === 'sent'" class="border p-2 text-left">Sent To</th>
-                        <th v-if="activeTab === 'received'" class="border p-2 text-left">From</th>
-                        <th class="border p-2 text-left">Type</th>
-                        <th class="border p-2 text-left">Requested Date</th>
-                        <th class="border p-2 text-left">Memo</th>
-                        <th class="border p-2 text-left">Status</th>
-                        <th class="border p-2 text-left">Action</th>
-                        <th class="border p-2 text-left">Last Updated</th>
+                        <th v-if="activeTab === 'sent'" class="border p-2 text-left">{{$t('approval.sentTo')}}</th>
+                        <th v-if="activeTab === 'received'" class="border p-2 text-left">{{$t('approval.from')}}</th>
+                        <th class="border p-2 text-left">{{$t('approval.type')}}</th>
+                        <th class="border p-2 text-left">{{$t('approval.requestedDate')}}</th>
+                        <th class="border p-2 text-left">{{$t('approval.memo')}}</th>
+                        <th class="border p-2 text-left">{{$t('approval.status')}}</th>
+                        <th class="border p-2 text-left">{{$t('approval.action')}}</th>
+                        <th class="border p-2 text-left">{{$t('approval.lastUpdated')}}</th>
                     </tr>
                 </thead>
                 <tbody class="m-0">
                     <tr v-if="filteredRequests.length === 0">
                         <td colspan="7" class="text-center text-xl text-gray-500 p-10">
-                            No approvals to show.
+                            {{$t('approval.noApprovals')}}
                         </td>
                     </tr>
                     <tr v-for="(request, index) in filteredRequests" :key="index"
@@ -156,7 +156,7 @@ const getDayWithSuffix = (day) => {
 
 function formatMonthYearMonthRequest(input) {
   const [month, year] = input.split('-');
-  const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "Octocber", "November", "December"];
+  const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
   const monthName = monthNames[parseInt(month) - 1];  // Subtract 1 because array is 0-indexed
 
   return `${monthName}, ${year}`;
