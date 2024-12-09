@@ -17,7 +17,7 @@
             <div class="text-xs">{{$t('calendar.headers.currentMonth')}}</div>
           </div>
           <hr class="w-px h-10 border-l border-slate-300 mx-4">
-          <div class="text-3xl text-slate-600">{{ totalWorkedHours.toFixed(2) ?? 0 }} {{$t('calendar.headers.hours')}}</div>
+          <div class="text-3xl text-slate-600">{{ totalWorkedHours % 1 === 0 ? totalWorkedHours : totalWorkedHours.toFixed(2) ?? 0 }} {{$t('calendar.headers.hours')}}</div>
         </div>
 
         <div class="bg-white shadow-sm border border-slate-200 rounded-lg p-2 flex flex-row justify-evenly items-center">

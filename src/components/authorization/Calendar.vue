@@ -17,7 +17,7 @@
           </div>
           <hr class="w-px h-10 border-l border-slate-300 mx-4">
           <!-- Hours Worked -->
-          <div class="text-3xl text-slate-600"> {{ calculatedTotalHours.toFixed(2) }} {{ $t('calendar.headers.hours') }}</div>
+          <div class="text-3xl text-slate-600"> {{ calculatedTotalHours % 1 === 0 ? calculatedTotalHours : calculatedTotalHours.toFixed(2) ?? 0 }} {{ $t('calendar.headers.hours') }}</div>
         </div>
         <!-- OT Card -->
         <div class="bg-white shadow-sm border border-slate-200 rounded-lg p-2 flex flex-row justify-evenly items-center">
