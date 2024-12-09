@@ -73,6 +73,7 @@ const authStore = useAuthStore();
 const isLoading = ref(false);
 const accountExists = ref(true);
 const toast = useToast();
+const { t } = useI18n();
 
 const handleSubmit = async () => {
   isLoading.value = true;
@@ -85,7 +86,7 @@ const handleSubmit = async () => {
   await resetEmail();
   router.push({ path: `/login` });
   isLoading.value = false;
-  toast.success("Success! Please check your email");
+  toast.success(t('login.success'));
 };
 
 const resetEmail = async () => {

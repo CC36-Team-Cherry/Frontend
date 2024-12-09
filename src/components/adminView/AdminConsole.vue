@@ -158,9 +158,9 @@ const stopEditing = async () => {
 
             // Stop editing after successful update
             editingIndex.value = null;
-            toast.success('Team name updated successfully');
+            toast.success(t('adminConsole.toast.teamUpdate'));
         } else {
-            toast.warning('Failed to update team name');
+            toast.warning(t('adminConsole.toast.teamFail'));
         }
     } catch (err) {
         console.error('Error updating team name:', err);
@@ -179,10 +179,10 @@ const addTeam = async () => {
             teams.value.push(response.data);
             newTeam.value = '';
         }
-        toast.success('New team saved successfully');
+        toast.success(t('adminConsole.toast.newTeam'));
     } catch (err) {
         //console.error(err);
-        toast.error('Error adding team');
+        toast.error(t('adminConsole.toast.newTeamFail'));
     }
 };
 
@@ -199,14 +199,14 @@ const deleteTeam = async (teamId) => {
         if (response.status !== 200) {
             // If the deletion fails, revert the change
             teams.value = originalTeams;
-            toast.warning('Failed to delete the team');
+            toast.warning(t('adminConsole.toast.teamDeleteFail'));
         } else {
-            toast.info('Team deleted successfully');
+            toast.info(t('adminConsole.toast.teamDelete'));
         }
 
     } catch (err) {
         //console.error(err);
-        toast.error('Error deleting team');
+        toast.error(t('adminConsole.toast.teamDeleteError'));
     }
 }
 
@@ -217,7 +217,7 @@ const deleteOrg = async () => {
             await axios.delete(`${apiUrl}/organizations/${authStore.user.company_id}`);
             isConfirmModalVisible.value = false;
             handleLogout();
-            toast.info("Organization deleted. Goodbye!");
+            toast.info(t('adminConsole.toast.orgDelete'));
         } else {
             console.error('Company id not defined in authStore');
         }
@@ -246,7 +246,7 @@ const saveSettings = async () => {
 
         if (response.status === 200) {
             authStore.user.company.name = organizationName.value;
-            toast.success("Organization name updated successfully")
+            toast.success(t('adminConsole.toast.orgUpdate'))
         }
 
     } catch (err) {
