@@ -245,7 +245,7 @@
       </div>
 
       <!-- Monthly Submit Button -->
-      <div class="flex flex-col items-start space-y-4 mt-auto">
+      <div class="flex flex-col items-center space-y-4 mt-auto">
         <div class="text-lg font-semibold mt-auto text-center">
           {{"Approval Status"}}
         </div>
