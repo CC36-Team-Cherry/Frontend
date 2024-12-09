@@ -54,6 +54,7 @@ import { Calendar } from '@fullcalendar/core';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import interactionPlugin from '@fullcalendar/interaction';
 import axios from 'axios';
+import { useAuthStore } from '@/stores/authStore';
 
 const apiUrl = import.meta.env.VITE_API_URL;
 axios.defaults.withCredentials = true;
@@ -80,8 +81,9 @@ export default {
   },
   methods: {
     async fetchUsers() {
+      const authStore = useAuthStore();
       try {
-        const response = await axios.get(`${apiUrl}/approvals/1`);
+        const response = await axios.get(`${apiUrl}/approvals/${authStore.user.id}`);
         this.users = response.data.approvees.map((user) => ({
           id: user.id,
           name: `${user.first_name} ${user.last_name}`,
@@ -94,7 +96,6 @@ export default {
       try {
         const response = await axios.get(`${apiUrl}/accounts/${userId}/remainingPto`);
         this.remainingPtoDays = response.data.remaining_pto ?? 0;
-        console.log("Remaining PTO fetched:", this.remainingPtoDays);
       } catch (err) {
         console.error('Error fetching remaining PTO:', err);
         this.remainingPtoDays = 0;
@@ -149,9 +150,6 @@ export default {
 
   const year = midViewDate.getFullYear();
   const month = midViewDate.getMonth() + 1; // Mese corrente
-
-  console.log("Calculated midViewDate:", midViewDate);
-  console.log("Current year:", year, "Current month:", month);
 
   // Carica i dati del mese effettivo
   this.fetchAttendanceDataForMonth(year, month);
