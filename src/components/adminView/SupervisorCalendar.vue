@@ -22,7 +22,7 @@
           <div class="text-xs">Current Month</div>
         </div>
         <hr class="w-px h-10 border-l border-slate-300 mx-4">
-        <div class="text-3xl text-slate-600">{{ totalWorkedHours ?? 0 }} Hrs</div>
+        <div class="text-3xl text-slate-600">{{ totalWorkedHours.toFixed(2) ?? 0 }} Hrs</div>
       </div>
 
       <div class="bg-white shadow-sm border border-slate-200 rounded-lg p-2 flex flex-row justify-evenly items-center">
@@ -76,6 +76,7 @@ export default {
       totalWorkedHours: 0,
       overtimeHours: 0,
       remainingPtoDays: 0,
+      breakTime: null,
     };
   },
   methods: {
@@ -156,118 +157,153 @@ export default {
   // Carica i dati del mese effettivo
   this.fetchAttendanceDataForMonth(year, month);
 },
-    async fetchAttendanceDataForMonth(year, month) {
-      if (!this.selectedUserId) {
-        console.error('No user selected');
-        return;
-      }
-      try {
-        await this.fetchRemainingPto(this.selectedUserId);
+async fetchAttendanceDataForMonth(year, month) {
+  if (!this.selectedUserId) {
+    console.error('No user selected');
+    return;
+  }
+  try {
+    await this.fetchRemainingPto(this.selectedUserId);
 
-        const attendanceResponse = await axios.get(`${apiUrl}/accounts/${this.selectedUserId}/attendance`);
-        const ptoResponse = await axios.get(`${apiUrl}/accounts/${this.selectedUserId}/approvalsPTO`);
+    const attendanceResponse = await axios.get(`${apiUrl}/accounts/${this.selectedUserId}/attendance`);
+    const ptoResponse = await axios.get(`${apiUrl}/accounts/${this.selectedUserId}/approvalsPTO`);
 
-        const attendanceRecords = attendanceResponse.data.filter((record) => {
-          const recordDate = new Date(record.day);
-          return (
-            recordDate.getFullYear() === year &&
-            recordDate.getMonth() + 1 === month
-          );
-        });
+    const attendanceRecords = attendanceResponse.data.filter((record) => {
+      const recordDate = new Date(record.day);
+      return (
+        recordDate.getFullYear() === year &&
+        recordDate.getMonth() + 1 === month
+      );
+    });
 
-        const ptoRecords = ptoResponse.data.approvalsSentData.filter((pto) => {
-          const ptoDate = new Date(pto.date);
-          return (
-            ptoDate.getFullYear() === year &&
-            ptoDate.getMonth() + 1 === month
-          );
-        });
+    const ptoRecords = ptoResponse.data.approvalsSentData.filter((pto) => {
+      const ptoDate = new Date(pto.date);
+      return (
+        ptoDate.getFullYear() === year &&
+        ptoDate.getMonth() + 1 === month
+      );
+    });
 
-        const attendanceEvents = attendanceRecords.map((record) => ({
-          id: record.id,
-          title: `${record.punch_in ? record.punch_in.split('T')[1].slice(0, 5) : ''} - ${record.punch_out ? record.punch_out.split('T')[1].slice(0, 5) : ''}`,
-          start: record.day,
-          backgroundColor: record.absence ? 'red' : 'lightblue',
-          extendedProps: {
-            attendanceType: record.absence ? 'absence' : 'general',
-            totalHours: record.punch_in && record.punch_out
-              ? (new Date(record.punch_out) - new Date(record.punch_in)) / (1000 * 60 * 60)
-              : 0,
-          },
-        }));
+    const attendanceEvents = attendanceRecords.map((record) => {
+      const punchInTime = record.punch_in ? record.punch_in.split('T')[1].slice(0, 5) : '';
+      const punchOutTime = record.punch_out ? record.punch_out.split('T')[1].slice(0, 5) : '';
+      const breakTime = record.break_amount ? `${record.break_amount} min` : "None";
+      console.log(breakTime);
 
-        const ptoEvents = ptoRecords.map((pto) => ({
-          id: pto.id,
-          title: `${pto.type}`,
-          start: pto.date,
-          backgroundColor: pto.status === 'Approved' ? 'purple' : 'gray',
-          extendedProps: {
-            attendanceType: pto.type === 'Special PTO'
-              ? 'Special PTO'
-              : pto.type === 'Half PTO'
-              ? 'halfpto'
-              : 'pto',
-            status: pto.status,
-          },
-        }));
-
-        this.holidays = this.generateJapaneseHolidays(year);
-
-        this.events = [...attendanceEvents, ...ptoEvents, ...this.holidays];
-
-        if (this.calendar) {
-          this.calendar.getEvents().forEach((event) => event.remove());
-          this.events.forEach((event) => this.calendar.addEvent(event));
-        }
-
-        const calculatedTotalHours = this.events.reduce((sum, event) => {
-          const isAbsence = event.extendedProps?.attendanceType === 'absence';
-          const isPto = event.extendedProps?.attendanceType === 'pto';
-          const isHalfPto = event.extendedProps?.attendanceType === 'halfpto';
-          const isSpecialPto = event.extendedProps?.attendanceType === 'Special PTO';
-
-          if (isAbsence) return sum;
-
-          if (isPto || isSpecialPto) {
-            return sum + 8;
-          } else if (isHalfPto) {
-            return sum + 4;
-          }
-
-          return sum + (event.extendedProps?.totalHours || 0);
-        }, 0);
-
-        this.totalWorkedHours = calculatedTotalHours;
-        this.overtimeHours = Math.max(0, calculatedTotalHours - 160);
-
-      } catch (error) {
-        console.error('Error fetching attendance data:', error);
-      }
-    },
-    eventContent(arg) {
-      if (arg.event.extendedProps.attendanceType === 'general' || arg.event.extendedProps.attendanceType === 'absence') {
-        return {
-          html: `<div style="color: black; background-color: ${arg.event.backgroundColor}; padding: 5px; border-radius: 4px;">
-            <b>${arg.event.title}</b>
-          </div>`,
-        };
-      } else if (arg.event.extendedProps.attendanceType === 'pto' || arg.event.extendedProps.attendanceType === 'Special PTO' || arg.event.extendedProps.attendanceType === 'halfpto') {
-        return {
-          html: `<div style="color: white; background-color: ${arg.event.backgroundColor}; padding: 5px; border-radius: 4px;">
-            <b>${arg.event.title}</b><br><i>${arg.event.extendedProps.status}</i>
-          </div>`,
-        };
-      } else if (arg.event.extendedProps.isHoliday) {
-        return {
-          html: `<div style="color: black; background-color: rgba(255, 0, 0, 0.2); padding: 5px; border-radius: 4px;">
-            <b>${arg.event.title}</b>
-          </div>`,
-        };
-      }
       return {
-        html: `<div style="padding: 5px; border-radius: 4px;">${arg.event.title}</div>`,
+        id: record.id,
+        title: `${punchInTime} - ${punchOutTime}`,
+        start: record.day,
+        backgroundColor: record.absence ? 'red' : 'lightblue',
+        extendedProps: {
+          attendanceType: record.absence ? 'absence' : 'general',
+          startTime: punchInTime,  
+          endTime: punchOutTime,   
+          totalHours: record.punch_in && record.punch_out
+            ? (new Date(record.punch_out) - new Date(record.punch_in)) / (1000 * 60 * 60)
+            : 0,
+          breakTime: breakTime,
+        },
       };
-    },
+    });
+
+    const ptoEvents = ptoRecords.map((pto) => ({
+      id: pto.id,
+      title: `${pto.type}`,
+      start: pto.date,
+      backgroundColor: pto.status === 'Approved' ? 'purple' : 'gray',
+      extendedProps: {
+        attendanceType: pto.type === 'Special PTO'
+          ? 'Special PTO'
+          : pto.type === 'Half PTO'
+          ? 'halfpto'
+          : 'pto',
+        status: pto.status,
+      },
+    }));
+
+    this.holidays = this.generateJapaneseHolidays(year);
+
+    this.events = [...attendanceEvents, ...ptoEvents, ...this.holidays];
+
+    if (this.calendar) {
+      this.calendar.getEvents().forEach((event) => event.remove());
+      this.events.forEach((event) => this.calendar.addEvent(event));
+    }
+
+    let totalBreakMinutes = 0;
+    
+    const calculatedTotalHours = this.events.reduce((sum, event) => {
+      const isAbsence = event.extendedProps?.attendanceType === 'absence';
+      const isPto = event.extendedProps?.attendanceType === 'pto';
+      const isHalfPto = event.extendedProps?.attendanceType === 'halfpto';
+      const isSpecialPto = event.extendedProps?.attendanceType === 'Special PTO';
+
+      if (isAbsence) return sum;
+
+      if (isPto || isSpecialPto) {
+        return sum + 8;
+      } else if (isHalfPto) {
+        return sum + 4;
+      }
+
+      const breakTimeMinutes = parseInt(event.extendedProps?.breakTime?.replace(' min', '')) || 0;
+      totalBreakMinutes += breakTimeMinutes;
+      return sum + (event.extendedProps?.totalHours || 0);
+    }, 0);
+
+    this.totalWorkedHours = calculatedTotalHours;
+    this.totalWorkedHours = calculatedTotalHours - totalBreakMinutes / 60;
+    this.overtimeHours = Math.max(0, calculatedTotalHours - 160);
+
+  } catch (error) {
+    console.error('Error fetching attendance data:', error);
+  }
+}
+,
+    eventContent: (arg) => {
+  // Gestione delle festività
+  if (arg.event.extendedProps.isHoliday) {
+    return {
+      html: `
+        <div style="text-align: left; font-size: 1vw; color: black; background-color: rgba(255, 0, 0, 0.2); padding: .5vw; border-radius: 4px; width: 100%; word-wrap: break-word; white-space: normal;">
+          <b>${arg.event.title}</b>
+        </div>
+      `,
+    };
+  }
+
+  // Gestione degli eventi con orari di ingresso e uscita
+  if (arg.event.extendedProps.startTime && arg.event.extendedProps.endTime) {
+    const breakTime = arg.event.extendedProps.breakTime
+      ? `<small style="font-size: 0.8vw; color: gray;">Break: ${arg.event.extendedProps.breakTime}</small>`
+      : '';
+    return {
+      html: `
+        <div style="text-align: left; font-size: 1vw; color: black; background-color: ${arg.event.backgroundColor}; padding: .5vw; border-radius: 4px; width: 100%; word-wrap: break-word; white-space: normal;">
+          <b>${arg.event.extendedProps.startTime} - ${arg.event.extendedProps.endTime}</b><br>
+          ${breakTime}
+        </div>
+      `,
+    };
+  }
+
+  // Gestione degli eventi PTO
+  if (arg.event.extendedProps.status) {
+    return {
+      html: `
+        <div style="text-align: center; font-size: 1vw; color: white; background-color: ${arg.event.backgroundColor}; padding: .5vw; border-radius: 4px; width: 100%; word-wrap: break-word; white-space: normal;">
+          <b>${arg.event.title}</b><br><i>${arg.event.extendedProps.status}</i>
+        </div>
+      `,
+    };
+  }
+
+  return {
+    html: `<div style="padding: 5px; border-radius: 4px;">${arg.event.title}</div>`,
+  };
+}
+
   },
   mounted() {
     this.initializeCalendar();
