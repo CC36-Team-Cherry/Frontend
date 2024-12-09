@@ -17,7 +17,7 @@
           </div>
           <hr class="w-px h-10 border-l border-slate-300 mx-4">
           <!-- Hours Worked -->
-          <div class="text-3xl text-slate-600"> {{ calculatedTotalHours }} Hr(s)</div>
+          <div class="text-3xl text-slate-600"> {{ calculatedTotalHours.toFixed(2) }} Hrs(s)</div>
         </div>
         <!-- OT Card -->
         <div class="bg-white shadow-sm border border-slate-200 rounded-lg p-2 flex flex-row justify-evenly items-center">
@@ -151,13 +151,12 @@
           :class="{'bg-blue-500 text-white py-1 px-3 rounded hover:bg-blue-600 w-full text-base mb-3' : isFormValid,
             'bg-gray-300 text-gray-500 py-1 px-3 rounded w-full cursor-not-allowed text-base mb-3' : !isFormValid
           }"
-          :disabled="!isFormValid"
         >
           {{  $t('calendar.logAttendance') }}
         </button>
         <button 
           @click="deleteGeneralAttendance" 
-          :class="{'bg-gray-500 text-gray-300 py-1 px-3 rounded w-full text-base mb-3': !selectionRange,
+          :class="{'bg-gray-500 text-gray-300 py-1 px-3 rounded w-full text-base mb-3 cursor-not-allowed': !selectionRange,
           'bg-red-500 text-white py-1 px-3 rounded hover:bg-red-600 w-full text-base mb-3': selectionRange}"
           :disabled="!selectionRange"
         >
@@ -362,7 +361,6 @@ export default {
         isAttendanceTypeSelected &&  // Attendance type is selected
         isStartTimeSelected && 
         isEndTimeSelected
-        // this.isEndTimeAfterStartTime()  // Optionally, check if end time is after start time
       )
     },
     isSubmitFormValid() {
@@ -927,6 +925,11 @@ updateSelectedBreakTime() {
       return;
     }
 
+    if(this.startTime > this.endTime) {
+      toast.warning(t('calendar.toast.invalidStartEndTimes'));
+      return
+    }
+
     const attendancePromises = filteredDays.map((day) => {
     const punchIn = `${day}T${this.startTime}:00Z`;
     const punchOut = `${day}T${this.endTime}:00Z`;
@@ -1304,13 +1307,6 @@ deleteGeneralAttendance() {
   closeSubmitMonthModal() {
     this.isSubmitMonthModalVisible = false;
     this.memo = '';
-  },
-  // Optional: Ensure end time is after start time
-  isEndTimeAfterStartTime() {
-  if (this.startTime && this.endTime) {
-    return this.endTime > this.startTime;
-    }
-    return true; // If times are not filled yet, assume it's valid
   },
  },
 };

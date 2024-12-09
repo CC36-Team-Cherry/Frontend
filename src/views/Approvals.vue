@@ -63,27 +63,33 @@
                         <td v-if="!request.isEditing" class="border p-2">{{ request.memo }}</td>
                         <td v-if="request.isEditing" class="border p-2">
                             <input v-model="request.newMessage" class="border rounded p-2 w-full"
-                                @keyup.enter="saveRemind(request)" @blur="cancelEditing(request)" />
+                                @keyup.enter="saveRemind(request)" @blur="(e) => {
+                                if (!e.relatedTarget) {
+                                    cancelEditing(request)}}" />
                         </td>
                         <td class="border p-2">{{ request.status }}</td>
                         <td class="p-2 grid grid-cols-2 gap-2">
-                            <button v-if="activeTab === 'received'" class="bg-green-500 text-white px-2 py-1 rounded"
+                            <button v-if="activeTab === 'received'" :title="$t('approval.approve')" class="bg-green-500 text-white px-2 py-1 rounded"
                                 @click="statusClick(request.id, 'Approved', request.attendanceType)">
                                 <i class="fas fa-check"></i>
                             </button>
-                            <button v-if="activeTab === 'received'" class="bg-gray-500 text-white px-2 py-1 rounded"
+                            <button v-if="activeTab === 'received'" :title="$t('approval.deny')" class="bg-gray-500 text-white px-2 py-1 rounded"
                                 @click="statusClick(request.id, 'Denied', request.attendanceType)">
                                 <i class="fas fa-times"></i>
                             </button>
-                            <button v-if="activeTab === 'received'" class="bg-blue-500 text-white px-2 py-1 rounded"
+                            <button v-if="activeTab === 'received'" :title="$t('approval.seeAttendance')" class="bg-blue-500 text-white px-2 py-1 rounded"
                                 @click="seeAttendanceClick(request.accountId)">
                                 <i class="fas fa-calendar-alt"></i>
                             </button>
-                            <button v-if="activeTab === 'sent'" class="bg-yellow-500 text-white px-2 py-1 rounded"
+                            <button v-if="activeTab === 'sent' && !request.isEditing" :title="$t('approval.remind')" class="bg-yellow-500 text-white px-2 py-1 rounded"
                                 @click="remindClick(request)">
                                 <i class="fas fa-bell"></i>
                             </button>
-                            <button class="bg-red-500 text-white px-2 py-1 rounded"
+                            <button v-if="activeTab === 'sent' && request.isEditing" :title="$t('approval.remind')" id="save" class="bg-green-500 text-white px-2 py-1 rounded"
+                                @click="saveRemind(request)">
+                                <i class="fas fa-check"></i>
+                            </button>
+                            <button :title="$t('approval.delete')" class="bg-red-500 text-white px-2 py-1 rounded"
                                 @click="deleteClick(request.id, request.attendanceType)">
                                 <i class="fas fa-trash-alt"></i>
                             </button>
@@ -106,6 +112,8 @@ import axios from 'axios';
 import { useAuthStore } from '@/stores/authStore';
 import LoopingRhombusesSpinner from '../modal/Loading.vue';
 import { useRouter } from 'vue-router';
+import { useToast } from "vue-toastification";
+import { useI18n } from 'vue-i18n';
 
 const apiUrl = import.meta.env.VITE_API_URL;
 axios.defaults.withCredentials = true;
@@ -113,6 +121,8 @@ const router = useRouter();
 const authStore = useAuthStore();
 const activeAccountId = authStore.user.id;
 const isLoading = ref(true);
+const toast = useToast();
+const {t} = useI18n();
 
 // Sample data for the approval requests
 const requests = authStore.approvals
@@ -201,12 +211,20 @@ const statusClick = async (approvalsId, statusChange, requestType) => {
             tabRequests[requestIndex].updated_at = new Date().toISOString(); // Update the updated date in the local state
         }
 
-        const response = await axios.patch(`${apiUrl}/approvals/${requestType}/${approvalsId}`,
+        await axios.patch(`${apiUrl}/approvals/${requestType}/${approvalsId}`,
             {
                 // Send status change string
                 statusChange
             }
         );
+
+        if (statusChange === 'Approved') {
+            toast.success(t('approval.messages.approved'))
+        }
+
+        if (statusChange === 'Denied') {
+            toast.info(t('approval.messages.denied'))
+        }
 
     } catch (err) {
         console.error('Error changing approval status:', err)
@@ -215,13 +233,17 @@ const statusClick = async (approvalsId, statusChange, requestType) => {
 
 // Button click to update able to edit message 
 const remindClick = (request) => {
+    if (request.status === "Approved" || request.status === "Denied") {
+        toast.warning(t('approval.closed'));
+        return;
+    }
     request.newMessage = request.memo;
+    toast.info(t('approval.enterMemo'));
     request.isEditing = true;
 }
 
 // Save remind with edited message and update last change
 const saveRemind = async (request) => {
-
     const newMessage = request.newMessage;
 
     try {
@@ -234,7 +256,7 @@ const saveRemind = async (request) => {
             request.updated_at = new Date().toISOString();
             request.isEditing = false;
         }
-
+        toast.success(t('approval.remindSuccess'));
         requests[activeTab.value].sort((a, b) => new Date(b.updated_at) - new Date(a.updated_at));
 
     } catch (err) {
@@ -251,10 +273,6 @@ const cancelEditing = (request) => {
 // Button click to see attendance, reroute OR modal to see that person's calendar view
 const seeAttendanceClick = async (requestId) => {
     try {
-
-        console.log("router check: ", router)
-        console.log("requested id", requestId)
-
         router.push({ name: 'supervisorCalendar', params: { userId: requestId }})
     } catch (err) {
         console.error('Error seeing attendance of selected account:', err)
@@ -265,11 +283,12 @@ const deleteClick = async (approvalsId, requestType) => {
     try {
         // Optimistic rendering
         const tabRequests = requests[activeTab.value]; // Get the requests for the active tab
-        console.log(tabRequests)
 
         requests[activeTab.value] = tabRequests.filter(request => !(request.id === approvalsId && request.attendanceType === requestType))
 
-        const response = await axios.delete(`${apiUrl}/approvals/${requestType}/${approvalsId}`);
+        await axios.delete(`${apiUrl}/approvals/${requestType}/${approvalsId}`);
+
+        toast.info(t('approval.messages.deleted'))
 
     } catch (err) {
         console.error('Error deleting approval:', err)
@@ -279,7 +298,6 @@ const deleteClick = async (approvalsId, requestType) => {
 // Fetch approvals when the component is mounted
 onMounted(() => {
     getApprovals();
-    console.log("request approvals", requests)
 });
 
 </script>

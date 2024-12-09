@@ -447,7 +447,6 @@ const handleDelete = async () => {
   try {
     isLoading.value = true;
     const employeeId = selectedEmployee.value.id;
-    console.log(employeeId);
     const response = await axios.delete(`${apiUrl}/accounts/${employeeId}`)
     if (response.status === 200) {
       await handleFetchEmployees(authStore.user.company_id);
@@ -467,7 +466,6 @@ const handleDelete = async () => {
 }
 
 const openCalendarModal = (user) => {
-  console.log("Opening calendar for user:", user);
   selectedUser.value = user;
   isCalendarModalVisible.value = true;
 };
@@ -509,7 +507,6 @@ const filteredEmployees = computed(() => {
 const fetchSupervisors = async () => {
   try {
     const response = await axios.get(`${apiUrl}/supervisors`);
-    console.log(response.data)
     fetchedSupervisors.value = response.data;
   } catch (err) {
     console.error('Error fetching supervisors:', err);

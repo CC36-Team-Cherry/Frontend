@@ -10,6 +10,13 @@
     {
       "path": "./tsconfig.vitest.json"
     }
-  ]
+  ],
+  "compilerOptions": {
+    "types": ["cypress"],
+    "module": "esnext",
+    "target": "es6",
+    "moduleResolution": "node",
+    "strict": true
+  }
 }
 
