@@ -1,5 +1,6 @@
 <template>
-  <div class="p-8 bg-gray-50 min-h-screen">
+  <LoopingRhombusesSpinner v-if="isLoading" class="bg-gray-100" />
+  <div v-else class="p-8 bg-gray-50 min-h-screen">
     <h1 class="text-2xl font-bold mb-6">{{ $t('settings.title') }}</h1>
     <div class="grid grid-cols-2 gap-6">
       <div class="flex flex-col">
@@ -32,7 +33,7 @@
           :value="(fetchedTeams.find(team => team.id === formData.team_id)?.team_name) || 'no team'" disabled />
       </div>
       <div>
-            <label class="block mb-1">{{ "Supervisor" }}</label>
+            <label class="block mb-1">{{ $t('employeeList.modal.userType.supervisor') }}</label>
             <input 
               v-model="supervisorSearch" 
               @input="filterSupervisors"
@@ -68,7 +69,7 @@
         <input type="date" v-model="formData.join_date.split('T')[0]" class="border rounded p-2"  :disabled="!authStore.user.Privileges.is_admin" />
       </div>
       <div v-if="authStore.user.Privileges.is_admin" class="flex flex-col">
-        <label class="font-medium">{{ 'Privileges' }}</label>
+        <label class="font-medium">{{ $t('employeeList.tableHeaders.privileges') }}</label>
         <div class="flex items-center space-x-2 text left">
           <input type="checkbox" v-model="formData.is_supervisor" class="scale-150 m-5" />{{ $t('employeeList.modal.userType.supervisor') }}
         </div>
@@ -77,7 +78,7 @@
         </div>
       </div>
       <div v-else>
-        <label class="font-medium">{{ 'Privileges' }}</label>
+        <label class="font-medium">{{ $t('employeeList.tableHeaders.privileges') }}</label>
         <input type="text" class="border rounded p-2 w-full bg-gray-100 text-gray-500" disabled
           :value="authStore.user.Privileges.is_supervisor ? 'Supervisor' : 'None'" />
       </div>
@@ -111,7 +112,11 @@ import axios from 'axios';
 import { useI18n } from 'vue-i18n';
 import { useAuthStore } from '@/stores/authStore';
 import { onClickOutside } from '@vueuse/core';
+import LoopingRhombusesSpinner from '../modal/Loading.vue';
+import { useToast } from "vue-toastification";
 
+const toast = useToast();
+const { t } = useI18n();
 const apiUrl = import.meta.env.VITE_API_URL;
 axios.defaults.withCredentials = true;
 const fetchedSupervisors = ref([]);
@@ -119,6 +124,7 @@ const supervisorSearch = ref('');
 const filteredSupervisors = ref([]);
 const dropdown = ref(null);
 const showDropdown = ref(false);
+const isLoading = ref(false);
 
 const authStore = useAuthStore();
 
@@ -149,7 +155,6 @@ async function handleFetchCurrentUserData() {
         ...formData,
         ...response.data,
       });
-      console.log(formData);
     } else {
       console.error('Server error.')
     }
@@ -212,7 +217,7 @@ const switchLanguage = (lang) => {
   const supervisorPlaceholder = computed(() => {
       // If a supervisor is selected, show their full name, otherwise default to "Select Supervisor"
       const supervisor = fetchedSupervisors.value.find(s => s.id === formData.supervisor_id);
-      return supervisor ? `${supervisor.first_name} ${supervisor.last_name}` : "Select Supervisor";
+      return supervisor ? `${supervisor.first_name} ${supervisor.last_name}` : t('employeeList.modal.placeholders.supervisor');
     }
   );
   
@@ -229,6 +234,7 @@ const switchLanguage = (lang) => {
 
 const handleSave = async () => {
   try {
+    isLoading.value = true;
     const employeeId = authStore.user.id;
     const cleanedUpdates = Object.fromEntries(
       Object.entries(formData).filter(([key, value]) => {
@@ -243,24 +249,29 @@ const handleSave = async () => {
     );
     cleanedUpdates.join_date = new Date(cleanedUpdates.join_date);
     cleanedUpdates.birthdate = new Date(cleanedUpdates.birthdate);
-    console.log("cleanedupdates", cleanedUpdates);
     authStore.user.supervisor_id = cleanedUpdates.supervisor_id;
     const response = await axios.patch(`${apiUrl}/accounts/${employeeId}`, cleanedUpdates);
     if (response.status === 200) {
-      console.log("Account updated successfully");
+      isLoading.value = false;
+      toast.success(t('settings.updateSuccess'));
       handleFetchCurrentUserData();
     } else {
-      console.error("Failed to update account")
+      isLoading.value = false;
+      toast.error(t('settings.updateFail'));
     }
   } catch (err) {
+    isLoading.value = false;
     console.error("Error updating employee: ", err);
+    toast.error(t('settings.updateFail'));
   }
 }
 
 onMounted(async () => {
+  isLoading.value = true;
   await handleFetchCurrentUserData();
   await handleFetchTeams();
   await fetchSupervisors();
   filterSupervisors();
+  isLoading.value = false;
 })
 </script>

@@ -25,7 +25,9 @@
       "type": "Type",
       "languagePreference": "Language Preference"
     },
-    "save": "Save"
+    "save": "Save",
+    "updateSuccess": "Account updated successfully",
+    "updateFail": "Failed to update account"
   },
   "language": {
     "en": "EN",
@@ -36,6 +38,7 @@
     "email": "Email",
     "password": "Password",
     "submit": "Login",
+    "invalidLogin": "Invalid username/password",
     "register": "Register new organization",
     "forgotPassword": "Forgot your password?",
     "return": "Return to login",
@@ -265,8 +268,12 @@
     "delete": "Delete",
     "messages": {
       "approved": "Request has been approved",
-      "denied": "Request has been denied"
-    }
+      "denied": "Request has been denied",
+      "deleted": "Request has been deleted"
+    },
+    "enterMemo": "Enter a memo to send with your reminder",
+    "remindSuccess": "Reminder sent!",
+    "closed": "This request is closed and cannot be edited"
   },
   "supervisorCalendar": {
     "title": "Supervisor Calendar",

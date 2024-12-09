@@ -25,7 +25,9 @@
       "type": "タイプ",
       "languagePreference": "言語選択"
     },
-    "save": "保存"
+    "save": "保存",
+    "updateSuccess": "アカウントが正常に更新されました",
+    "updateFail": "アカウントの更新に失敗しました"
   },
   "language": {
     "en": "EN",
@@ -36,6 +38,7 @@
     "email": "メールアドレス",
     "password": "パスワード",
     "submit": "ログイン",
+    "invalidLogin": "ユーザー名またはパスワードが無効",
     "register": "組織を登録",
     "forgotPassword": "パスワードをお忘れの場合",
     "return": "ログインに戻る",
@@ -265,8 +268,12 @@
     "delete": "削除",
     "messages": {
       "approved": "承認が正常に行われました！",
-      "denied": "承認リクエストを却下しました。"
-    }
+      "denied": "承認リクエストを却下しました",
+      "deleted": "リクエストは削除されました"
+    },
+    "enterMemo": "リマインダーと一緒に送信するメモを入力してください",
+    "remindSuccess": "リマインダーが送信されました！",
+    "closed": "このリクエストはクローズされており、編集できません"
   },
   "supervisorCalendar": {
     "title": "監督者カレンダー",
