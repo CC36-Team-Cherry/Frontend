@@ -89,9 +89,12 @@ import { auth } from '../../firebase/firebaseConfig.ts'
 import { useI18n } from 'vue-i18n';
 import axios from "axios";
 import LoopingRhombusesSpinner from '../../modal/Loading.vue';
+import { useToast } from "vue-toastification";
 
 const apiUrl = import.meta.env.VITE_API_URL;
 axios.defaults.withCredentials = true;
+const toast = useToast();
+const {t} = useI18n();
 
 const email = ref('')
 const password = ref('');
@@ -134,17 +137,23 @@ const goToForgotPassword = () => {
 }
 
 const loginFirebase = async () => {
-  const credential = await signInWithEmailAndPassword(auth, email.value, password.value);
-  const user = credential.user;
-  const token = await user.getIdToken();
-  await getUserFromBackend(token);
-  updateLastLogin();
-  if(authStore.user?.language_preference === 'en') {
-    locale.value = 'en-US';
-  } else if (authStore.user?.language_preference === 'ja') {
-    locale.value = 'ja-JP';
+  const credential = await signInWithEmailAndPassword(auth, email.value, password.value).catch((err) => {
+    toast.error(t('login.invalidLogin'));
+    isLoading.value = false;
+    return;
+  });
+  if (credential) {
+    const user = credential.user;
+    const token = await user.getIdToken();
+    await getUserFromBackend(token);
+    updateLastLogin();
+    if(authStore.user?.language_preference === 'en') {
+      locale.value = 'en-US';
+    } else if (authStore.user?.language_preference === 'ja') {
+      locale.value = 'ja-JP';
+    }
+    router.push({ path: `/calendar` });
   }
-  router.push({ path: `/calendar` });
 }
 
 const switchLanguage = (lang : string) => {

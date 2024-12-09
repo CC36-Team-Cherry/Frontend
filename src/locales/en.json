@@ -36,6 +36,7 @@
     "email": "Email",
     "password": "Password",
     "submit": "Login",
+    "invalidLogin": "Invalid username/password",
     "register": "Register new organization",
     "forgotPassword": "Forgot your password?",
     "return": "Return to login",

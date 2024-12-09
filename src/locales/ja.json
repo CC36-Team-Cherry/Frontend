@@ -36,6 +36,7 @@
     "email": "メールアドレス",
     "password": "パスワード",
     "submit": "ログイン",
+    "invalidLogin": "ユーザー名またはパスワードが無効",
     "register": "組織を登録",
     "forgotPassword": "パスワードをお忘れの場合",
     "return": "ログインに戻る",
