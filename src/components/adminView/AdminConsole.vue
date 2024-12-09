@@ -89,6 +89,8 @@ import LoopingRhombusesSpinner from '../../modal/Loading.vue';
 import ConfirmModal from '@/modal/ConfirmModal.vue';
 import { useLogout } from "@/utils/useLogout";
 import { useToast } from "vue-toastification";
+import i18n from '../../i18n.ts';
+const { t } = i18n.global;
 
 const { handleLogout } = useLogout();
 
@@ -248,6 +250,8 @@ const saveSettings = async () => {
             authStore.user.company.name = organizationName.value;
             toast.success(t('adminConsole.toast.orgUpdate'))
         }
+
+        formData.value.organizationName = '';
 
     } catch (err) {
         console.error(err);

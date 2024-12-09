@@ -17,7 +17,7 @@
           </div>
           <hr class="w-px h-10 border-l border-slate-300 mx-4">
           <!-- Hours Worked -->
-          <div class="text-3xl text-slate-600"> {{ calculatedTotalHours.toFixed(2) }} Hrs</div>
+          <div class="text-3xl text-slate-600"> {{ calculatedTotalHours.toFixed(2) }} Hrs(s)</div>
         </div>
         <!-- OT Card -->
         <div class="bg-white shadow-sm border border-slate-200 rounded-lg p-2 flex flex-row justify-evenly items-center">
@@ -26,7 +26,7 @@
             <div class="text-xs">Current Month</div>
           </div>
           <hr class="w-px h-10 border-l border-slate-300 mx-4">
-          <div class="text-3xl text-slate-600"> {{ extraHours }} Hrs</div>
+          <div class="text-3xl text-slate-600"> {{ extraHours }} Hr(s)</div>
         </div>
         <!-- PTO Card -->
         <div class="bg-white shadow-sm border border-slate-200 rounded-lg p-2 flex flex-row justify-evenly items-center">
@@ -35,7 +35,7 @@
             <div class="text-xs">Total Remaining</div>
           </div>
           <hr class="w-px h-10 border-l border-slate-300 mx-4">
-          <div class="text-3xl text-slate-600">{{ remainingPto }} Days</div>
+          <div class="text-3xl text-slate-600">{{ remainingPto }} Day(s)</div>
         </div>
       </div>
 
@@ -739,8 +739,16 @@ async fetchAttendanceData(accountId) {
       };
     });
 
+    const filteredPtoEvents = response2.data.approvalsSentData.filter((pto) => {
+      const ptoDate = new Date(pto.date);
+      return (
+        ptoDate.getMonth() + 1 === currentMonth &&
+        ptoDate.getFullYear() === currentYear
+      );
+    });
+
     // Gestione delle PTO requests
-    const ptoEvents = response2.data.approvalsSentData.map((pto) => {
+    const ptoEvents = filteredPtoEvents.map((pto) => {
       const title = `${pto.type}`;
       const backgroundColor = this.getEventColor(pto); // Usa getEventColor per determinare il colore
 
@@ -987,6 +995,7 @@ updateSelectedBreakTime() {
       this.updateChart();
       this.clearForm();
       this.attendanceType = 'general';
+      this.calendar.unselect();
     })
     .catch((error) => {
       console.error('Error logging attendance:', error.response?.data || error.message);
@@ -1233,11 +1242,6 @@ deleteGeneralAttendance() {
         const [month, year] = request.date.split('-').map(Number); // Split date into month and year
         return year === currentYear && month === currentMonth;
       });
-
-      console.log("selected date :", selectedDate)
-      console.log("current month :", currentMonth)
-      console.log("current month :", currentYear)
-      console.log("existing request :", existingRequest)
 
       if (existingRequest) {
         toast.error(t('calendar.toast.alreadySubmittedMonth'));
