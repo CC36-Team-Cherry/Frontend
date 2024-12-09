@@ -3,7 +3,7 @@ import './assets/style.css';
 import { createApp } from 'vue';
 import { createPinia } from 'pinia';
 import piniaPluginPersistedState from 'pinia-plugin-persistedstate';
-import Toast, { type PluginOptions } from "vue-toastification";
+import Toast, { type PluginOptions, POSITION } from "vue-toastification";
 import "vue-toastification/dist/index.css";
 
 import App from './App.vue';
@@ -17,6 +17,7 @@ pinia.use(piniaPluginPersistedState);
 
 const options: PluginOptions = {
     // Default options go here if we want to change anything
+    position: POSITION.BOTTOM_CENTER
 };
 
 app.use(pinia);
