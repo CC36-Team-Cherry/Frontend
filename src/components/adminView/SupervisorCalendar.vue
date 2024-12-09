@@ -88,7 +88,6 @@ export default {
           id: user.id,
           name: `${user.first_name} ${user.last_name}`,
         }));
-        console.log("fetch users", this.users)
       } catch (error) {
         console.error('Error fetching users:', error);
       }
@@ -97,7 +96,6 @@ export default {
       try {
         const response = await axios.get(`${apiUrl}/accounts/${userId}/remainingPto`);
         this.remainingPtoDays = response.data.remaining_pto ?? 0;
-        console.log("Remaining PTO fetched:", this.remainingPtoDays);
       } catch (err) {
         console.error('Error fetching remaining PTO:', err);
         this.remainingPtoDays = 0;
@@ -152,9 +150,6 @@ export default {
 
   const year = midViewDate.getFullYear();
   const month = midViewDate.getMonth() + 1; // Mese corrente
-
-  console.log("Calculated midViewDate:", midViewDate);
-  console.log("Current year:", year, "Current month:", month);
 
   // Carica i dati del mese effettivo
   this.fetchAttendanceDataForMonth(year, month);

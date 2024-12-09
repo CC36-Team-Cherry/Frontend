@@ -390,7 +390,7 @@ const sendFirebaseEmail = (email) => {
     //   console.log("SENT");
     // })
     .catch((error) => {
-      console.log(error.code, error.message);
+      console.error(error.code, error.message);
     });
 }
 

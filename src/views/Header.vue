@@ -64,7 +64,7 @@
   };
 
   const checkLogin = () => {
-    console.log(getAuth().currentUser);
+    console.error(getAuth().currentUser);
   }
 
   </script>

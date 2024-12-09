@@ -118,7 +118,7 @@ const getUserFromBackend = async (token: string) => {
     // store user data in Pinia
     authStore.login(backendData.data)
   } catch (err) {
-    console.log(err);
+    console.error(err);
   }
 }
 

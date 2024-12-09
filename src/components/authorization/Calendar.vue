@@ -386,7 +386,6 @@ export default {
 
       const authStore = useAuthStore();
       const requests = authStore.approvals.sent;
-      console.log("monthSubmitApprovalStatus: ", requests)
 
       const selectedDate = new Date(selectedMonth.value);
       selectedDate.setDate(selectedDate.getDate() + 7);
@@ -400,10 +399,8 @@ export default {
 
       // Return the status of the existing request if found, otherwise return 'No Request'
       if (existingRequest) {
-        console.log("Existing Request Status:", existingRequest.status);
         return existingRequest.status;
       } else {
-        console.log("No Request Found");
         return 'No Request'; // Return a default value when no request exists
       }
     }
@@ -424,8 +421,6 @@ export default {
   this.holidays = this.generateJapaneseHolidays(new Date().getFullYear()); 
 
   const activeAccountSupervisorId = authStore.user.supervisor_id;
-  console.log("store values", authStore.user)
-  console.log("active account supervisor id", activeAccountSupervisorId)
   if (activeAccountSupervisorId) {
     this.selectedSupervisorId = activeAccountSupervisorId;
   }
@@ -510,13 +505,11 @@ if (arg.event.extendedProps.status) {
 
 },
     datesSet: (info) => {
-      console.log('Month changed:', info.start); 
       this.handleMonthChange(info.start); // Funzione per gestire il cambio mese
       selectedMonth.value = info.start;
     },
   });
 
-  console.log(this.calendar);
   this.calendar.render();
 
   
@@ -567,10 +560,8 @@ if (arg.event.extendedProps.status) {
   
   const year = startDate.getFullYear();
   const month = startDate.getMonth() + 1; //for now i put +2 because it looks 2 months before every time
-  console.log("year and month", year, month);
 
   this.maxHours = this.calculateMaxHours(year, month);
-  console.log('Updated maxHours:', this.maxHours);
   
   totalHours.value = 0;
   const authStore = useAuthStore();
@@ -579,7 +570,6 @@ if (arg.event.extendedProps.status) {
 
 calculateMaxHours(year, month) {
     const daysInMonth = new Date(year, month, 0).getDate(); 
-    console.log(daysInMonth);
     let workingDays = 0;
 
     for (let day = 1; day <= daysInMonth; day++) {
@@ -642,8 +632,6 @@ setEndTimeFourHoursAhead() {
       return;
     }
 
-  console.log("Initializing chart with maxHours:", this.maxHours);
-
   this.attendanceChart = new Chart(ctx, {
     type: "doughnut",
     data: {
@@ -675,13 +663,6 @@ updateChart() {
   const extraHours = workedHours > this.maxHours ? workedHours - this.maxHours : 0; 
   const remainingHours = Math.max(this.maxHours - workedHours, 0); 
 
-  console.log("Updating chart with data:", {
-    workedHours,
-    remainingHours,
-    extraHours,
-    maxHours: this.maxHours,
-  });
-
   try {
     // Aggiorna i dati del grafico
     this.attendanceChart.data.datasets[0].data = [
@@ -698,7 +679,6 @@ updateChart() {
 
     this.extraHours = extraHours; // Mantieni la variabile per l'uso nella card
     this.attendanceChart.update();
-    console.log("Chart updated successfully.");
   } catch (err) {
     console.error("Error updating chart:", err);
   }
@@ -796,8 +776,6 @@ async fetchAttendanceData(accountId) {
   return sum + Math.max(eventTotalHours, 0); // Ensure no negative hours
 }, 0);
 
-      console.log("Calculated Total Hours:", calculatedTotalHours);
-
     if (!isNaN(calculatedTotalHours) && calculatedTotalHours >= 0) {
       totalHours.value = calculatedTotalHours;
     } else {
@@ -842,8 +820,6 @@ getEventTypeFromColor(color) {
       this.startTime = event.extendedProps.startTime || '';
       this.endTime = event.extendedProps.endTime || '';
       this.attendanceType = this.getEventTypeFromColor(event.backgroundColor);
-
-      console.log("attendanceType",attendanceType);
     },
 
     selectAll(event) {
@@ -1200,7 +1176,7 @@ deleteGeneralAttendance() {
         break
 
         default:
-          console.log("Unkown attendance type");
+          console.error("Unkown attendance type");
       }    
       
       try {
@@ -1244,7 +1220,6 @@ deleteGeneralAttendance() {
 
       // Check if a request already exists for the selected month and year
       const requests = authStore.approvals.sent;
-      // console.log("requests", requests)
       const existingRequest = requests.find(request => {
         const [month, year] = request.date.split('-').map(Number); // Split date into month and year
         return year === currentYear && month === currentMonth;
@@ -1301,13 +1276,11 @@ deleteGeneralAttendance() {
     try {
       const response = await axios.get(`${apiUrl}/accounts/${authStore.user.id}/remainingPto`);
       this.remainingPto = response.data.remaining_pto;
-      console.log("frontend response for pto: ", response.data)
     } catch(err) {
       console.error('Error fetching remaining PTO: ', err);
     }
   },
   openSubmitMonthModal() {
-    console.log("passing")
     this.isSubmitMonthModalVisible = true;
     this.fetchSupervisors();
   },
