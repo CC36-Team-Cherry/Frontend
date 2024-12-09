@@ -284,6 +284,8 @@ import { useAuthStore } from '@/stores/authStore';
 import Chart from 'chart.js/auto';
 import { ref } from 'vue';
 import SubmitMonthModal from '@/modal/SubmitMonthModal.vue';
+import { useToast } from "vue-toastification";
+const toast = useToast();
 
 const apiUrl = import.meta.env.VITE_API_URL;
 axios.defaults.withCredentials = true;
@@ -881,7 +883,7 @@ updateSelectedBreakTime() {
     });
 
     if (filteredDays.length === 0) {
-      alert('Attendance has already been logged for all selected days.');
+      toast.warning('Attendance has already been logged for all selected days');
       return;
     }
 
@@ -969,7 +971,7 @@ deleteGeneralAttendance() {
 });
 
   if (attendanceToDelete.length === 0) {
-    alert("No attendance to delete on selected days.");
+    toast.warning('No attendance to delete on selected days');
     return;
   }
 
@@ -979,7 +981,7 @@ deleteGeneralAttendance() {
 
   Promise.all(deletePromises)
     .then(() => {
-      alert('General attendance deleted on selected days.');
+      toast.success('General attendance deleted on selected days');
 
       this.fetchAttendanceData(authStore.user.id);
       this.updateChart();
@@ -1045,7 +1047,7 @@ deleteGeneralAttendance() {
 
        // Check if PTO or HalfPTO is being requested and remainingPto is 0
       if ((this.attendanceType === "pto" || this.attendanceType === "halfpto") && this.remainingPto <= 0) {
-        alert("Not enough PTO remaining to submit");
+        toast.warning('Not enough PTO remaining to submit');
         return; 
       }
 
@@ -1086,7 +1088,7 @@ deleteGeneralAttendance() {
           const selectedHalfPtoDates = this.selectionRange.split(', ');
 
           if (selectedHalfPtoDates.length > 1) {
-            alert("You cannot submit a Half PTO request for multiple dates");
+            toast.warning('You cannot submit a Half PTO request for multiple dates');
             console.error("Half PTO request cannot be submitted for multiple dates");
             return
 }
@@ -1124,7 +1126,7 @@ deleteGeneralAttendance() {
           const selectedSpecialPtoDates = this.selectionRange.split(', ');
 
           if (selectedSpecialPtoDates.length > 1) {
-            alert("You cannot submit a Special PTO request for multiple dates");
+            toast.warning('You cannot submit a Special PTO request for multiple dates');
             console.error("Special PTO request cannot be submitted for multiple dates");
             return
           }
@@ -1206,7 +1208,7 @@ deleteGeneralAttendance() {
 
       console.log("existing request: ", existingRequest)
       if (existingRequest) {
-        alert('A request for this month has already been submitted for approval.');
+        toast.error('A request for this month has already been submitted for approval');
         return;
       }
 
@@ -1228,10 +1230,10 @@ deleteGeneralAttendance() {
       this.closeSubmitMonthModal();
 
       // Optionally, show a success message or update the state
-      alert('Month attendance approval request submitted successfully.');
+      toast.success('Month attendance approval request submitted successfully');
     } catch (err) {
       console.error('Error submitting month approval request:', err);
-      alert('Failed to submit month approval request.');
+      toast.error('Failed to submit month approval request');
     }
   },
     async getSpecialPto() {
