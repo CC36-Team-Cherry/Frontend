@@ -49,12 +49,13 @@ const router = createRouter({
       }
     },
     {
-      path: '/supervisor-calendar',
+      path: '/supervisor-calendar/:userId?',
       name: 'supervisorCalendar',
       component: SupervisorCalendar,
+      props: route => ({ userId: route.params.userId }),
       meta: {
         requiresAuth: true
-      }
+      },
     },
     {
       path: '/settings', 

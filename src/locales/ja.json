@@ -42,6 +42,8 @@
     "resetPassword": "パスワードをリセットする",
     "sendEmail": "送信",
     "accountDNE": "アカウントが見つかりません",
+    "passwordMismatch": "パスワードが一致しません",
+    "success": "成功しました！メールをご確認ください",
     "placeholders": {
       "email": "メールアドレスを入力してください",
       "password": "パスワードを入力してください",
@@ -51,14 +53,15 @@
   },
   "register": {
     "title": "組織を登録",
-    "firstName": "氏名",
-    "lastName": "苗字",
-    "organizationName": "組織名",
+    "firstName": "氏名を入力してください",
+    "lastName": "苗字を入力してください",
+    "organizationName": "組織名を入力してください",
     "organizationDetails": "組織の詳細",
     "submit": "送信",
     "success": "登録が成功しました",
     "errorFillAllFields": "すべての必須項目に入力してください",
-    "goBack": "戻る"
+    "goBack": "戻る",
+    "role": "ユーザー役割を入力してください"
   },
   "adminConsole": {
     "title": "管理コンソール",
@@ -70,8 +73,22 @@
       "organizationName": "組織名"
     },
     "buttons": {
+      "edit": "編集",
+      "delete": "削除",
       "save": "保存",
+      "saveName": "新しい名前を保存",
       "deleteOrganization": "組織を削除"
+    },
+    "toast": {
+      "teamUpdate": "チーム名が正常に更新されました",
+      "teamFail": "チーム名の更新に失敗しました",
+      "teamDelete": "チームが正常に削除されました",
+      "teamDeleteFail": "チームの削除に失敗しました",
+      "teamDeleteError": "チームの削除中にエラーが発生しました",
+      "newTeam": "新しいチームが正常に保存されました",
+      "newTeamFail": "チームの追加中にエラーが発生しました",
+      "orgUpdate": "組織名が正常に更新されました",
+      "orgDelete": "組織が削除されました。さようなら！"
     }
   },
   "employeeList": {
@@ -128,6 +145,15 @@
         "admin": " 管理者"
       },
       "sendInvitation": "招待を送信"
+    },
+    "toast": {
+      "newInvite": "新しいユーザーが正常に招待されました",
+      "accountUpdate": "アカウントが正常に更新されました",
+      "accountUpdateFail": "アカウントの更新に失敗しました",
+      "accountUpdateError": "アカウントの更新中にエラーが発生しました",
+      "deleteAccount": "アカウントが正常に削除されました",
+      "deleteAccountFail": "アカウントの削除に失敗しました",
+      "deleteAccountError": "アカウントの削除中にエラーが発生しました"
     }
   },
   "employeeDetails": {
@@ -170,6 +196,17 @@
       "general": "一般",
       "pto": "有給休暇",
       "specialPto": "特別有給休暇"
+    },
+    "toast": {
+      "attendanceWarning": "選択したすべての日に対する出席はすでに記録されています",
+      "noAttDelete": "選択した日には削除する出席情報がありません",
+      "attDeleted": "選択した日に対する一般出席が削除されました",
+      "notEnoughPTO": "提出するのに十分なPTO残高がありません",
+      "halfRequest": "複数の日に対して半日PTOリクエストを提出することはできません",
+      "specialRequest": "複数の日に対して特別PTOリクエストを提出することはできません",
+      "alreadySubmittedMonth": "今月のリクエストはすでに承認のために提出されています",
+      "submittedMonth": "月次出席承認リクエストが正常に提出されました",
+      "submitMonthFail": "月次承認リクエストの提出に失敗しました"
     },
     "months": [
       "1月",

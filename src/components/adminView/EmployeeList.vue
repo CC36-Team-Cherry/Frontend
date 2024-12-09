@@ -162,7 +162,7 @@
               $t('employeeList.modal.fields.email')
             }}</label>
             <input type="email" v-model="formData.email" class="border rounded p-2 w-full" />
-            <span v-if="duplicateEmail" class="text-red-500 italic">$t('employeeList.emailInUse')</span>
+            <span v-if="duplicateEmail" class="text-red-500 italic">{{$t('employeeList.emailInUse')}}</span>
           </div>
           <div>
             <label class="block mb-1"><span class="text-red-500 font-bold">*</span>{{
@@ -251,12 +251,14 @@ import { onClickOutside } from '@vueuse/core';
 import SvgIcon from '@jamescoyle/vue-icon';
 import { mdiSort } from '@mdi/js';
 import LoopingRhombusesSpinner from '../../modal/Loading.vue';
+import { useToast } from "vue-toastification";
 
 const apiUrl = import.meta.env.VITE_API_URL;
 
 axios.defaults.withCredentials = true;
 
 const authStore = useAuthStore();
+const toast = useToast();
 
 const searchTerm = ref('');
 const isAddUserModalVisible = ref(false);
@@ -331,7 +333,7 @@ const openConfirmModal = () => {
 //adding a new user
 const handleSubmit = async () => {
   if (!formData.email || !formData.first_name || !formData.last_name || !formData.birthdate || !formData.join_date || !formData.role) {
-    alert('Please fill out all required fields.');
+    toast.warning(t('register.errorFillAllFields'));
     return;
   }
   modalLoading.value = true;
@@ -345,6 +347,7 @@ const handleSubmit = async () => {
     return;
   }
   modalLoading.value = false;
+  toast.success(t('employeeList.toast.newInvite'));
   closeAddUserModal();
   // send email to the new user, delayed by two seconds to allow time for new account to post to Firebase
   await new Promise(resolve => { setTimeout(resolve, 2000) });
@@ -404,6 +407,7 @@ const closeEmployeeDetailsModal = () => {
 
 const handleUpdate = async (updatedData) => {
   try {
+    isLoading.value = true;
     const employeeId = selectedEmployee.value.id;
     const cleanedUpdates = Object.fromEntries(
       Object.entries(updatedData).filter(([key, value]) => {
@@ -421,33 +425,42 @@ const handleUpdate = async (updatedData) => {
     cleanedUpdates.birthdate = new Date(cleanedUpdates.birthdate);
     const response = await axios.patch(`${apiUrl}/accounts/${employeeId}`, cleanedUpdates);
     if (response.status === 200) {
-      console.log("Account updated successfully");
       await handleFetchEmployees(authStore.user.company_id);
       closeEmployeeDetailsModal();
+      isLoading.value = false;
+      toast.success(t('employeeList.toast.accountUpdate'));
     } else {
-      console.error("Failed to update account")
+      isLoading.value = false;
+      toast.error(t('employeeList.toast.accountUpdateFail'));
     }
   } catch (err) {
-    console.error("Error updating employee: ", err);
+    //console.error("Error updating employee: ", err);
+    isLoading.value = false;
+    toast.error(t('employeeList.toast.accountUpdateError'));
   }
 }
 
 //deleting account
 const handleDelete = async () => {
   try {
+    isLoading.value = true;
     const employeeId = selectedEmployee.value.id;
     console.log(employeeId);
     const response = await axios.delete(`${apiUrl}/accounts/${employeeId}`)
     if (response.status === 200) {
-      console.log('Account deleted successfully');
       await handleFetchEmployees(authStore.user.company_id);
       isConfirmModalVisible.value = false;
       closeEmployeeDetailsModal();
+      isLoading.value = false;
+      toast.info(t('employeeList.toast.deleteAccount'));
     } else {
-      console.error('Failed to delete account');
+      isLoading.value = false;
+      toast.error(t('employeeList.toast.deleteAccountFail'));
     }
   } catch (err) {
-    console.error("Error deleting employee: ", err);
+    //console.error("Error deleting employee: ", err);
+    isLoading.value = false;
+    toast.error(t('employeeList.toast.deleteAccountError'));
   }
 }
 

@@ -7,7 +7,23 @@ export const content = [
 export const theme = {
   extend: {},
 };
-export const plugins = [];
+export const plugins = [
+  function ({ addUtilities }) {
+    addUtilities({
+      '.no-spinner': {
+        '&::-webkit-inner-spin-button': {
+          '-webkit-appearance': 'none',
+          margin: '0',
+        },
+        '&::-webkit-outer-spin-button': {
+          '-webkit-appearance': 'none',
+          margin: '0',
+        },
+        '-moz-appearance': 'textfield',
+      },
+    });
+  },
+];
 
 // module.exports = {
 //   content: [

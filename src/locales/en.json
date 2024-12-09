@@ -42,6 +42,8 @@
     "resetPassword": "Reset your password",
     "sendEmail": "Submit",
     "accountDNE": "Account not found",
+    "passwordMismatch": "Passwords don't match",
+    "success": "Success! Please check your email",
     "placeholders": {
       "email": "Enter your email address",
       "password": "Enter your password",
@@ -51,14 +53,15 @@
   },
   "register": {
     "title": "Register New Organization",
-    "firstName": "First Name",
-    "lastName": "Last Name",
-    "organizationName": "Organization Name",
+    "firstName": "Enter your first name",
+    "lastName": "Enter your last name",
+    "organizationName": "Enter the name of your organization",
     "organizationDetails": "Organization Details",
     "submit": "Submit",
     "success": "Registration successful",
     "errorFillAllFields": "Please fill all required fields",
-    "goBack": "Go back"
+    "goBack": "Go back",
+    "role": "Enter your user role"
   },
   "adminConsole": {
     "title": "Admin Console",
@@ -70,8 +73,22 @@
       "organizationName": "Organization Name"
     },
     "buttons": {
+      "edit": "Edit",
+      "delete": "Delete",
       "save": "Save",
+      "saveName": "Save New Name",
       "deleteOrganization": "Delete Organization"
+    },
+    "toast": {
+      "teamUpdate": "Team name updated successfully",
+      "teamFail": "Failed to update team name",
+      "teamDelete": "Team deleted successfully",
+      "teamDeleteFail": "Failed to delete the team",
+      "teamDeleteError": "Error deleting team",
+      "newTeam": "New team saved successfully",
+      "newTeamFail": "Error adding team",
+      "orgUpdate": "Organization name updated successfully",
+      "orgDelete": "Organization deleted. Goodbye!"
     }
   },
   "employeeList": {
@@ -128,6 +145,15 @@
         "admin": " Admin"
       },
       "sendInvitation": "Send Invitation"
+    },
+    "toast": {
+      "newInvite": "New user successfully invited",
+      "accountUpdate": "Account updated successfully",
+      "accountUpdateFail": "Failed to update account",
+      "accountUpdateError": "Error updating account",
+      "deleteAccount": "Account deleted successfully",
+      "deleteAccountFail": "Failed to delete account",
+      "deleteAccountError": "Error deleting account"
     }
   },
   "employeeDetails": {
@@ -172,6 +198,17 @@
       "specialPto": "Special PTO",
       "halfPto": "Half PTO",
       "absence": "Absence"
+    },
+    "toast": {
+      "attendanceWarning": "Attendance has already been logged for all selected days",
+      "noAttDelete": "No attendance to delete on selected days",
+      "attDeleted": "General attendance deleted on selected days",
+      "notEnoughPTO": "Not enough PTO remaining to submit",
+      "halfRequest": "You cannot submit a Half PTO request for multiple dates",
+      "specialRequest": "You cannot submit a Special PTO request for multiple dates",
+      "alreadySubmittedMonth": "A request for this month has already been submitted for approval",
+      "submittedMonth": "Month attendance approval request submitted successfully",
+      "submitMonthFail": "Failed to submit month approval request"
     },
     "months": [
       "1月",

@@ -86,11 +86,16 @@
             <div v-if="authStore.user.Privileges.is_admin || authStore.user.Privileges.is_supervisor">
               <label class="font-semibold block">Leave Date</label>
               <input :disabled="!authStore.user.Privileges.is_admin"
-                type="date" v-model="formData.leave_date" class="border w-full rounded px-2 py-1" />
+                type="date" v-model="formData.leave_date" class="border w-full rounded px-2 py-1 mb-2" />
             </div>
+            <label class="font-medium">{{ 'Privileges' }}</label>
             <div v-if="authStore.user.Privileges.is_admin">
-              <input type="checkbox" v-model="formData.is_supervisor"> Supervisor
-              <input type="checkbox" v-model="formData.is_admin"> Admin
+              <div class="flex items-center space-x-2 text-left">
+                <input type="checkbox" v-model="formData.is_supervisor" class="scale-150 m-5"> Supervisor
+              </div>
+              <div class="flex items-center space-x-2 text-left">
+                <input type="checkbox" v-model="formData.is_admin" class="scale-150 m-5"> Admin
+              </div>
             </div>
           </div>
           <!-- Attendance Settings -->
@@ -110,30 +115,35 @@
                   @input="validateRemainingPto" 
                 />
               </div>
+              <!-- Special Holidays List -->
               <div>
                 <label class="font-semibold block">{{ $t('employeeDetails.fields.specialHolidays') }}</label>
-                <div>
-                  <ul class="flex flex-col">
-                    <li v-for="(specialPto, index) in specialPtos" :key="specialPto.id" class="flex justify-around">
-                      <input v-if="editingSpecialPtoIndex === index" v-model="specialPtos[index].type"
+                <div class="flex justify-center items-center space-x-4 mb-6">
+                    <input v-model="newSpecialPto" type="text" placeholder="Enter Special PTO" class="border-2 border-gray-300 rounded-lg p-2 w-72" />
+                    <button @click="addSpecialPto" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-1 rounded" type="button">
+                      Add
+                    </button>
+                </div>
+                <div class="overflow-x-auto flex justify-center">
+                  <ul class="space-y-4 w-full max-w-3xl">
+                    <li v-for="(specialPto, index) in specialPtos" :key="specialPto.id" class="flex items-center justify-between bg-gray-100 p-4 rounded-lg shadow-sm hover:bg-gray-200">
+                      <input v-if="editingSpecialPtoIndex === index" class="border-2 border-gray-300 rounded-lg p-2 w-full mx-5" v-model="specialPtos[index].type"
                         @keyup.enter="stopEditing" />
-                      <span v-else>
+                      <span v-else class="w-full">
                         {{ specialPto.type }}</span>
                       <button @click="startEditingSpecialPto(index)" v-if="editingSpecialPtoIndex !== index"
-                        class="border-2">
+                        class="bg-yellow-500 hover:bg-yellow-600 text-white px-4 py-2 rounded mr-2 w-1/6">
                         Edit
                       </button>
-                      <button @click="deleteSpecialPto(specialPto.id)" class="border-2">
+                      <button @click="stopEditing" v-if="editingSpecialPtoIndex === index"
+                        class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded mr-2 w-1/6">
+                        Save
+                      </button>
+                      <button @click="deleteSpecialPto(specialPto.id)" class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded w-1/6">
                         Delete
                       </button>
                     </li>
                   </ul>
-                  <div class="flex justify-around">
-                    <input v-model="newSpecialPto" type="text" placeholder="Enter Special PTO" class="border-2" />
-                    <button @click="addSpecialPto" class="border-2" type="button">
-                      Add
-                    </button>
-                  </div>
                 </div>
               </div>
             </div>

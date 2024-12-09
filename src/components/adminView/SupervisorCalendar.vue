@@ -59,9 +59,15 @@ const apiUrl = import.meta.env.VITE_API_URL;
 
 export default {
   name: 'SupervisorCalendar',
+  props: {
+    userId: {
+      type: [String, Number],
+      required: true,
+    }
+  },
   data() {
     return {
-      selectedUserId: null,
+      selectedUserId: this.userId,
       users: [],
       events: [],
       holidays: [],

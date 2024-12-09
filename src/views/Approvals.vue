@@ -21,7 +21,7 @@
         <!-- Content -->
         <div class="max-h-[90%] overflow-scroll mt-5">
             <!-- Team Table -->
-            <table class="w-full border-collapse border border-gray-300">
+            <table class="w-full border-collapse border border-gray-300 table-fixed">
                 <thead class="bg-gray-200 sticky top-0 shadow-[0_0px_0.5px_1px_rgba(229,231,235,1)]">
                     <tr>
                         <th v-if="activeTab === 'sent'" class="border p-2 text-left">Sent To</th>
@@ -57,8 +57,7 @@
                         </td>
                         <td class="border p-2">
                             <div v-if="request.attendanceType === 'PTO' || request.attendanceType === 'Special PTO'">{{  `${new Date(request.date).toLocaleString('en-US', { month: 'short' })} ${getDayWithSuffix(new Date(request.date).getDate())}, ${new Date(request.date).getFullYear()}` }}</div>
-                            <div v-if="request.attendanceType === 'Half PTO'">{{  `${new Date(request.date).toLocaleString('en-US', { month: 'short' })} ${getDayWithSuffix(new Date(request.date).getDate())}, ${new Date(request.date).getFullYear()}` }}</div>
-                            <div v-if="request.attendanceType === 'Half PTO'">{{  `${new Date(request.hour_start).toLocaleTimeString('en-US', {hour12: false, hour: 'numeric', minute: '2-digit'})}-${new Date(request.hour_end).toLocaleTimeString('en-US', {hour12: false, hour: 'numeric', minute: '2-digit'})}` }}</div>
+                            <div v-if="request.attendanceType === 'Half PTO'">{{  `${new Date(request.date).toLocaleString('en-US', { month: 'short' })} ${getDayWithSuffix(new Date(request.date).getDate())}, ${new Date(request.date).getFullYear()} | ${new Date(request.hour_start).toLocaleTimeString('en-US', {hour12: false, hour: 'numeric', minute: '2-digit'})}-${new Date(request.hour_end).toLocaleTimeString('en-US', {hour12: false, hour: 'numeric', minute: '2-digit'})}` }}</div>
                             <div v-if="request.attendanceType === 'Month Attendance'"> {{ `${formatMonthYearMonthRequest(request.date)}` }} </div>
                         </td>
                         <td v-if="!request.isEditing" class="border p-2">{{ request.memo }}</td>
@@ -67,24 +66,24 @@
                                 @keyup.enter="saveRemind(request)" @blur="cancelEditing(request)" />
                         </td>
                         <td class="border p-2">{{ request.status }}</td>
-                        <td class="border p-2 flex flex-col space-y-2">
+                        <td class="border p-2 grid grid-cols-2 gap-2">
                             <button v-if="activeTab === 'received'" class="bg-green-500 text-white px-2 py-1 rounded"
                                 @click="statusClick(request.id, 'Approved', request.attendanceType)">
-                                <i class="fa-solid fa-check"></i>
+                                <i class="fas fa-check"></i>
                             </button>
-                            <button v-if="activeTab === 'received'" class="bg-red-500 text-white px-2 py-1 rounded"
+                            <button v-if="activeTab === 'received'" class="bg-gray-500 text-white px-2 py-1 rounded"
                                 @click="statusClick(request.id, 'Denied', request.attendanceType)">
                                 <i class="fas fa-times"></i>
                             </button>
                             <button v-if="activeTab === 'received'" class="bg-blue-500 text-white px-2 py-1 rounded"
-                                @click="seeAttendanceClick(request.id)">
+                                @click="seeAttendanceClick(request.accountId)">
                                 <i class="fas fa-calendar-alt"></i>
                             </button>
                             <button v-if="activeTab === 'sent'" class="bg-yellow-500 text-white px-2 py-1 rounded"
                                 @click="remindClick(request)">
                                 <i class="fas fa-bell"></i>
                             </button>
-                            <button class="bg-gray-500 text-white px-2 py-1 rounded"
+                            <button class="bg-red-500 text-white px-2 py-1 rounded"
                                 @click="deleteClick(request.id, request.attendanceType)">
                                 <i class="fas fa-trash-alt"></i>
                             </button>
@@ -106,9 +105,11 @@ import { ref, computed, onMounted } from 'vue';
 import axios from 'axios';
 import { useAuthStore } from '@/stores/authStore';
 import LoopingRhombusesSpinner from '../modal/Loading.vue';
+import { useRouter } from 'vue-router';
 
 const apiUrl = import.meta.env.VITE_API_URL;
 axios.defaults.withCredentials = true;
+const router = useRouter();
 const authStore = useAuthStore();
 const activeAccountId = authStore.user.id;
 const isLoading = ref(true);
@@ -249,9 +250,13 @@ const cancelEditing = (request) => {
 }
 
 // Button click to see attendance, reroute OR modal to see that person's calendar view
-const seeAttendanceClick = async () => {
+const seeAttendanceClick = async (requestId) => {
     try {
 
+        console.log("router check: ", router)
+        console.log("requested id", requestId)
+
+        router.push({ name: 'supervisorCalendar', params: { userId: requestId }})
     } catch (err) {
         console.error('Error seeing attendance of selected account:', err)
     }
