@@ -25,8 +25,8 @@
               <span class="text-red-500 font-bold">*</span>{{ $t('login.email') }}:
             </label>
             <input v-model="formData.email" type="email" :placeholder="$t('login.placeholders.email')"
-              class="w-full p-3 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-400"
-              />
+              data-test="reg-username"
+              class="w-full p-3 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-400" />
             <span v-if="duplicateEmail" class="text-red-500 italic">{{ $t('employeeList.emailInUse') }}</span>
           </div>
           <div>
@@ -34,58 +34,55 @@
               <span class="text-red-500 font-bold">*</span>{{ $t('login.password') }}:
             </label>
             <input v-model="formData.password" type="password" :placeholder="$t('login.placeholders.password')"
-              class="w-full p-3 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-400"
-              />
+              data-test="reg-password"
+              class="w-full p-3 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-400" />
           </div>
           <div>
             <label class="block text-gray-700 font-medium mb-2">
               <span class="text-red-500 font-bold">*</span>{{ $t('register.firstName') }}:
             </label>
             <input v-model="formData.first_name" type="text" :placeholder="$t('register.firstName')"
-              class="w-full p-3 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-400"
-              />
+              data-test="reg-first-name"
+              class="w-full p-3 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-400" />
           </div>
           <div>
             <label class="block text-gray-700 font-medium mb-2">
               <span class="text-red-500 font-bold">*</span>{{ $t('register.lastName') }}:
             </label>
             <input v-model="formData.last_name" type="text" :placeholder="$t('register.lastName')"
-              class="w-full p-3 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-400"
-              />
+              data-test="reg-last-name"
+              class="w-full p-3 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-400" />
           </div>
           <div>
             <label class="block text-gray-700 font-medium mb-2">
               <span class="text-red-500 font-bold">*</span>{{ $t('employeeDetails.fields.dateOfBirth') }}:
             </label>
-            <input v-model="formData.birthdate" type="date"
-              class="w-full p-3 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-400"
-              />
+            <input v-model="formData.birthdate" type="date" data-test="reg-birthday"
+              class="w-full p-3 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-400" />
           </div>
           <div>
             <label class="block text-gray-700 font-medium mb-2">
               <span class="text-red-500 font-bold">*</span>{{ $t('settings.fields.role') }}:
             </label>
-            <input v-model="formData.role" type="text" :placeholder="$t('register.role')"
-              class="w-full p-3 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-400"
-              />
+            <input v-model="formData.role" type="text" :placeholder="$t('register.role')" data-test="reg-role"
+              class="w-full p-3 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-400" />
           </div>
           <div>
             <label class="block text-gray-700 font-medium mb-2">
               <span class="text-red-500 font-bold">*</span>{{ $t('settings.fields.joinDate') }}:
             </label>
-            <input v-model="formData.join_date" type="date"
-              class="w-full p-3 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-400"
-              />
+            <input v-model="formData.join_date" type="date" data-test="reg-join-date"
+              class="w-full p-3 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-400" />
           </div>
           <div>
             <label class="block text-gray-700 font-medium mb-2">
               <span class="text-red-500 font-bold">*</span>{{ $t('register.organizationName') }}:
             </label>
             <input v-model="formData.company_name" type="text" :placeholder="$t('register.organizationName')"
-              class="w-full p-3 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-400"
-              />
+              data-test="reg-company-name"
+              class="w-full p-3 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-400" />
           </div>
-          <button type="submit"
+          <button type="submit" data-test="org-register-button"
             class="bg-blue-500 text-white py-3 px-4 rounded hover:bg-blue-600 transition duration-200 font-semibold">
             {{ $t('register.submit') }}
           </button>
@@ -158,7 +155,7 @@ const handleSubmit = async () => {
 
     //check if the entered email address is already associated with an account in the database
     const doesAccountExist = await verifyAccount();
-    if(doesAccountExist) {
+    if (doesAccountExist) {
       duplicateEmail.value = true;
       isLoading.value = false;
       return;
@@ -179,7 +176,7 @@ const createUserFirebase = async () => {
   const email = formData.value.email;
   const password = formData.value.password;
 
-  
+
   //create the new user in Firebase
   const credential = await createUserWithEmailAndPassword(auth, email, password);
   const user = credential.user;
@@ -209,7 +206,7 @@ const verifyAccount = async () => {
   }
 }
 
-const switchLanguage = (lang : any) => {
+const switchLanguage = (lang: any) => {
   locale.value = lang;
 };
 

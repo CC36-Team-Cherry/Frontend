@@ -69,6 +69,7 @@
         </button>
         <hr class="border-gray-300">
         <button
+          data-test="register-button"
           @click="goToRegister()"
           class="bg-green-500 text-white py-2 px-4 rounded hover:bg-green-600 transition"
         >
