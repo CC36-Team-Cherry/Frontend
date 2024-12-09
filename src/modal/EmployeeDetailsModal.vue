@@ -132,15 +132,15 @@
                       <span v-else class="w-full">
                         {{ specialPto.type }}</span>
                       <button @click="startEditingSpecialPto(index)" v-if="editingSpecialPtoIndex !== index"
-                        class="bg-yellow-500 hover:bg-yellow-600 text-white px-4 py-2 rounded mr-2 w-1/6">
-                        Edit
+                        class="bg-yellow-500 hover:bg-yellow-600 text-white px-5 py-2 rounded mr-2 w-1/12">
+                        <i class="fas fa-edit"></i>
                       </button>
                       <button @click="stopEditing" v-if="editingSpecialPtoIndex === index"
-                        class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded mr-2 w-1/6">
-                        Save
+                        class="bg-blue-500 hover:bg-blue-600 text-white px-5 py-2 rounded mr-2 w-1/12">
+                        <i class="fas fa-save"></i>
                       </button>
-                      <button @click="deleteSpecialPto(specialPto.id)" class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded w-1/6">
-                        Delete
+                      <button @click="deleteSpecialPto(specialPto.id)" class="bg-red-500 hover:bg-red-600 text-white px-5 py-2 rounded w-1/12">
+                        <i class="fas fa-trash-alt"></i>
                       </button>
                     </li>
                   </ul>

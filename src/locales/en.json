@@ -113,7 +113,7 @@
       "status": "Status",
       "lastLogin": "Last Login",
       "email": "Email",
-      "att": "Att."
+      "att": "Attendance"
     },
     "none": "None",
     "view": "View",
@@ -179,8 +179,8 @@
       "dateOfBirth": "Date of Birth",
       "team": "Team",
       "supervisor": "Supervisor",
-      "pto": "PTO",
-      "specialHolidays": "Special Holidays",
+      "pto": "Paid Time Off (PTO)",
+      "specialHolidays": "Special PTO",
       "holidayType": "Holiday Type"
     },
     "placeholders": {
@@ -191,7 +191,7 @@
     "buttons": {
       "addHoliday": "Add Holiday",
       "save": "Save",
-      "delete": "Delete"
+      "delete": "Delete Employee"
     }
   },
   "calendar": {
@@ -207,7 +207,7 @@
     "submit": "Submit",
     "supervisorPlaceholder": "List of Supervisors",
     "approvalStatus": "Approval Status",
-    "monthlySubmit": "Monthly Submit",
+    "monthlySubmit": "Submit Month",
     "types": {
       "general": "General Attendance",
       "pto": "PTO",
@@ -215,16 +215,16 @@
       "halfPto": "Half PTO",
       "absence": "Absence",
       "hr": "hr",
-      "min": "min"
+      "min": "m"
     },
     "headers": {
       "totalWorked": "Total Worked",
       "overtime": "Overtime",
       "currentMonth": "Current Month",
-      "hours": "Hrs",
+      "hours": "Hr(s)",
       "pto": "Paid Time Off",
       "totalRemaining": "Total remaining",
-      "days": "Days"
+      "days": "Day(s)"
     },
     "toast": {
       "attendanceWarning": "Attendance has already been logged for all selected days",
@@ -287,7 +287,7 @@
       "denied": "Request has been denied",
       "deleted": "Request has been deleted"
     },
-    "enterMemo": "Enter a memo to send with your request",
+    "enterMemo": "Optional Memo",
     "remindSuccess": "Reminder sent!",
     "closed": "This request is closed and cannot be edited"
   },

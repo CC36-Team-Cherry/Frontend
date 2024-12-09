@@ -16,11 +16,11 @@
             </div>
 
         <div class="overflow-x-auto flex justify-center">
-            <table class="w-8/12 table-auto border-collapse">
-                <thead class="bg-gray-200">
+            <table class="w-1/2 table-auto border-collapse">
+                <thead class="bg-blue-100">
                     <tr>
-                        <th class="border p-2 text-left w-2/3">{{$t('adminConsole.teamName')}}</th>
-                        <th class="border p-2 text-left w-1/3">{{$t('adminConsole.actions')}}</th>
+                        <th class="border p-2 text-left w-5/6">{{$t('adminConsole.teamName')}}</th>
+                        <th class="border p-2 text-left w-1/6">{{$t('adminConsole.actions')}}</th>
                     </tr>
                 </thead>
                 <tr v-for="(team, index) in teams" :key="team.id" class="hover:bg-gray-100 even:bg-gray-50">
@@ -33,12 +33,14 @@
                         </span>
                     </td>
                     <td class="border p-2 flex space-x-2 justify-center">
-                        <button @click="startEditing(index)" v-if="editingIndex !== index" class="bg-yellow-500 hover:bg-yellow-600 text-white px-5 py-2 rounded mr-2">
-                            {{ $t('adminConsole.buttons.edit') }}
+                        <button @click="startEditing(index)" v-if="editingIndex !== index" class="bg-yellow-500 hover:bg-yellow-600 text-white px-6 py-2 rounded mr-2 w-20">
+                            <i class="fas fa-edit"></i>
                         </button>
-                        <button @click="stopEditing" v-else class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded mr-2">{{ $t('adminConsole.buttons.save') }}</button>
-                        <button @click="deleteTeam(team.id)" class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded">
-                            {{ $t('adminConsole.buttons.delete') }}
+                        <button @click="stopEditing" v-else class="bg-blue-500 hover:bg-blue-600 text-white px-6 py-2 rounded mr-2 w-20">
+                            <i class="fas fa-save"></i>
+                        </button>
+                        <button @click="deleteTeam(team.id)" class="bg-red-500 hover:bg-red-600 text-white px-6 py-2 rounded w-20">
+                            <i class="fas fa-trash-alt"></i>
                         </button>
                     </td>
                 </tr>
@@ -58,10 +60,10 @@
             <!-- <label class="font-medium text-left">{{ $t('adminConsole.fields.organizationName') }}</label> -->
             <input type="text" v-model="formData.organizationName" class="border rounded p-2 w-1/6" :placeholder=authStore.user.company.name />
                     <!-- Save and Delete buttons -->
-            <button @click="saveSettings" class="my-1 w-1/6 py-2 px-3 rounded bg-blue-500 hover:bg-blue-600 transition text-white">
+            <button @click="saveSettings" class="my-1 w-1/12 py-2 px-3 rounded bg-blue-500 hover:bg-blue-600 transition text-white">
                 {{ $t('adminConsole.buttons.saveName') }}
             </button>
-            <button @click="openConfirmModal" class="my-4 w-1/6 py-2 rounded bg-red-500 hover:bg-red-600 transition text-white">
+            <button @click="openConfirmModal" class="my-4 w-1/12 py-2 rounded bg-red-500 hover:bg-red-600 transition text-white">
                 {{ $t('adminConsole.buttons.deleteOrganization') }}
             </button>
         </div>

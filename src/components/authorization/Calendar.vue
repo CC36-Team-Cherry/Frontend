@@ -45,65 +45,65 @@
       </div>
     </div>
     <!-- Right Sidebar -->
-    <div class="bg-white shadow-sm border border-slate-200 rounded-lg p-2 flex flex-col" style="width: 240px; max-width: 240px;">
+    <div class="bg-white shadow-sm border border-slate-200 rounded-lg p-2 flex flex-col w-80">
       <!-- Tabs --> 
       <div class="flex mb-3">
         <button
           @click="tab = 'attendance', attendanceType = 'general'"
           :class="{'bg-blue-500 text-white': tab === 'attendance', 'text-blue-500': tab !== 'attendance'}"
-          class="px-4 py-2 text-sm font-bold flex-1 rounded"
+          class="px-4 py-2 text-medium font-bold flex-1 rounded"
         >
         {{ $t('calendar.attendance') }}
         </button>
         <button
           @click="tab = 'pto', attendanceType = 'pto'"
           :class="{'bg-blue-500 text-white': tab === 'pto', 'text-blue-500': tab !== 'pto'}"
-          class="px-4 py-2 text-sm font-bold flex-1 rounded"
+          class="px-4 py-2 text-medium font-bold flex-1 rounded"
         >{{ $t('calendar.types.pto') }}</button>
       </div>
 
       <!-- Attendance Form Tab -->
       <div v-if="tab === 'attendance'">
         <div class="mb-3">
-          <label class="block mb-1 font-bold text-sm">{{ $t('calendar.selection') }}</label>
+          <label class="block mb-1 font-bold text-medium">{{ $t('calendar.selection') }}</label>
           <input
             type="text"
             placeholder="YYYY-MM-DD - YYYY-MM-DD"
             v-model="selectionRange"
-            class="border border-gray-300 rounded p-1 text-xs w-full"
+            class="border border-gray-300 rounded p-1 text-sm w-full"
           />
         </div>
         <div class="mb-3">
-          <label class="block mb-1 font-bold text-sm">{{ $t('calendar.type') }}</label>
-          <select v-model="attendanceType" class="border border-gray-300 rounded p-1 text-xs w-full">
+          <label class="block mb-1 font-bold text-medium">{{ $t('calendar.type') }}</label>
+          <select v-model="attendanceType" class="border border-gray-300 rounded p-1 text-sm w-full">
             <option value="general">{{ $t('calendar.types.general') }}</option>
             <option value="absence">{{  $t('calendar.types.absence') }}</option>
           </select>
         </div>
         <div class="mb-3">
-          <label class="block mb-1 font-bold text-sm">{{  $t('calendar.startTime') }}</label>
+          <label class="block mb-1 font-bold text-medium">{{  $t('calendar.startTime') }}</label>
           <input
             type="time"
             v-model="startTime"
-            class="border border-gray-300 rounded p-1 text-xs w-full"
+            class="border border-gray-300 rounded p-1 text-sm w-full"
           />
         </div>
         <div class="mb-3">
-          <label class="block mb-1 font-bold text-sm">{{ $t('calendar.endTime') }}</label>
+          <label class="block mb-1 font-bold text-medium">{{ $t('calendar.endTime') }}</label>
           <input
             type="time"
             v-model="endTime"
-            class="border border-gray-300 rounded p-1 text-xs w-full"
+            class="border border-gray-300 rounded p-1 text-sm w-full"
           />
         </div>
         <div class="mb-3">
-  <label class="block mb-1 font-bold text-sm">{{ $t('calendar.breakTime') }}</label>
+  <label class="block mb-1 font-bold text-medium">{{ $t('calendar.breakTime') }}</label>
   <div class="flex gap-2 items-center">
     <!-- Hours Input -->
     <div class="flex items-center">
       <button 
         @click="decreaseBreakHours" 
-        class="px-2 py-1 rounded border text-xs bg-gray-100 border-gray-300 hover:bg-blue-500 hover:text-white">
+        class="px-2 py-1 rounded border text-sm bg-gray-100 border-gray-300 hover:bg-blue-500 hover:text-white">
         -
       </button>
       <input 
@@ -111,12 +111,12 @@
         v-model="breakHours" 
         @input="validateHours"
         @focus="selectAll($event)" 
-        class="no-spinner px-3 py-1 text-center border text-xs bg-white border-gray-300 w-10" 
+        class="no-spinner px-3 py-1 text-center border text-sm bg-white border-gray-300 w-10" 
         min="0" 
         max="23">
       <button 
         @click="increaseBreakHours" 
-        class="px-2 py-1 rounded border text-xs bg-gray-100 border-gray-300 hover:bg-blue-500 hover:text-white">
+        class="px-2 py-1 rounded border text-sm bg-gray-100 border-gray-300 hover:bg-blue-500 hover:text-white">
         +
       </button>
       <span class="ml-1 text-sm">{{ $t('calendar.types.hr') }}</span>
@@ -126,7 +126,7 @@
     <div class="flex items-center">
       <button 
         @click="decreaseBreakMinutes" 
-        class="px-2 py-1 rounded border text-xs bg-gray-100 border-gray-300 hover:bg-blue-500 hover:text-white">
+        class="px-2 py-1 rounded border text-sm bg-gray-100 border-gray-300 hover:bg-blue-500 hover:text-white">
         -
       </button>
       <input 
@@ -134,12 +134,12 @@
         v-model="breakMinutes" 
         @input="validateMinutes"
         @focus="selectAll($event)" 
-        class="no-spinner px-3 py-1 text-center border text-xs bg-white border-gray-300 w-10" 
+        class="no-spinner px-3 py-1 text-center border text-sm bg-white border-gray-300 w-10" 
         min="0" 
         max="59">
       <button 
         @click="increaseBreakMinutes" 
-        class="px-2 py-1 rounded border text-xs bg-gray-100 border-gray-300 hover:bg-blue-500 hover:text-white">
+        class="px-2 py-1 rounded border text-sm bg-gray-100 border-gray-300 hover:bg-blue-500 hover:text-white">
         +
       </button>
       <span class="ml-1 text-sm">{{ $t('calendar.types.min') }}</span>
@@ -167,17 +167,17 @@
       <!-- PTO Tab -->
       <div v-if="tab === 'pto'">
         <div>
-          <label class="block mb-1 font-bold text-sm">{{  $t('calendar.selection') }}</label>
+          <label class="block mb-1 font-bold text-medium">{{  $t('calendar.selection') }}</label>
           <input
             type="text"
             placeholder="YYYY-MM-DD - YYYY-MM-DD"
             v-model="selectionRange"
-            class="border border-gray-300 rounded p-1 text-xs w-full mb-3"
+            class="border border-gray-300 rounded p-1 text-sm w-full mb-3"
           />
         </div>
         <div class="mb-3">
-          <label class="block mb-1 font-bold text-sm">{{ $t('calendar.type') }}</label>
-          <select v-model="attendanceType" class="border border-gray-300 rounded p-1 text-xs w-full">
+          <label class="block mb-1 font-bold text-medium">{{ $t('calendar.type') }}</label>
+          <select v-model="attendanceType" class="border border-gray-300 rounded p-1 text-sm w-full">
             <option value="pto">{{ $t('calendar.types.pto') }}</option>
             <option value="halfpto">{{ $t('calendar.types.halfPto') }}</option>
             <optgroup v-if="specialPtos.length > 0" label="Special PTO">
@@ -192,27 +192,27 @@
           </select>
         </div>
         <div v-show="isHalfPtoSelected" class="mb-3">
-          <label class="block mb-1 font-bold text-sm">{{  $t('calendar.startTime') }}</label>
+          <label class="block mb-1 font-bold text-medium">{{  $t('calendar.startTime') }}</label>
           <input
             type="time"
             v-model="startTime"
-            class="border border-gray-300 rounded p-1 text-xs w-full"
+            class="border border-gray-300 rounded p-1 text-sm w-full"
           />
         </div>
         <div v-show="isHalfPtoSelected" class="mb-3">
-          <label class="block mb-1 font-bold text-sm">{{ $t('calendar.endTime') }}</label>
+          <label class="block mb-1 font-bold text-medium">{{ $t('calendar.endTime') }}</label>
           <input
             type="time"
             v-model="endTime"
-            class="border border-gray-300 rounded p-1 text-xs w-full"
+            class="border border-gray-300 rounded p-1 text-sm w-full"
             :disabled="isHalfPtoSelected"
           />
         </div>
         <div class="mb-3">
-          <label class="block mb-1 font-bold text-sm">{{  $t('employeeList.modal.userType.supervisor') }}</label>
+          <label class="block mb-1 font-bold text-medium">{{  $t('employeeList.modal.userType.supervisor') }}</label>
           <select
             v-model="selectedSupervisorId"
-            class="border border-gray-300 rounded p-1 text-xs w-full"
+            class="border border-gray-300 rounded p-1 text-sm w-full"
           >
             <option value="" disabled>{{  $t('employeeList.modal.placeholders.supervisor') }}</option>
             <option
@@ -225,12 +225,12 @@
           </select>
         </div>
         <div class="mb-3">
-          <label class="block mb-1 font-bold text-sm">{{  $t('approval.memo') }}</label>
+          <label class="block mb-1 font-bold text-medium">{{  $t('approval.memo') }}</label>
           <input
             v-model="memo"
             type="text"
             :placeholder="$t('approval.enterMemo')"
-            class="border border-gray-300 rounded p-1 text-xs w-full"
+            class="border border-gray-300 rounded p-1 text-sm w-full"
           />
         </div>  
         <button
@@ -245,9 +245,10 @@
       </div>
 
       <!-- Monthly Submit Button -->
-      <div class="flex flex-col items-center space-y-4 mt-auto">
+      <div class="flex flex-col items-center space-y-3 mt-auto">
+
         <div class="text-lg font-semibold mt-auto text-center">
-          {{"Approval Status"}}
+          {{"Month Approval "}}
         </div>
         <div 
         :class="{
@@ -259,8 +260,11 @@
         class="text-lg font-medium px-4 py-2 rounded-md w-full text-center">
           {{ monthSubmitApprovalStatus }}
         </div>
+
+        <hr class="w-11/12 border-gray-300 my-4">
+
         <button
-          class="bg-green-500 text-white py-1 px-3 rounded hover:bg-gray-600 w-full text-lg mb-2 h-16"
+          class="bg-green-500 text-white py-1 px-3 rounded hover:bg-gray-600 w-full text-xl mb-2 h-16"
           @click.stop="openSubmitMonthModal"
         >
         {{$t('calendar.monthlySubmit')}}
@@ -792,7 +796,7 @@ async fetchAttendanceData(accountId) {
 
 // Usa la tua funzione esistente per determinare il colore
 getEventColor(data) {
-  if (data.absence) return 'red';  // Assenza
+  if (data.absence) return 'pink';  // Assenza
   if (data.status === "Approved") return 'blue';  // PTO completo
   if (data.special_pto) return 'green';  // PTO speciale
   if (data.status === "Pending") return 'gray';  // PTO parziale
@@ -801,7 +805,7 @@ getEventColor(data) {
 
 getEventTypeFromColor(color) {
   switch (color) {
-    case 'red':
+    case 'pink':
       return 'absence';
     case 'orange':
       return 'pto';
