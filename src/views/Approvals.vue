@@ -211,12 +211,20 @@ const statusClick = async (approvalsId, statusChange, requestType) => {
             tabRequests[requestIndex].updated_at = new Date().toISOString(); // Update the updated date in the local state
         }
 
-        const response = await axios.patch(`${apiUrl}/approvals/${requestType}/${approvalsId}`,
+        await axios.patch(`${apiUrl}/approvals/${requestType}/${approvalsId}`,
             {
                 // Send status change string
                 statusChange
             }
         );
+
+        if (statusChange === 'Approved') {
+            toast.success(t('approval.messages.approved'))
+        }
+
+        if (statusChange === 'Denied') {
+            toast.info(t('approval.messages.denied'))
+        }
 
     } catch (err) {
         console.error('Error changing approval status:', err)
@@ -283,7 +291,9 @@ const deleteClick = async (approvalsId, requestType) => {
 
         requests[activeTab.value] = tabRequests.filter(request => !(request.id === approvalsId && request.attendanceType === requestType))
 
-        const response = await axios.delete(`${apiUrl}/approvals/${requestType}/${approvalsId}`);
+        await axios.delete(`${apiUrl}/approvals/${requestType}/${approvalsId}`);
+
+        toast.info(t('approval.messages.deleted'))
 
     } catch (err) {
         console.error('Error deleting approval:', err)

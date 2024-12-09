@@ -266,7 +266,8 @@
     "delete": "Delete",
     "messages": {
       "approved": "Request has been approved",
-      "denied": "Request has been denied"
+      "denied": "Request has been denied",
+      "deleted": "Request has been deleted"
     },
     "enterMemo": "Enter a memo to send with your reminder",
     "remindSuccess": "Reminder sent!",
