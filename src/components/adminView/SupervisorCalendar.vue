@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="h-screen">
     <!-- User Selection Dropdown -->
     <div class="mb-4">
       <label for="user-select" class="block text-sm font-semibold">{{$t('supervisorCalendar.teamMembers')}}</label>
@@ -45,7 +45,7 @@
     </div>
 
     <!-- Calendar -->
-    <div ref="calendar" id="calendar" class="w-full"></div>
+    <div ref="calendar" id="calendar" class="h-full"></div>
   </div>
 </template>
 
@@ -137,6 +137,7 @@ export default {
             this.handleMonthChange(info.start);
           },
           eventContent: this.eventContent,
+          fixedWeekCount: false,
         });
         this.calendar.render();
       }
