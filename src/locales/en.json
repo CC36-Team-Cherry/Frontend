@@ -78,6 +78,18 @@
       "save": "Save",
       "saveName": "Save New Name",
       "deleteOrganization": "Delete Organization"
+    },
+    "toast": {
+      "teamUpdate": "Team name updated successfully",
+      "teamFail": "Failed to update team name",
+      "teamDelete": "Team deleted successfully",
+      "teamDeleteFail": "Failed to delete the team",
+      "teamDeleteError": "Error deleting team",
+      "newTeam": "New team saved successfully",
+      "newTeamFail": "Error adding team",
+      "orgUpdate": "Organization name updated successfully",
+      "orgDelete": "Organization deleted. Goodbye!"
+
     }
   },
   "employeeList": {
