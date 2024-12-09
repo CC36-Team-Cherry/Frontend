@@ -883,7 +883,7 @@ updateSelectedBreakTime() {
     });
 
     if (filteredDays.length === 0) {
-      toast.warning('Attendance has already been logged for all selected days');
+      toast.warning(t('calendar.toast.attendanceWarning'));
       return;
     }
 
@@ -971,7 +971,7 @@ deleteGeneralAttendance() {
 });
 
   if (attendanceToDelete.length === 0) {
-    toast.warning('No attendance to delete on selected days');
+    toast.warning(t('calendar.toast.noAttDelete'));
     return;
   }
 
@@ -981,7 +981,7 @@ deleteGeneralAttendance() {
 
   Promise.all(deletePromises)
     .then(() => {
-      toast.success('General attendance deleted on selected days');
+      toast.success(t('calendar.toast.attDeleted'));
 
       this.fetchAttendanceData(authStore.user.id);
       this.updateChart();
@@ -1047,7 +1047,7 @@ deleteGeneralAttendance() {
 
        // Check if PTO or HalfPTO is being requested and remainingPto is 0
       if ((this.attendanceType === "pto" || this.attendanceType === "halfpto") && this.remainingPto <= 0) {
-        toast.warning('Not enough PTO remaining to submit');
+        toast.warning(t('calendar.toast.notEnoughPTO'));
         return; 
       }
 
@@ -1088,7 +1088,7 @@ deleteGeneralAttendance() {
           const selectedHalfPtoDates = this.selectionRange.split(', ');
 
           if (selectedHalfPtoDates.length > 1) {
-            toast.warning('You cannot submit a Half PTO request for multiple dates');
+            toast.warning(t('calendar.toast.halfRequest'));
             console.error("Half PTO request cannot be submitted for multiple dates");
             return
 }
@@ -1126,7 +1126,7 @@ deleteGeneralAttendance() {
           const selectedSpecialPtoDates = this.selectionRange.split(', ');
 
           if (selectedSpecialPtoDates.length > 1) {
-            toast.warning('You cannot submit a Special PTO request for multiple dates');
+            toast.warning(t('calendar.toast.specialRequest'));
             console.error("Special PTO request cannot be submitted for multiple dates");
             return
           }
@@ -1208,7 +1208,7 @@ deleteGeneralAttendance() {
 
       console.log("existing request: ", existingRequest)
       if (existingRequest) {
-        toast.error('A request for this month has already been submitted for approval');
+        toast.error(t('calendar.toast.alreadySubmittedMonth'));
         return;
       }
 
@@ -1230,10 +1230,10 @@ deleteGeneralAttendance() {
       this.closeSubmitMonthModal();
 
       // Optionally, show a success message or update the state
-      toast.success('Month attendance approval request submitted successfully');
+      toast.success(t('calendar.toast.submittedMonth'));
     } catch (err) {
       console.error('Error submitting month approval request:', err);
-      toast.error('Failed to submit month approval request');
+      toast.error(t('calendar.toast.submitMonthFail'));
     }
   },
     async getSpecialPto() {
