@@ -283,7 +283,7 @@ import { useI18n } from 'vue-i18n';
 import { useAuthStore } from '@/stores/authStore';
 import Chart from 'chart.js/auto';
 import { ref } from 'vue';
-import SubmitMonthModal from '../../modal/SubmitMonthModal.vue';
+import SubmitMonthModal from '@/modal/SubmitMonthModal.vue';
 import { useToast } from "vue-toastification";
 const toast = useToast();
 
@@ -295,13 +295,15 @@ const selectedMonth = ref(null);
 const currentUserAtten = ref(null);
 
 export default {  
+  components: {
+    SubmitMonthModal,
+  },  
   data() {
     return {
       calculatedTotalHours: totalHours,
       selectionRange: '',
       extraHours: 0,
-      attendanceType: '',
-
+      attendanceType: 'general',
       startTime: '',
       endTime: '',
       calendar: null,
@@ -893,7 +895,7 @@ updateSelectedBreakTime() {
     const [startHour, startMinute] = this.startTime.split(':').map(Number);
     const [endHour, endMinute] = this.endTime.split(':').map(Number);
 
-    
+
     let totalHours = 0;
     if (this.attendanceType === 'general') {
       const startTotalMinutes = startHour * 60 + startMinute;
@@ -1096,8 +1098,6 @@ deleteGeneralAttendance() {
           const halfPtoStartTime = new Date(`${this.selectionRange}T${this.startTime}:00.000Z`).toISOString();
           const halfPtoEndTime = new Date(`${this.selectionRange}T${this.endTime}:00.000Z`).toISOString();
 
-          const selectedhalfPtoDates = this.selectionRange.split(', ');
-
           const halfPtoApproval = {
             account_id: authStore.user.id,
             supervisor_id: this.selectedSupervisorId,
@@ -1158,9 +1158,28 @@ deleteGeneralAttendance() {
         requests.sent = response.data.approvalsSentData;
         requests.received = response.data.approvalsReceivedData;
         authStore.setApprovals(response.data.approvalsSentData, response.data.approvalsReceivedData);
+        
+        this.fetchAttendanceData(authStore.user.id);
+        this.updateChart();
+        this.clearForm();
+
       } catch (err) {
         console.error('Error fetching approvals:', err);
       }
+
+
+
+    //   Promise.all(attendancePromises)
+    //     .then(() => {
+      
+    //   this.fetchAttendanceData(authStore.user.id);
+    //   this.updateChart();
+    //   this.clearForm();
+    // })
+    // .catch((error) => {
+    //   console.error('Error logging attendance:', error.response?.data || error.message);
+    // });
+
     },
     // Submit handler for general attendance
     async submitMonthApproval({ supervisorId, memo }) {
@@ -1168,16 +1187,23 @@ deleteGeneralAttendance() {
       const authStore = useAuthStore();
 
       const selectedDate = new Date(selectedMonth.value);
-      const currentMonth = selectedDate.getMonth() + 1;
+      selectedDate.setDate(selectedDate.getDate() + 7);
+      const currentMonth = selectedDate.getMonth() === 0 ? selectedDate.getMonth() + 1 : selectedDate.getMonth() + 1;
       const currentYear = selectedDate.getFullYear();
-      const nextMonth = currentMonth === 12 ? 12 : currentMonth + 1;
+
+        // Log for debugging
+        console.log("Selected Month: ", selectedDate.getMonth())
+        console.log("Selected Date: ", selectedDate);
+        console.log("Current Month: ", currentMonth);
+        console.log("Current Year: ", currentYear);
+        // console.log("Next Month: ", nextMonth);
 
       // Check if a request already exists for the selected month and year
       const requests = authStore.approvals;
       console.log("requests", requests)
       const existingRequest = requests.sent.find(request => {
         const [year, month] = request.date.split('-').map(Number); // Split date into month and year
-        return year === currentYear && month === nextMonth;
+        return year === currentYear && month === currentMonth;
       });
 
       console.log("existing request: ", existingRequest)
@@ -1189,7 +1215,7 @@ deleteGeneralAttendance() {
       const generalApproval = {
         account_id: authStore.user.id,
         supervisor_id: supervisorId,
-        month: nextMonth,
+        month: currentMonth,
         year: currentYear,
         content: memo,
         status: 'Pending',
