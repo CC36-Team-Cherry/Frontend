@@ -196,6 +196,7 @@
     "type": "Type",
     "startTime": "Start Time",
     "endTime": "End Time",
+    "breakTime": "Break Amount",
     "attendance": "Attendance",
     "submission": "Submission",
     "logAttendance": "Log Attendance",
@@ -217,7 +218,8 @@
       "specialRequest": "You cannot submit a Special PTO request for multiple dates",
       "alreadySubmittedMonth": "A request for this month has already been submitted for approval",
       "submittedMonth": "Month attendance approval request submitted successfully",
-      "submitMonthFail": "Failed to submit month approval request"
+      "submitMonthFail": "Failed to submit month approval request",
+      "invalidStartEndTimes": "End time should be before start time"
     },
     "months": [
       "1月",
