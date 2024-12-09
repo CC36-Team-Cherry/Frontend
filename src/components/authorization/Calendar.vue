@@ -107,11 +107,11 @@
         -
       </button>
       <input 
-        type="number" 
+        type="number"
         v-model="breakHours" 
         @input="validateHours"
         @focus="selectAll($event)" 
-        class=" no-spinner px-3 py-1 text-center border text-xs bg-white border-gray-300 w-10" 
+        class="no-spinner px-3 py-1 text-center border text-xs bg-white border-gray-300 w-10" 
         min="0" 
         max="23">
       <button 
@@ -246,12 +246,20 @@
       </div>
 
       <!-- Monthly Submit Button -->
-      <button
-        class="bg-green-500 text-white py-1 px-3 rounded hover:bg-gray-600 w-full text-base mb-2 h-16 mt-auto"
-        @click.stop="openSubmitMonthModal"
-      >
-        Monthly Submit
-      </button>
+      <div class="flex flex-col items-start space-y-4 mt-auto">
+        <div class="text-lg mt-auto">
+          {{"Approval Status"}}
+        </div>
+        <div class="text-lg"> 
+          {{ monthSubmitApprovalStatus }}
+        </div>
+        <button
+          class="bg-green-500 text-white py-1 px-3 rounded hover:bg-gray-600 w-full text-lg mb-2 h-16"
+          @click.stop="openSubmitMonthModal"
+        >
+          Monthly Submit
+        </button>
+      </div>
 
       <SubmitMonthModal 
         :isVisible="isSubmitMonthModalVisible"
@@ -324,7 +332,6 @@ export default {
       remainingPto: null,
       tab: 'attendance',
       isSubmitMonthModalVisible: false,
-
       selectedBreakTime: null,
       breakHours: 0,
       breakMinutes: 0,
@@ -367,6 +374,31 @@ export default {
         isAttendanceTypeSelected &&
         isSupervisorSelected
       )
+    },
+    monthSubmitApprovalStatus() {
+
+      const authStore = useAuthStore();
+      const requests = authStore.approvals.sent;
+      console.log("monthSubmitApprovalStatus: ", requests)
+
+      const selectedDate = new Date(selectedMonth.value);
+      selectedDate.setDate(selectedDate.getDate() + 7);
+      const currentMonth = selectedDate.getMonth() === 0 ? selectedDate.getMonth() + 1 : selectedDate.getMonth() + 1;
+      const currentYear = selectedDate.getFullYear();
+      
+      const existingRequest = requests.find(request => {
+        const [month, year] = request.date.split('-').map(Number); // Split date into month and year
+        return year === currentYear && month === currentMonth;
+      });
+
+      // Return the status of the existing request if found, otherwise return 'No Request'
+      if (existingRequest) {
+        console.log("Existing Request Status:", existingRequest.status);
+        return existingRequest.status;
+      } else {
+        console.log("No Request Found");
+        return 'No Request'; // Return a default value when no request exists
+      }
     }
   },
 
@@ -401,6 +433,7 @@ export default {
     initialView: 'dayGridMonth',
     locale: this.locales[locale.value],
     selectable: true,
+    unselectAuto: false,
     businessHours: {
       daysOfWeek: [1, 2, 3, 4, 5], 
     },
@@ -664,7 +697,6 @@ updateChart() {
   }
 },
 
-
 async fetchAttendanceData(accountId) {
   try {
     const response = await axios.get(`${apiUrl}/accounts/${accountId}/attendance`);
@@ -774,8 +806,6 @@ getEventColor(data) {
   return 'lightblue';  // Colore di default
 },
 
-
-
 getEventTypeFromColor(color) {
   switch (color) {
     case 'red':
@@ -790,20 +820,20 @@ getEventTypeFromColor(color) {
       return 'general';
   }
 },
-  //   handleEventClick(event) {
-  //     if (event.extendedProps.isHoliday) return; 
-  //     this.selectedEventId = event.id;
-  //     this.selectionRange = event.start.toISOString().split('T')[0];
-  //     this.startTime = event.extendedProps.startTime || '';
-  //     this.endTime = event.extendedProps.endTime || '';
-  //     this.attendanceType = this.getEventTypeFromColor(event.backgroundColor);
+    handleEventClick(event) {
+      if (event.extendedProps.isHoliday) return; 
+      this.selectedEventId = event.id;
+      this.selectionRange = event.start.toISOString().split('T')[0];
+      this.startTime = event.extendedProps.startTime || '';
+      this.endTime = event.extendedProps.endTime || '';
+      this.attendanceType = this.getEventTypeFromColor(event.backgroundColor);
 
-  //     console.log("attendanceType",attendanceType);
-  //   },
+      console.log("attendanceType",attendanceType);
+    },
 
-  //   selectAll(event) {
-  //   event.target.select();
-  // },
+    selectAll(event) {
+    event.target.select();
+  },
     validateHours() {
   if (this.breakHours === "" || this.breakHours === null) {
     this.breakHours = 0;
@@ -930,7 +960,7 @@ updateSelectedBreakTime() {
       break_amount:  this.selectedBreakTime || 0,
       totalHours: totalHours, // Usa il valore calcolato per totalHours
     };
-    
+
     if (this.selectedEventId) {
       
       return axios.put(
@@ -948,10 +978,10 @@ updateSelectedBreakTime() {
 
   Promise.all(attendancePromises)
     .then(() => {
-      
       this.fetchAttendanceData(authStore.user.id);
       this.updateChart();
       this.clearForm();
+      this.attendanceType = 'general';
     })
     .catch((error) => {
       console.error('Error logging attendance:', error.response?.data || error.message);
@@ -1084,7 +1114,6 @@ deleteGeneralAttendance() {
 
         case "halfpto":
 
-          //TODO: Allow for multiple half PTO input
           const selectedHalfPtoDates = this.selectionRange.split(', ');
 
           if (selectedHalfPtoDates.length > 1) {
@@ -1188,25 +1217,23 @@ deleteGeneralAttendance() {
 
       const selectedDate = new Date(selectedMonth.value);
       selectedDate.setDate(selectedDate.getDate() + 7);
+      // const currentMonth = selectedDate.getMonth() + 1;
       const currentMonth = selectedDate.getMonth() === 0 ? selectedDate.getMonth() + 1 : selectedDate.getMonth() + 1;
       const currentYear = selectedDate.getFullYear();
 
-        // Log for debugging
-        console.log("Selected Month: ", selectedDate.getMonth())
-        console.log("Selected Date: ", selectedDate);
-        console.log("Current Month: ", currentMonth);
-        console.log("Current Year: ", currentYear);
-        // console.log("Next Month: ", nextMonth);
-
       // Check if a request already exists for the selected month and year
-      const requests = authStore.approvals;
-      console.log("requests", requests)
-      const existingRequest = requests.sent.find(request => {
-        const [year, month] = request.date.split('-').map(Number); // Split date into month and year
+      const requests = authStore.approvals.sent;
+      // console.log("requests", requests)
+      const existingRequest = requests.find(request => {
+        const [month, year] = request.date.split('-').map(Number); // Split date into month and year
         return year === currentYear && month === currentMonth;
       });
 
-      console.log("existing request: ", existingRequest)
+      console.log("selected date :", selectedDate)
+      console.log("current month :", currentMonth)
+      console.log("current month :", currentYear)
+      console.log("existing request :", existingRequest)
+
       if (existingRequest) {
         toast.error('A request for this month has already been submitted for approval');
         return;
@@ -1223,8 +1250,9 @@ deleteGeneralAttendance() {
 
     try {
       await axios.post(`${apiUrl}/approvals/monthAttendance`, generalApproval);
-
-      authStore.approvals.sent.push(generalApproval);
+      const response = await axios.get(`${apiUrl}/accounts/${authStore.user.id}/approvals`);
+      requests.sent = response.data.approvalsSentData;
+      authStore.setApprovals(response.data.approvalsSentData);
 
       // Close the modal on success
       this.closeSubmitMonthModal();

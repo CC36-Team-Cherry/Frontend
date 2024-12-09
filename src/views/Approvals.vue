@@ -66,7 +66,7 @@
                                 @keyup.enter="saveRemind(request)" @blur="cancelEditing(request)" />
                         </td>
                         <td class="border p-2">{{ request.status }}</td>
-                        <td class="border p-2 grid grid-cols-2 gap-2">
+                        <td class="p-2 grid grid-cols-2 gap-2">
                             <button v-if="activeTab === 'received'" class="bg-green-500 text-white px-2 py-1 rounded"
                                 @click="statusClick(request.id, 'Approved', request.attendanceType)">
                                 <i class="fas fa-check"></i>
@@ -115,7 +115,6 @@ const activeAccountId = authStore.user.id;
 const isLoading = ref(true);
 
 // Sample data for the approval requests
-// const requests = ref({});
 const requests = authStore.approvals
 
 // Reactive state to store current tab
