@@ -1130,10 +1130,6 @@ deleteGeneralAttendance() {
     }
     return true; // If times are not filled yet, assume it's valid
   },
-  logAttendance() {
-    // Handle log attendance logic here
-    console.log("Attendance logged");
-  }
  },
 
 };

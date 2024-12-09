@@ -114,9 +114,9 @@ export default {
         { title: 'Christmas Holiday', start: `${year}-12-29`, isHoliday: true },
         { title: 'Christmas Holiday', start: `${year}-12-30`, isHoliday: true },
         { title: 'Christmas Holiday', start: `${year}-12-31`, isHoliday: true },
-        { title: 'Christmas Holiday', start: `${year + 1}-01-01`, isHoliday: true },
-        { title: 'Christmas Holiday', start: `${year + 1}-01-02`, isHoliday: true },
-        { title: 'Christmas Holiday', start: `${year + 1}-01-03`, isHoliday: true },
+        { title: "New Year's Day", start: `${year + 1}-01-01`, isHoliday: true },
+        { title: 'Christmas Holiday', start: `2025-01-02`, isHoliday: true },
+        { title: 'Christmas Holiday', start: `2025-01-03`, isHoliday: true },
       ];
     },
     initializeCalendar() {
@@ -134,12 +134,21 @@ export default {
         this.calendar.render();
       }
     },
-    handleMonthChange(startDate) {
-      const year = startDate.getFullYear();
-      const month = startDate.getMonth() + 1;
-      console.log("Year, Month changed:", { year, month });
-      this.fetchAttendanceDataForMonth(year, month);
-    },
+  handleMonthChange(startDate) {
+  // Calcola la data centrale del calendario (media tra inizio e fine)
+    const midViewDate = new Date(
+    (this.calendar.view.activeStart.getTime() + this.calendar.view.activeEnd.getTime()) / 2
+   );
+
+  const year = midViewDate.getFullYear();
+  const month = midViewDate.getMonth() + 1; // Mese corrente
+
+  console.log("Calculated midViewDate:", midViewDate);
+  console.log("Current year:", year, "Current month:", month);
+
+  // Carica i dati del mese effettivo
+  this.fetchAttendanceDataForMonth(year, month);
+},
     async fetchAttendanceDataForMonth(year, month) {
       if (!this.selectedUserId) {
         console.error('No user selected');
@@ -184,7 +193,7 @@ export default {
           id: pto.id,
           title: `${pto.type}`,
           start: pto.date,
-          backgroundColor: pto.status === 'Approved' ? 'green' : 'gray',
+          backgroundColor: pto.status === 'Approved' ? 'purple' : 'gray',
           extendedProps: {
             attendanceType: pto.type === 'Special PTO'
               ? 'Special PTO'
