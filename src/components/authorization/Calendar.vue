@@ -245,8 +245,8 @@
       </div>
 
       <!-- Monthly Submit Button -->
-      <div class="flex flex-col items-start space-y-4 mt-auto">
-        <div class="text-lg font-semibold mt-auto">
+      <div class="flex flex-col items-center space-y-4 mt-auto">
+        <div class="text-lg font-semibold mt-auto text-center">
           {{"Approval Status"}}
         </div>
         <div 
@@ -263,7 +263,7 @@
           class="bg-green-500 text-white py-1 px-3 rounded hover:bg-gray-600 w-full text-lg mb-2 h-16"
           @click.stop="openSubmitMonthModal"
         >
-          Monthly Submit
+          Monthly Submission
         </button>
       </div>
 
