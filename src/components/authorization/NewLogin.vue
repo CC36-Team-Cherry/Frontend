@@ -71,6 +71,7 @@ axios.defaults.withCredentials = true;
 const { locale } = useI18n();
 const isLoading = ref(false);
 const toast = useToast();
+const { t } = useI18n();
 
 const newPassword = ref('');
 const confirmNewPassword = ref('');
@@ -81,7 +82,7 @@ let accountEmail = '';
 
 const handleResetPassword = () => {
   if (newPassword.value !== confirmNewPassword.value) {
-    toast.warning("Passwords don't match");
+    toast.warning(t('login.passwordMismatch'));
     return;
   }
   isLoading.value = true;

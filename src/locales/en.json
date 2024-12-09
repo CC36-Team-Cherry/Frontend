@@ -42,6 +42,7 @@
     "resetPassword": "Reset your password",
     "sendEmail": "Submit",
     "accountDNE": "Account not found",
+    "passwordMismatch": "Passwords don't match",
     "placeholders": {
       "email": "Enter your email address",
       "password": "Enter your password",
