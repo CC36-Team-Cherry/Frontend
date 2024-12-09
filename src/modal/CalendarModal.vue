@@ -17,7 +17,7 @@
             <div class="text-xs">{{$t('calendar.headers.currentMonth')}}</div>
           </div>
           <hr class="w-px h-10 border-l border-slate-300 mx-4">
-          <div class="text-3xl text-slate-600">{{ totalWorkedHours ?? 0 }} {{$t('calendar.headers.hours')}}</div>
+          <div class="text-3xl text-slate-600">{{ totalWorkedHours.toFixed(2) ?? 0 }} {{$t('calendar.headers.hours')}}</div>
         </div>
 
         <div class="bg-white shadow-sm border border-slate-200 rounded-lg p-2 flex flex-row justify-evenly items-center">
@@ -170,6 +170,7 @@ export default {
           backgroundColor: record.absence ? 'red' : 'lightblue',
           extendedProps: {
             attendanceType: record.absence ? 'absence' : 'general',
+            breakTime: record.break_amount ? `${record.break_amount} min` : "None",
             totalHours: record.punch_in && record.punch_out
               ? (new Date(record.punch_out) - new Date(record.punch_in)) / (1000 * 60 * 60)
               : 0,
@@ -200,6 +201,8 @@ export default {
           this.events.forEach((event) => this.calendar.addEvent(event));
         }
 
+        let totalBreakMinutes = 0;
+
         const calculatedTotalHours = this.events.reduce((sum, event) => {
           const isAbsence = event.extendedProps?.attendanceType === 'absence';
           const isPto = event.extendedProps?.attendanceType === 'pto';
@@ -214,10 +217,13 @@ export default {
             return sum + 4;
           }
 
+          const breakTimeMinutes = parseInt(event.extendedProps?.breakTime?.replace(' min', '')) || 0;
+          totalBreakMinutes += breakTimeMinutes;
+
           return sum + (event.extendedProps?.totalHours || 0);
         }, 0);
 
-        this.totalWorkedHours = calculatedTotalHours;
+        this.totalWorkedHours = calculatedTotalHours - totalBreakMinutes / 60;
         this.overtimeHours = Math.max(0, calculatedTotalHours - 160);
 
       } catch (error) {
@@ -226,10 +232,14 @@ export default {
     },
     eventContent(arg) {
       if (arg.event.extendedProps.attendanceType === 'general' || arg.event.extendedProps.attendanceType === 'absence') {
-        return {
-          html: `<div style="color: black; background-color: ${arg.event.backgroundColor}; padding: 5px; border-radius: 4px;">
-            <b>${arg.event.title}</b>
-          </div>`,
+        const breakTimeHtml = arg.event.extendedProps.breakTime
+      ? `<div style="font-size: 0.8vw; color: gray; margin-top: 0.2em;">Break: ${arg.event.extendedProps.breakTime}</div>`
+      : '';
+    return {
+      html: `<div style="text-align: left; font-size: 1vw; color: black; background-color: ${arg.event.backgroundColor}; padding: .5vw; border-radius: 4px; width: 100%; word-wrap: break-word; white-space: normal;">
+        <b>${arg.event.title}</b>
+        ${breakTimeHtml}
+      </div>`,
         };
       } else if (arg.event.extendedProps.attendanceType === 'pto' || arg.event.extendedProps.attendanceType === 'Special PTO' || arg.event.extendedProps.attendanceType === 'halfpto') {
         return {
@@ -270,5 +280,3 @@ export default {
   },
 };
 </script>
-
-  
