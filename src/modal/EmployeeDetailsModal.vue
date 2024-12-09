@@ -14,7 +14,7 @@
         <!-- Account Info -->
         <div>
           <h3 class="text-lg text-center font-semibold mb-4">
-            --- {{ $t('employeeDetails.accountInfo') }} ---
+            {{ $t('employeeDetails.accountInfo') }}
           </h3>
           <div class="space-y-3">
             <div>
@@ -74,34 +74,34 @@
               </ul>
             </div>
             <div>
-              <label class="font-semibold block">Role</label>
+              <label class="font-semibold block">{{ $t('employeeList.modal.fields.role') }}</label>
               <input :disabled="!authStore.user.Privileges.is_admin"
                 type="text" v-model="formData.role" class="border w-full rounded px-2 py-1" />
             </div>
             <div>
-              <label class="font-semibold block">Join Date</label>
+              <label class="font-semibold block">{{ $t('employeeList.modal.fields.joinDate') }}</label>
               <input :disabled="!authStore.user.Privileges.is_admin"
                 type="date" v-model="formData.join_date" class="border w-full rounded px-2 py-1" />
             </div>
             <div v-if="authStore.user.Privileges.is_admin || authStore.user.Privileges.is_supervisor">
-              <label class="font-semibold block">Leave Date</label>
+              <label class="font-semibold block">{{ $t('employeeList.tableHeaders.lastDate') }}</label>
               <input :disabled="!authStore.user.Privileges.is_admin"
                 type="date" v-model="formData.leave_date" class="border w-full rounded px-2 py-1 mb-2" />
             </div>
-            <label class="font-medium">{{ 'Privileges' }}</label>
+            <label class="font-medium">{{ $t('employeeList.tableHeaders.privileges') }}</label>
             <div v-if="authStore.user.Privileges.is_admin">
               <div class="flex items-center space-x-2 text-left">
-                <input type="checkbox" v-model="formData.is_supervisor" class="scale-150 m-5"> Supervisor
+                <input type="checkbox" v-model="formData.is_supervisor" class="scale-150 m-5"> {{ $t('employeeList.modal.userType.supervisor') }}
               </div>
               <div class="flex items-center space-x-2 text-left">
-                <input type="checkbox" v-model="formData.is_admin" class="scale-150 m-5"> Admin
+                <input type="checkbox" v-model="formData.is_admin" class="scale-150 m-5"> {{ $t('employeeList.modal.userType.admin') }}
               </div>
             </div>
           </div>
           <!-- Attendance Settings -->
           <div v-if="authStore.user.Privileges.is_admin">
             <h3 class="text-lg font-semibold text-center mb-4">
-              --- {{ $t('employeeDetails.attendanceSettings') }} ---
+              {{ $t('employeeDetails.attendanceSettings') }}
             </h3>
             <div class="space-y-3">
               <div>
@@ -119,9 +119,9 @@
               <div>
                 <label class="font-semibold block">{{ $t('employeeDetails.fields.specialHolidays') }}</label>
                 <div class="flex justify-center items-center space-x-4 mb-6">
-                    <input v-model="newSpecialPto" type="text" placeholder="Enter Special PTO" class="border-2 border-gray-300 rounded-lg p-2 w-72" />
+                    <input v-model="newSpecialPto" type="text" :placeholder="$t('employeeList.modal.placeholders.specialPTO')" class="border-2 border-gray-300 rounded-lg p-2 w-72" />
                     <button @click="addSpecialPto" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-1 rounded" type="button">
-                      Add
+                      {{ $t('adminConsole.buttons.add') }}
                     </button>
                 </div>
                 <div class="overflow-x-auto flex justify-center">

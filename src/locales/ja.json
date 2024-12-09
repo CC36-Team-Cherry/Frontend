@@ -65,6 +65,8 @@
   },
   "adminConsole": {
     "title": "管理コンソール",
+    "teamName": "チーム名",
+    "actions": "アクション",
     "fields": {
       "teamList": "チームリスト",
       "adminSettings": "管理者設定",
@@ -73,6 +75,8 @@
       "organizationName": "組織名"
     },
     "buttons": {
+      "add": "追加",
+      "addPlaceholder": "チーム名を入力してください",
       "edit": "編集",
       "delete": "削除",
       "save": "保存",
@@ -104,9 +108,11 @@
       "lastDate": "退社日",
       "privileges": "権利",
       "status": "ステータス",
+      "lastLogin": "最終ログイン",
       "email": "メールアドレス",
       "att": "出席"
     },
+    "none": "なし",
     "view": "表示",
     "employeeHeader": {
       "currentMonthInfo": "今月の出席情報",
@@ -125,6 +131,7 @@
         "email": "メールアドレス",
         "dateOfBirth": "生年月日",
         "team": "チーム",
+        "noTeam": "チームなし",
         "supervisor": "デフォルトの上司",
         "role": "役割",
         "joinDate": "入社日",
@@ -138,11 +145,13 @@
         "selectTeam": "チームを選択してください",
         "supervisor": "上司の名前を入力してください",
         "role": "役割を入力してください",
-        "pto": "有給日数を入力してください"
+        "pto": "有給日数を入力してください",
+        "specialPTO": "特別有給日数を入力してください"
       },
       "userType": {
-        "supervisor": " 上司",
-        "admin": " 管理者"
+        "supervisor": "上司",
+        "admin": "管理者",
+        "adminSupervisor": "管理者, 上司"
       },
       "sendInvitation": "招待を送信"
     },
@@ -195,7 +204,9 @@
     "types": {
       "general": "一般",
       "pto": "有給休暇",
-      "specialPto": "特別有給休暇"
+      "specialPto": "特別有給休暇",
+      "halfPto": "半日有給休暇",
+      "absence": "欠席"
     },
     "toast": {
       "attendanceWarning": "選択したすべての日に対する出席はすでに記録されています",
@@ -232,30 +243,33 @@
       "土曜日"
     ]
   },
-  "Approval": {
-    "TabSent": "承認リクエスト送信済み",
-    "TabReceived": "承認リクエスト受信済み",
-    "SentTo": "送信先",
-    "From": "送信元",
-    "Type": "タイプ",
-    "Message": "メッセージ",
-    "Status": "ステータス",
-    "Action": "アクション",
-    "Date": "日付",
-    "NoApprovals": "表示する承認がありません。",
-    "MonthlyAttendance": "月次出勤状況",
-    "Approve": "承認",
-    "Deny": "却下",
-    "SeeAttendance": "出勤状況を確認",
-    "Remind": "リマインド",
-    "Delete": "削除",
-    "Messages": {
-      "Approved": "承認が正常に行われました！",
-      "Denied": "承認リクエストを却下しました。"
+  "approval": {
+    "tabSent": "承認リクエスト送信済み",
+    "tabReceived": "承認リクエスト受信済み",
+    "sentTo": "送信先",
+    "from": "送信元",
+    "type": "タイプ",
+    "message": "メッセージ",
+    "status": "ステータス",
+    "action": "アクション",
+    "date": "日付",
+    "requestedDate": "リクエスト日",
+    "memo": "メモ",
+    "lastUpdated": "最終更新",
+    "noApprovals": "表示する承認がありません。",
+    "monthlyAttendance": "月次出勤状況",
+    "approve": "承認",
+    "deny": "却下",
+    "seeAttendance": "出勤状況を確認",
+    "remind": "リマインド",
+    "delete": "削除",
+    "messages": {
+      "approved": "承認が正常に行われました！",
+      "denied": "承認リクエストを却下しました。"
     }
   },
-  "SupervisorCalendar": {
-    "Title": "監督者カレンダー",
-    "SelectPlaceholder": "チームメンバーを選択してください"
+  "supervisorCalendar": {
+    "title": "監督者カレンダー",
+    "selectPlaceholder": "チームメンバーを選択してください"
   }
 }

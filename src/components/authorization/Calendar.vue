@@ -287,6 +287,7 @@ import dayGridPlugin from '@fullcalendar/daygrid';
 import enLocale from '@fullcalendar/core/locales/en-gb';
 import jaLocale from '@fullcalendar/core/locales/ja';
 import axios from 'axios';
+import i18n from '../../i18n.ts';
 import { useI18n } from 'vue-i18n';
 import { useAuthStore } from '@/stores/authStore';
 import Chart from 'chart.js/auto';
@@ -294,6 +295,7 @@ import { ref } from 'vue';
 import SubmitMonthModal from '@/modal/SubmitMonthModal.vue';
 import { useToast } from "vue-toastification";
 const toast = useToast();
+const { t } = i18n.global;
 
 const apiUrl = import.meta.env.VITE_API_URL;
 axios.defaults.withCredentials = true;

@@ -65,6 +65,8 @@
   },
   "adminConsole": {
     "title": "Admin Console",
+    "teamName": "Team Name",
+    "actions": "Actions",
     "fields": {
       "teamList": "Team List",
       "adminSettings": "Admin Settings",
@@ -73,6 +75,8 @@
       "organizationName": "Organization Name"
     },
     "buttons": {
+      "add": "Add",
+      "addPlaceholder": "Enter Team Name",
       "edit": "Edit",
       "delete": "Delete",
       "save": "Save",
@@ -104,9 +108,11 @@
       "lastDate": "Leave Date",
       "privileges": "Privileges",
       "status": "Status",
+      "lastLogin": "Last Login",
       "email": "Email",
       "att": "Att."
     },
+    "none": "None",
     "view": "View",
     "employeeHeader": {
       "currentMonthInfo": "Current Month Attendance Info",
@@ -125,6 +131,7 @@
         "email": "Email",
         "dateOfBirth": "Date of Birth",
         "team": "Team",
+        "noTeam": "No team",
         "supervisor": "Default Supervisor",
         "role": "Role",
         "joinDate": "Join Date",
@@ -138,11 +145,13 @@
         "selectTeam": "Select a Team",
         "supervisor": "Select a Supervisor",
         "role": "Enter a Role",
-        "pto": "Enter PTO"
+        "pto": "Enter PTO",
+        "specialPTO": "Enter Special PTO"
       },
       "userType": {
         "supervisor": " Supervisor",
-        "admin": " Admin"
+        "admin": " Admin",
+        "adminSupervisor": "Admin, Supervisor"
       },
       "sendInvitation": "Send Invitation"
     },
@@ -234,26 +243,33 @@
       "土曜日"
     ]
   },
-  "Approval": {
-    "TabSent": "Approval Requests Sent",
-    "TabReceived": "Approval Requests Received",
-    "SentTo": "Sent To",
-    "From": "From",
-    "Type": "Type",
-    "Message": "Message",
-    "Status": "Status",
-    "Action": "Action",
-    "Date": "Date",
-    "NoApprovals": "No approvals to show.",
-    "MonthlyAttendance": "Monthly Attendance for",
-    "Approve": "Approve",
-    "Deny": "Deny",
-    "SeeAttendance": "See Attendance",
-    "Remind": "Remind",
-    "Delete": "Delete"
+  "approval": {
+    "tabSent": "Approval Requests Sent",
+    "tabReceived": "Approval Requests Received",
+    "sentTo": "Sent To",
+    "from": "From",
+    "type": "Type",
+    "message": "Message",
+    "status": "Status",
+    "action": "Action",
+    "date": "Date",
+    "requestedDate": "Requested Date",
+    "memo": "Memo",
+    "lastUpdated": "Last Updated",
+    "noApprovals": "No approvals to show.",
+    "monthlyAttendance": "Monthly Attendance for",
+    "approve": "Approve",
+    "deny": "Deny",
+    "seeAttendance": "See Attendance",
+    "remind": "Remind",
+    "delete": "Delete",
+    "messages": {
+      "approved": "Request has been approved",
+      "denied": "Request has been denied"
+    }
   },
-  "SupervisorCalendar": {
-    "Title": "Supervisor Calendar",
-    "SelectPlaceholder": "Select a team member"
+  "supervisorCalendar": {
+    "title": "Supervisor Calendar",
+    "selectPlaceholder": "Select a team member"
   }
 }
