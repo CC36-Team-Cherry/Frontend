@@ -267,7 +267,10 @@
     "messages": {
       "approved": "Request has been approved",
       "denied": "Request has been denied"
-    }
+    },
+    "enterMemo": "Enter a memo to send with your reminder",
+    "remindSuccess": "Reminder sent!",
+    "closed": "This request is closed and cannot be edited"
   },
   "supervisorCalendar": {
     "title": "Supervisor Calendar",
