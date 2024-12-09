@@ -199,6 +199,7 @@
     "type": "タイプを選択",
     "startTime": "開始時間",
     "endTime": "終了時間",
+    "breakTime": "休暇期間",
     "attendance": "出勤記録",
     "submission": "提出",
     "logAttendance": "出勤を記録",
@@ -220,7 +221,8 @@
       "specialRequest": "複数の日に対して特別PTOリクエストを提出することはできません",
       "alreadySubmittedMonth": "今月のリクエストはすでに承認のために提出されています",
       "submittedMonth": "月次出席承認リクエストが正常に提出されました",
-      "submitMonthFail": "月次承認リクエストの提出に失敗しました"
+      "submitMonthFail": "月次承認リクエストの提出に失敗しました",
+      "invalidStartEndTimes": "終了時刻は開始時刻の前である必要があります"
     },
     "months": [
       "1月",
