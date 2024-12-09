@@ -126,6 +126,7 @@ export default {
             this.handleMonthChange(info.start);
           },
           eventContent: this.eventContent,
+          fixedWeekCount: false,
         });
         this.calendar.render();
       }
