@@ -96,6 +96,56 @@
             class="border border-gray-300 rounded p-1 text-xs w-full"
           />
         </div>
+        <div class="mb-3">
+  <label class="block mb-1 font-bold text-sm">{{ $t('calendar.breakTime') }}</label>
+  <div class="flex gap-2 items-center">
+    <!-- Hours Input -->
+    <div class="flex items-center">
+      <button 
+        @click="decreaseBreakHours" 
+        class="px-2 py-1 rounded border text-xs bg-gray-100 border-gray-300 hover:bg-blue-500 hover:text-white">
+        -
+      </button>
+      <input 
+        type="number" 
+        v-model="breakHours" 
+        @input="validateHours"
+        @focus="selectAll($event)" 
+        class=" no-spinner px-3 py-1 text-center border text-xs bg-white border-gray-300 w-10" 
+        min="0" 
+        max="23">
+      <button 
+        @click="increaseBreakHours" 
+        class="px-2 py-1 rounded border text-xs bg-gray-100 border-gray-300 hover:bg-blue-500 hover:text-white">
+        +
+      </button>
+      <span class="ml-1 text-sm">hr</span>
+    </div>
+
+    <!-- Minutes Input -->
+    <div class="flex items-center">
+      <button 
+        @click="decreaseBreakMinutes" 
+        class="px-2 py-1 rounded border text-xs bg-gray-100 border-gray-300 hover:bg-blue-500 hover:text-white">
+        -
+      </button>
+      <input 
+        type="number" 
+        v-model="breakMinutes" 
+        @input="validateMinutes"
+        @focus="selectAll($event)" 
+        class="no-spinner px-3 py-1 text-center border text-xs bg-white border-gray-300 w-10" 
+        min="0" 
+        max="59">
+      <button 
+        @click="increaseBreakMinutes" 
+        class="px-2 py-1 rounded border text-xs bg-gray-100 border-gray-300 hover:bg-blue-500 hover:text-white">
+        +
+      </button>
+      <span class="ml-1 text-sm">min</span>
+    </div>
+  </div>
+</div>
         <button
           @click="logAttendance"
           :class="{'bg-blue-500 text-white py-1 px-3 rounded hover:bg-blue-600 w-full text-base mb-3' : isFormValid,
@@ -270,6 +320,10 @@ export default {
       remainingPto: null,
       tab: 'attendance',
       isSubmitMonthModalVisible: false,
+
+      selectedBreakTime: null,
+      breakHours: 0,
+      breakMinutes: 0,
     };
   },
   computed: {
@@ -294,7 +348,7 @@ export default {
         isDateSelected &&  // Date range is selected
         isAttendanceTypeSelected &&  // Attendance type is selected
         isStartTimeSelected && 
-        isEndTimeSelected 
+        isEndTimeSelected
         // this.isEndTimeAfterStartTime()  // Optionally, check if end time is after start time
       )
     },
@@ -370,9 +424,9 @@ export default {
         .map((date) => date.toISOString().split('T')[0])
         .join(', ');
     },
-    eventClick: (info) => {
-      this.handleEventClick(info.event);
-    },
+    // eventClick: (info) => {
+    //   this.handleEventClick(info.event);
+    // },
     eventContent: (arg) => {
       if (arg.event.extendedProps.isHoliday) {
   return {
@@ -386,14 +440,18 @@ export default {
 
 // Gestione degli eventi con orari di ingresso e uscita
 if (arg.event.extendedProps.startTime && arg.event.extendedProps.endTime) {
-  return {
-    html: `
-      <div style="text-align: left; font-size: 1vw; color: black; background-color: ${arg.event.backgroundColor}; padding: .5vw; border-radius: 4px; width: 100%; word-wrap: break-word; white-space: normal;">
-        <b>${arg.event.extendedProps.startTime} - ${arg.event.extendedProps.endTime}</b>
-      </div>
-    `,
-  };
-}
+    const breakTime = arg.event.extendedProps.breakTime
+      ? `<small style="font-size: 0.8vw; color: gray;">Break: ${arg.event.extendedProps.breakTime}</small>`
+      : '';
+    return {
+      html: `
+        <div style="text-align: left; font-size: 1vw; color: black; background-color: ${arg.event.backgroundColor}; padding: .5vw; border-radius: 4px; width: 100%; word-wrap: break-word; white-space: normal;">
+          <b>${arg.event.extendedProps.startTime} - ${arg.event.extendedProps.endTime}</b><br>
+          ${breakTime}
+        </div>
+      `,
+    };
+  }
 
 // Gestione degli eventi PTO
 if (arg.event.extendedProps.status) {
@@ -569,9 +627,9 @@ updateChart() {
     return;
   }
 
-  const workedHours = totalHours.value; // Ore lavorate
-  const extraHours = workedHours > this.maxHours ? workedHours - this.maxHours : 0; // Ore extra (non nel grafico)
-  const remainingHours = Math.max(this.maxHours - workedHours, 0); // Ore rimanenti
+  const workedHours = totalHours.value - (this.selectedBreakTime || 0) / 60;
+  const extraHours = workedHours > this.maxHours ? workedHours - this.maxHours : 0; 
+  const remainingHours = Math.max(this.maxHours - workedHours, 0); 
 
   console.log("Updating chart with data:", {
     workedHours,
@@ -583,8 +641,9 @@ updateChart() {
   try {
     // Aggiorna i dati del grafico
     this.attendanceChart.data.datasets[0].data = [
-      workedHours,    // Ore lavorate
-      remainingHours, // Ore rimanenti
+      Math.max(workedHours - extraHours, 0), 
+      remainingHours,           
+      extraHours,               
     ];
 
     // Aggiorna i colori del grafico
@@ -626,18 +685,8 @@ async fetchAttendanceData(accountId) {
     const attendanceEvents = filteredAttendance.map((record) => {
       const startTime = record.punch_in ? record.punch_in.split('T')[1].slice(0, 5) : null;
       const endTime = record.punch_out ? record.punch_out.split('T')[1].slice(0, 5) : null;
-
-      let totalHours = 0;
-      if (startTime && endTime) {
-        const [startHour, startMinute] = startTime.split(':').map(Number);
-        const [endHour, endMinute] = endTime.split(':').map(Number);
-
-        totalHours = (endHour * 60 + endMinute - (startHour * 60 + startMinute)) / 60;
-
-        if (totalHours < 0) {
-          totalHours = 0;
-        }
-      }
+      const totalHours = record.totalHours;
+      const breakTime = record.break_amount ? `${record.break_amount} min` : "None";
 
       return {
         id: record.id,
@@ -648,6 +697,7 @@ async fetchAttendanceData(accountId) {
           startTime,
           endTime,
           totalHours,
+          breakTime,
           attendanceType: record.absence ? "absence" : "general",
         },
       };
@@ -676,21 +726,24 @@ async fetchAttendanceData(accountId) {
 
     // Calcola il totale delle ore per le attendance
     const calculatedTotalHours = this.events.reduce((sum, event) => {
-     const isAbsence = event.extendedProps?.attendanceType === 'absence';  // Verifica se l'evento è un'assenza
-     const isPto = event.extendedProps?.attendanceType === 'pto';  // Verifica se l'evento è Full PTO
-     const isHalfPto = event.extendedProps?.attendanceType === 'halfpto';  // Verifica se l'evento è Half PTO
-     const isSpecialPto = event.extendedProps?.attendanceType === 'Special PTO';  // Verifica se l'evento è Special PTO
+  const isAbsence = event.extendedProps?.attendanceType === 'absence';  // Check if the event is an absence
+  const isPto = event.extendedProps?.attendanceType === 'pto';  // Check if the event is Full PTO
+  const isHalfPto = event.extendedProps?.attendanceType === 'halfpto';  // Check if the event is Half PTO
+  const isSpecialPto = event.extendedProps?.attendanceType === 'Special PTO';  // Check if the event is Special PTO
 
-    if (isAbsence) return sum;
+  if (isAbsence) return sum;
 
-    if (isPto || isSpecialPto) {
-     return sum + 8;  
-    } else if (isHalfPto) {
-     return sum + 4;  
-    }
+  if (isPto || isSpecialPto) {
+    return sum + 8;  // Add 8 hours for Full PTO or Special PTO
+  } else if (isHalfPto) {
+    return sum + 4;  // Add 4 hours for Half PTO
+  }
 
-     return sum + (event.extendedProps?.totalHours || 0);
-    }, 0);
+  // For general attendance, subtract the selected break time
+  const eventTotalHours = (event.extendedProps?.totalHours || 0) - (this.selectedBreakTime || 0) / 60; 
+
+  return sum + Math.max(eventTotalHours, 0); // Ensure no negative hours
+}, 0);
 
       console.log("Calculated Total Hours:", calculatedTotalHours);
 
@@ -733,16 +786,80 @@ getEventTypeFromColor(color) {
       return 'general';
   }
 },
-    handleEventClick(event) {
-      if (event.extendedProps.isHoliday) return; 
-      this.selectedEventId = event.id;
-      this.selectionRange = event.start.toISOString().split('T')[0];
-      this.startTime = event.extendedProps.startTime || '';
-      this.endTime = event.extendedProps.endTime || '';
-      this.attendanceType = this.getEventTypeFromColor(event.backgroundColor);
+  //   handleEventClick(event) {
+  //     if (event.extendedProps.isHoliday) return; 
+  //     this.selectedEventId = event.id;
+  //     this.selectionRange = event.start.toISOString().split('T')[0];
+  //     this.startTime = event.extendedProps.startTime || '';
+  //     this.endTime = event.extendedProps.endTime || '';
+  //     this.attendanceType = this.getEventTypeFromColor(event.backgroundColor);
 
-      console.log("attendanceType",attendanceType);
-    },
+  //     console.log("attendanceType",attendanceType);
+  //   },
+
+  //   selectAll(event) {
+  //   event.target.select();
+  // },
+    validateHours() {
+  if (this.breakHours === "" || this.breakHours === null) {
+    this.breakHours = 0;
+  } else if (this.breakHours > 23) {
+    this.breakHours = 23;
+  }
+},
+
+validateMinutes() {
+  if (this.breakMinutes === "" || this.breakMinutes === null) {
+    this.breakMinutes = 0;
+  } else if (this.breakMinutes > 59) {
+    this.breakMinutes = 59;
+  }
+},
+
+increaseBreakHours() {
+  if (this.breakHours === "" || this.breakHours === null) {
+    this.breakHours = 0;
+  } else if (this.breakHours < 23) {
+    this.breakHours += 1;
+  }
+  this.updateSelectedBreakTime();
+},
+
+decreaseBreakHours() {
+  if (this.breakHours > 0) {
+    this.breakHours -= 1;
+  } else {
+    this.breakHours = 0;
+  }
+  this.updateSelectedBreakTime();
+},
+
+increaseBreakMinutes() {
+  if (this.breakMinutes === "" || this.breakMinutes === null) {
+    this.breakMinutes = 15;
+  } else if (this.breakMinutes < 59) {
+    this.breakMinutes += 15;
+    if (this.breakMinutes > 59) {
+      this.breakMinutes = 0;
+    }
+  }
+  this.updateSelectedBreakTime();
+},
+
+decreaseBreakMinutes() {
+  if (this.breakMinutes > 14) {
+    this.breakMinutes -= 15;
+  } else {
+    this.breakMinutes = 0;
+  }
+  this.updateSelectedBreakTime();
+},
+
+updateSelectedBreakTime() {
+  // Ensure breakHours and breakMinutes are numbers and calculate total time in minutes
+  this.selectedBreakTime = (parseInt(this.breakHours, 10) || 0) * 60 + (parseInt(this.breakMinutes, 10) || 0);
+},
+
   logAttendance() {
     const authStore = useAuthStore();
     const days = this.selectionRange.split(', ');
@@ -779,7 +896,7 @@ getEventTypeFromColor(color) {
     if (this.attendanceType === 'general') {
       const startTotalMinutes = startHour * 60 + startMinute;
       const endTotalMinutes = endHour * 60 + endMinute;
-      totalHours = (endTotalMinutes - startTotalMinutes) / 60;
+      totalHours = (endTotalMinutes - startTotalMinutes - (this.selectedBreakTime || 0)) / 60;
     }
     // Aggiungi 8 ore se è PTO o Special PTO
     else if (this.attendanceType === 'pto' || this.attendanceType === 'specialPto') {
@@ -806,7 +923,7 @@ getEventTypeFromColor(color) {
       full_pto: this.attendanceType === 'pto',
       half_pto: this.attendanceType === 'halfpto',
       special_pto: this.attendanceType === 'specialPto',
-      break_amount: 0,
+      break_amount:  this.selectedBreakTime || 0,
       totalHours: totalHours, // Usa il valore calcolato per totalHours
     };
     
@@ -906,6 +1023,9 @@ deleteGeneralAttendance() {
       this.startTime = '';
       this.endTime = '';
       this.selectedEventId = null;
+      this.selectedBreakTime = null;
+      this.breakHours = 0;
+      this.breakMinutes = 0;
     },
     async fetchSupervisors() {
       const authStore = useAuthStore();
@@ -1130,12 +1250,7 @@ deleteGeneralAttendance() {
     }
     return true; // If times are not filled yet, assume it's valid
   },
-  logAttendance() {
-    // Handle log attendance logic here
-    console.log("Attendance logged");
-  }
  },
-
 };
 
 </script>
