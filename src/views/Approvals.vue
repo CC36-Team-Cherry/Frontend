@@ -22,7 +22,7 @@
         <div class="max-h-[90%] overflow-scroll mt-5">
             <!-- Team Table -->
             <table class="w-full border-collapse border border-gray-300 table-fixed">
-                <thead class="bg-gray-400 sticky top-0 shadow-[0_0px_0.5px_1px_rgba(229,231,235,1)]">
+                <thead class="bg-blue-100 sticky top-0 shadow-[0_0px_0.5px_1px_rgba(229,231,235,1)]">
                     <tr>
                         <th v-if="activeTab === 'sent'" class="border p-2 text-left">{{$t('approval.sentTo')}}</th>
                         <th v-if="activeTab === 'received'" class="border p-2 text-left">{{$t('approval.from')}}</th>
@@ -68,31 +68,35 @@
                                     cancelEditing(request)}}" />
                         </td>
                         <td class="border p-2">{{ request.status }}</td>
-                        <td class="p-2 grid grid-cols-2 gap-2">
-                            <button v-if="activeTab === 'received'" :title="$t('approval.approve')" class="bg-green-500 text-white px-2 py-1 rounded"
-                                @click="statusClick(request.id, 'Approved', request.attendanceType)">
-                                <i class="fas fa-check"></i>
-                            </button>
-                            <button v-if="activeTab === 'received'" :title="$t('approval.deny')" class="bg-gray-500 text-white px-2 py-1 rounded"
-                                @click="statusClick(request.id, 'Denied', request.attendanceType)">
-                                <i class="fas fa-times"></i>
-                            </button>
-                            <button v-if="activeTab === 'received'" :title="$t('approval.seeAttendance')" class="bg-blue-500 text-white px-2 py-1 rounded"
-                                @click="seeAttendanceClick(request.accountId)">
-                                <i class="fas fa-calendar-alt"></i>
-                            </button>
-                            <button v-if="activeTab === 'sent' && !request.isEditing" :title="$t('approval.remind')" class="bg-yellow-500 text-white px-2 py-1 rounded"
-                                @click="remindClick(request)">
-                                <i class="fas fa-bell"></i>
-                            </button>
-                            <button v-if="activeTab === 'sent' && request.isEditing" :title="$t('approval.remind')" id="save" class="bg-green-500 text-white px-2 py-1 rounded"
-                                @click="saveRemind(request)">
-                                <i class="fas fa-check"></i>
-                            </button>
-                            <button :title="$t('approval.delete')" class="bg-red-500 text-white px-2 py-1 rounded"
-                                @click="deleteClick(request.id, request.attendanceType)">
-                                <i class="fas fa-trash-alt"></i>
-                            </button>
+                        <td class="border p-2">
+                            <div class="flex justify-center items-center w-full h-full">
+                                <div class="grid grid-cols-2 gap-2 w-48">
+                                    <button v-if="activeTab === 'received'" :title="$t('approval.approve')" class="bg-green-500 text-white px-5 py-2 rounded w-full"
+                                        @click="statusClick(request.id, 'Approved', request.attendanceType)">
+                                        <i class="fas fa-check"></i>
+                                    </button>
+                                    <button v-if="activeTab === 'received'" :title="$t('approval.deny')" class="bg-gray-500 text-white px-5 py-2 rounded w-full"
+                                        @click="statusClick(request.id, 'Denied', request.attendanceType)">
+                                        <i class="fas fa-times"></i>
+                                    </button>
+                                    <button v-if="activeTab === 'received'" :title="$t('approval.seeAttendance')" class="bg-sky-500 text-white px-5 py-2 rounded w-full"
+                                        @click="seeAttendanceClick(request.accountId)">
+                                        <i class="fas fa-calendar-alt"></i>
+                                    </button>
+                                    <button v-if="activeTab === 'sent' && !request.isEditing" :title="$t('approval.remind')" class="bg-yellow-500 text-white px-5 py-2 rounded w-full"
+                                        @click="remindClick(request)">
+                                        <i class="fas fa-bell"></i>
+                                    </button>
+                                    <button v-if="activeTab === 'sent' && request.isEditing" :title="$t('approval.remind')" id="save" class="bg-green-500 text-white px-5 py-2 rounded w-full"
+                                        @click="saveRemind(request)">
+                                        <i class="fas fa-check"></i>
+                                    </button>
+                                    <button :title="$t('approval.delete')" class="bg-red-500 text-white px-5 py-2 rounded w-full"
+                                        @click="deleteClick(request.id, request.attendanceType)">
+                                        <i class="fas fa-trash-alt"></i>
+                                    </button>
+                                </div>
+                            </div>
                         </td>
                         <td class="border p-2">
                             {{ 

@@ -11,7 +11,7 @@
     </div>
     <div class="max-h-[90%] overflow-scroll">
     <table class="table-auto w-full border-collapse border border-gray-300">
-      <thead class="bg-gray-400 sticky top-0 shadow-[0_0px_0.5px_1px_rgba(229,231,235,1)]">
+      <thead class="bg-blue-100 sticky top-0 shadow-[0_0px_0.5px_1px_rgba(229,231,235,1)]">
         <tr>
           <th class="border p-2 text-left">
             <div class="inline-flex items-center space-x-2">
@@ -132,8 +132,9 @@
             <td class="border p-2">{{ employee.email }}</td>
             <td v-if="authStore.user.Privileges?.is_admin"
               class="border p-2 flex justify-center items-center">
-              <button class="bg-green-500 text-white px-2 py-1 rounded" @click.stop="openCalendarModal(employee)">
-                {{ $t('employeeList.view') }}
+              <button class="bg-sky-500 text-white px-6 py-2 rounded w-20" @click.stop="openCalendarModal(employee)">
+                <!-- {{ $t('employeeList.view') }} -->
+                <i class="fas fa-calendar-alt"></i>
               </button>
             </td>
           </tr>
