@@ -96,7 +96,7 @@
             class="border border-gray-300 rounded p-1 text-xs w-full"
           />
         </div>
-        <div class="mb-3">
+        <div v-if="attendanceType === 'general'" class="mb-3">
   <label class="block mb-1 font-bold text-sm">{{ $t('calendar.breakTime') }}</label>
   <div class="flex gap-2 items-center">
     <!-- Hours Input -->
