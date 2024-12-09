@@ -45,7 +45,6 @@ function getCookie(name: string) {
 
 const checkCookie = () => {
     const cookie = getCookie('csrfToken');
-    console.log(cookie);
 }
 
 const logoutFirebase = () => {

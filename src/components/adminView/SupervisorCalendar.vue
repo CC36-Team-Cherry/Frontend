@@ -2,14 +2,14 @@
   <div>
     <!-- User Selection Dropdown -->
     <div class="mb-4">
-      <label for="user-select" class="block text-sm font-semibold">Select User</label>
+      <label for="user-select" class="block text-sm font-semibold">{{$t('supervisorCalendar.teamMembers')}}</label>
       <select
         id="user-select"
         v-model="selectedUserId"
         @change="fetchAttendanceData"
         class="w-full p-2 border rounded"
       >
-        <option value="" disabled selected>Select a user</option>
+        <option value="" disabled selected>{{$t('supervisorCalendar.selectPlaceholder')}}</option>
         <option v-for="user in users" :key="user.id" :value="user.id">{{ user.name }}</option>
       </select>
     </div>
@@ -18,29 +18,29 @@
     <div class="grid grid-cols-3 gap-4 mb-4">
       <div class="bg-white shadow-sm border border-slate-200 rounded-lg p-2 flex flex-row justify-evenly items-center">
         <div>
-          <div class="text-3xl text-slate-600">Total Worked</div>
-          <div class="text-xs">Current Month</div>
+          <div class="text-3xl text-slate-600">{{$t('calendar.headers.totalWorked')}}</div>
+          <div class="text-xs">{{$t('calendar.headers.currentMonth')}}</div>
         </div>
         <hr class="w-px h-10 border-l border-slate-300 mx-4">
-        <div class="text-3xl text-slate-600">{{ totalWorkedHours ?? 0 }} Hrs</div>
+        <div class="text-3xl text-slate-600">{{ totalWorkedHours ?? 0 }} {{$t('calendar.headers.hours')}}</div>
       </div>
 
       <div class="bg-white shadow-sm border border-slate-200 rounded-lg p-2 flex flex-row justify-evenly items-center">
         <div>
-          <div class="text-3xl text-slate-600">Overtime</div>
-          <div class="text-xs">Current Month</div>
+          <div class="text-3xl text-slate-600">{{$t('calendar.headers.overtime')}}</div>
+          <div class="text-xs">{{$t('calendar.headers.currentMonth')}}</div>
         </div>
         <hr class="w-px h-10 border-l border-slate-300 mx-4">
-        <div class="text-3xl text-slate-600">{{ overtimeHours ?? 0 }} Hrs</div>
+        <div class="text-3xl text-slate-600">{{ overtimeHours ?? 0 }} {{$t('calendar.headers.hours')}}</div>
       </div>
 
       <div class="bg-white shadow-sm border border-slate-200 rounded-lg p-2 flex flex-row justify-evenly items-center">
         <div>
-          <div class="text-3xl text-slate-600">Paid Time Off</div>
-          <div class="text-xs">Total Remaining</div>
+          <div class="text-3xl text-slate-600">{{$t('calendar.headers.pto')}}</div>
+          <div class="text-xs">{{$t('calendar.headers.totalRemaining')}}</div>
         </div>
         <hr class="w-px h-10 border-l border-slate-300 mx-4">
-        <div class="text-3xl text-slate-600">{{ remainingPtoDays ?? 0 }} Days</div>
+        <div class="text-3xl text-slate-600">{{ remainingPtoDays ?? 0 }} {{$t('calendar.headers.days')}}</div>
       </div>
     </div>
 
@@ -54,6 +54,7 @@ import { Calendar } from '@fullcalendar/core';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import interactionPlugin from '@fullcalendar/interaction';
 import axios from 'axios';
+import { useAuthStore } from '@/stores/authStore';
 
 const apiUrl = import.meta.env.VITE_API_URL;
 axios.defaults.withCredentials = true;
@@ -80,8 +81,9 @@ export default {
   },
   methods: {
     async fetchUsers() {
+      const authStore = useAuthStore();
       try {
-        const response = await axios.get(`${apiUrl}/approvals/1`);
+        const response = await axios.get(`${apiUrl}/approvals/${authStore.user.id}`);
         this.users = response.data.approvees.map((user) => ({
           id: user.id,
           name: `${user.first_name} ${user.last_name}`,
@@ -94,7 +96,6 @@ export default {
       try {
         const response = await axios.get(`${apiUrl}/accounts/${userId}/remainingPto`);
         this.remainingPtoDays = response.data.remaining_pto ?? 0;
-        console.log("Remaining PTO fetched:", this.remainingPtoDays);
       } catch (err) {
         console.error('Error fetching remaining PTO:', err);
         this.remainingPtoDays = 0;
@@ -149,9 +150,6 @@ export default {
 
   const year = midViewDate.getFullYear();
   const month = midViewDate.getMonth() + 1; // Mese corrente
-
-  console.log("Calculated midViewDate:", midViewDate);
-  console.log("Current year:", year, "Current month:", month);
 
   // Carica i dati del mese effettivo
   this.fetchAttendanceDataForMonth(year, month);

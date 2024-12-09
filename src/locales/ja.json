@@ -203,14 +203,28 @@
     "attendance": "出勤記録",
     "submission": "提出",
     "logAttendance": "出勤を記録",
+    "clearAttendance": "出席をクリアする",
     "submit": "送信",
     "supervisorPlaceholder": "上司を選択してください",
+    "approvalStatus": "承認状況",
+    "monthlySubmit": "月次提出",
     "types": {
       "general": "一般",
       "pto": "有給休暇",
       "specialPto": "特別有給休暇",
       "halfPto": "半日有給休暇",
-      "absence": "欠席"
+      "absence": "欠席",
+      "hr": "時",
+      "min": "分"
+    },
+    "headers": {
+      "totalWorked": "総勤務時間",
+      "overtime": "残業",
+      "currentMonth": "今月",
+      "hours": "時間",
+      "pto": "有給休暇",
+      "totalRemaining": "残り総時間",
+      "days": "日"
     },
     "toast": {
       "attendanceWarning": "選択したすべての日に対する出席はすでに記録されています",
@@ -279,6 +293,7 @@
   },
   "supervisorCalendar": {
     "title": "監督者カレンダー",
-    "selectPlaceholder": "チームメンバーを選択してください"
+    "selectPlaceholder": "チームメンバーを選択してください",
+    "teamMembers": "チームメンバー"
   }
 }

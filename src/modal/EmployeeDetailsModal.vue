@@ -284,8 +284,6 @@ const stopEditing = async () => {
   const specialPto = specialPtos.value[editingSpecialPtoIndex.value];
   
   try {
-    
-    console.log("specialPto", specialPto);
 
     const response = await axios.patch(`${apiUrl}/specialPto/${specialPto.id}`, {
       specialPto
@@ -372,6 +370,8 @@ onClickOutside(dropdown, closeDropdown);
     // Check if the value is a valid number and greater than or equal to zero
     if (value < 0 || isNaN(value)) {
       formData.remaining_pto = 0;  // Reset to 0 if it's invalid
+    } else if (value > 100) {
+      formData.remaining_pto = 100;
     }
   }
 

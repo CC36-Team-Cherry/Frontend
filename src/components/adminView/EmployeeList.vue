@@ -131,7 +131,7 @@
                 employee.last_login ? employee.last_login.split('T')[0] : 'Invite Sent' }}</td>
             <td class="border p-2">{{ employee.email }}</td>
             <td v-if="authStore.user.Privileges?.is_admin"
-              class="border p-2">
+              class="border p-2 flex justify-center items-center">
               <button class="bg-green-500 text-white px-2 py-1 rounded" @click.stop="openCalendarModal(employee)">
                 {{ $t('employeeList.view') }}
               </button>
@@ -252,6 +252,8 @@ import SvgIcon from '@jamescoyle/vue-icon';
 import { mdiSort } from '@mdi/js';
 import LoopingRhombusesSpinner from '../../modal/Loading.vue';
 import { useToast } from "vue-toastification";
+import i18n from '../../i18n.ts';
+const { t } = i18n.global;
 
 const apiUrl = import.meta.env.VITE_API_URL;
 
@@ -388,7 +390,7 @@ const sendFirebaseEmail = (email) => {
     //   console.log("SENT");
     // })
     .catch((error) => {
-      console.log(error.code, error.message);
+      console.error(error.code, error.message);
     });
 }
 
@@ -735,11 +737,11 @@ const handleFetchAll = async () => {
   await handleFetchEmployees();
   await handleFetchTeams();
   await fetchSupervisors();
+  filterSupervisors();
   isLoading.value = false;
 }
 
 onMounted(() => {
   handleFetchAll();
-  filterSupervisors();
 });
 </script>
