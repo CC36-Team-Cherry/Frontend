@@ -17,7 +17,7 @@
             <div class="text-xs">Current Month</div>
           </div>
           <hr class="w-px h-10 border-l border-slate-300 mx-4">
-          <div class="text-3xl text-slate-600">{{ totalWorkedHours ?? 0 }} Hrs</div>
+          <div class="text-3xl text-slate-600">{{ totalWorkedHours.toFixed(2) ?? 0 }} Hrs</div>
         </div>
 
         <div class="bg-white shadow-sm border border-slate-200 rounded-lg p-2 flex flex-row justify-evenly items-center">
@@ -205,6 +205,8 @@ export default {
           this.events.forEach((event) => this.calendar.addEvent(event));
         }
 
+        let totalBreakMinutes = 0;
+
         const calculatedTotalHours = this.events.reduce((sum, event) => {
           const isAbsence = event.extendedProps?.attendanceType === 'absence';
           const isPto = event.extendedProps?.attendanceType === 'pto';
@@ -219,10 +221,13 @@ export default {
             return sum + 4;
           }
 
+          const breakTimeMinutes = parseInt(event.extendedProps?.breakTime?.replace(' min', '')) || 0;
+          totalBreakMinutes += breakTimeMinutes;
+
           return sum + (event.extendedProps?.totalHours || 0);
         }, 0);
 
-        this.totalWorkedHours = calculatedTotalHours;
+        this.totalWorkedHours = calculatedTotalHours - totalBreakMinutes / 60;
         this.overtimeHours = Math.max(0, calculatedTotalHours - 160);
 
       } catch (error) {
@@ -279,5 +284,3 @@ export default {
   },
 };
 </script>
-
-  
