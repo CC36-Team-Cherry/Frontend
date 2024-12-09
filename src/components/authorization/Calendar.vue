@@ -443,6 +443,9 @@ export default {
     editable: true,
     eventStartEditable: false,
     eventDurationEditable: false,
+    buttonText: {
+    today: 'Today',
+    },
     select: (selectionInfo) => {
       const startDate = new Date(selectionInfo.startStr);
       const endDate = new Date(selectionInfo.endStr);

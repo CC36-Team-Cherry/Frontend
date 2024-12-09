@@ -122,6 +122,9 @@ export default {
           plugins: [dayGridPlugin, interactionPlugin],
           initialView: 'dayGridMonth',
           events: [],
+          buttonText: {
+          today: 'Today',
+          },
           datesSet: (info) => {
             this.handleMonthChange(info.start);
           },
