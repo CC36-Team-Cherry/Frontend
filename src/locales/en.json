@@ -199,6 +199,17 @@
       "halfPto": "Half PTO",
       "absence": "Absence"
     },
+    "toast": {
+      "attendanceWarning": "Attendance has already been logged for all selected days",
+      "noAttDelete": "No attendance to delete on selected days",
+      "attDeleted": "General attendance deleted on selected days",
+      "notEnoughPTO": "Not enough PTO remaining to submit",
+      "halfRequest": "You cannot submit a Half PTO request for multiple dates",
+      "specialRequest": "You cannot submit a Special PTO request for multiple dates",
+      "alreadySubmittedMonth": "A request for this month has already been submitted for approval",
+      "submittedMonth": "Month attendance approval request submitted successfully",
+      "submitMonthFail": "Failed to submit month approval request"
+    },
     "months": [
       "1月",
       "2月",

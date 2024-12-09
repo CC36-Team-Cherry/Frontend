@@ -197,6 +197,17 @@
       "pto": "有給休暇",
       "specialPto": "特別有給休暇"
     },
+    "toast": {
+      "attendanceWarning": "選択したすべての日に対する出席はすでに記録されています",
+      "noAttDelete": "選択した日には削除する出席情報がありません",
+      "attDeleted": "選択した日に対する一般出席が削除されました",
+      "notEnoughPTO": "提出するのに十分なPTO残高がありません",
+      "halfRequest": "複数の日に対して半日PTOリクエストを提出することはできません",
+      "specialRequest": "複数の日に対して特別PTOリクエストを提出することはできません",
+      "alreadySubmittedMonth": "今月のリクエストはすでに承認のために提出されています",
+      "submittedMonth": "月次出席承認リクエストが正常に提出されました",
+      "submitMonthFail": "月次承認リクエストの提出に失敗しました"
+    },
     "months": [
       "1月",
       "2月",
