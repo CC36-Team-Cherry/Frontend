@@ -108,9 +108,11 @@
       "lastDate": "退社日",
       "privileges": "権利",
       "status": "ステータス",
+      "lastLogin": "最終ログイン",
       "email": "メールアドレス",
       "att": "出席"
     },
+    "none": "なし",
     "view": "表示",
     "employeeHeader": {
       "currentMonthInfo": "今月の出席情報",
@@ -129,6 +131,7 @@
         "email": "メールアドレス",
         "dateOfBirth": "生年月日",
         "team": "チーム",
+        "noTeam": "チームなし",
         "supervisor": "デフォルトの上司",
         "role": "役割",
         "joinDate": "入社日",
@@ -142,11 +145,13 @@
         "selectTeam": "チームを選択してください",
         "supervisor": "上司の名前を入力してください",
         "role": "役割を入力してください",
-        "pto": "有給日数を入力してください"
+        "pto": "有給日数を入力してください",
+        "specialPTO": "特別有給日数を入力してください"
       },
       "userType": {
-        "supervisor": " 上司",
-        "admin": " 管理者"
+        "supervisor": "上司",
+        "admin": "管理者",
+        "adminSupervisor": "管理者, 上司"
       },
       "sendInvitation": "招待を送信"
     },

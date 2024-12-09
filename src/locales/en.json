@@ -108,9 +108,11 @@
       "lastDate": "Leave Date",
       "privileges": "Privileges",
       "status": "Status",
+      "lastLogin": "Last Login",
       "email": "Email",
       "att": "Att."
     },
+    "none": "None",
     "view": "View",
     "employeeHeader": {
       "currentMonthInfo": "Current Month Attendance Info",
@@ -129,6 +131,7 @@
         "email": "Email",
         "dateOfBirth": "Date of Birth",
         "team": "Team",
+        "noTeam": "No team",
         "supervisor": "Default Supervisor",
         "role": "Role",
         "joinDate": "Join Date",
@@ -142,11 +145,13 @@
         "selectTeam": "Select a Team",
         "supervisor": "Select a Supervisor",
         "role": "Enter a Role",
-        "pto": "Enter PTO"
+        "pto": "Enter PTO",
+        "specialPTO": "Enter Special PTO"
       },
       "userType": {
         "supervisor": " Supervisor",
-        "admin": " Admin"
+        "admin": " Admin",
+        "adminSupervisor": "Admin, Supervisor"
       },
       "sendInvitation": "Send Invitation"
     },

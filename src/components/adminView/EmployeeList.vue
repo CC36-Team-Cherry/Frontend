@@ -82,7 +82,7 @@
           <th v-if="authStore.user.Privileges?.is_admin || authStore.user.Privileges?.is_supervisor"
             class="border p-2 text-left">
             <div class="inline-flex items-center space-x-2">
-              <span>Last Login</span>
+              <span>{{ $t('employeeList.tableHeaders.lastLogin') }}</span>
               <svg-icon v-if="!isLastLoginSorted" :path="path" type="mdi" class="cursor-pointer w-5 h-5 min-w-5"
                 @click="handleLastLoginSort"></svg-icon>
               <svg-icon v-if="isLastLoginSorted && !isLastLoginSortedRev" :path="path" type="mdi"
@@ -111,19 +111,19 @@
           <tr v-for="employee in displayedEmployees" :key="employee.id" @click="openEmployeeDetailsModal(employee)"
             class="cursor-pointer hover:bg-gray-300 even:bg-gray-200 odd:bg-white">
             <td class="border p-2">{{ employee.first_name + ' ' + employee.last_name }}</td>
-            <td class="border p-2">{{ employee.team ? employee.team.team_name : 'NA' }}</td>
+            <td class="border p-2">{{ employee.team ? employee.team.team_name : $t('employeeList.modal.fields.noTeam') }}</td>
             <td class="border p-2">{{ employee.role }}</td>
             <td class="border p-2">{{ employee.join_date.split('T')[0] }}</td>
-            <td class="border p-2">{{ employee.leave_date ? employee.leave_date.split('T')[0] : 'NA' }}</td>
+            <td class="border p-2">{{ employee.leave_date ? employee.leave_date.split('T')[0] : 'N/A' }}</td>
             <td class="border p-2">
               {{
                 employee.Privileges.is_admin && employee.Privileges.is_supervisor
-                  ? 'Admin,\nSupervisor'
+                  ? $t('employeeList.modal.userType.adminSupervisor')
                   : employee.Privileges.is_admin
-                    ? 'Admin'
+                    ? $t('employeeList.modal.userType.admin')
                     : employee.Privileges.is_supervisor
-                      ? 'Supervisor'
-                      : 'none'
+                      ? $t('employeeList.modal.userType.supervisor')
+                      : $t('employeeList.none')
               }}
             </td>
             <td v-if="authStore.user.Privileges?.is_admin || authStore.user.Privileges?.is_supervisor"
@@ -174,13 +174,13 @@
             <select v-model="formData.team_id" class="border rounded p-2 w-full">
               <option value="" disabled>{{ $t('employeeDetails.placeholders.selectTeam') }}</option>
               <option v-for="team in fetchedTeams" :key="team.id" :value="team.id">{{ team.team_name }}</option>
-              <option :value="null">No team</option>
+              <option :value="null">{{$t('employeeList.modal.fields.noTeam')}}</option>
             </select>
           </div>
           <div>
-            <label class="block mb-1">{{ "Supervisor" }}</label>
+            <label class="block mb-1">{{ $t('employeeList.modal.userType.supervisor') }}</label>
             <input v-model="supervisorSearch" @input="filterSupervisors" @focus="showDropdown = true" type="text"
-              placeholder="Select Supervisor" class="border rounded p-2 w-full">
+              :placeholder="$t('employeeList.modal.placeholders.supervisor')" class="border rounded p-2 w-full">
             <ul v-if="showDropdown && filteredSupervisors.length > 0" ref="dropdown"
               class="border rounded mt-2 max-h-48 overflow-y-auto">
               <li v-for="supervisor in filteredSupervisors" :key="supervisor.id" @click="selectedSupervisor(supervisor)"
