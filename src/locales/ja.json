@@ -43,6 +43,7 @@
     "sendEmail": "送信",
     "accountDNE": "アカウントが見つかりません",
     "passwordMismatch": "パスワードが一致しません",
+    "success": "成功しました！メールをご確認ください",
     "placeholders": {
       "email": "メールアドレスを入力してください",
       "password": "パスワードを入力してください",
