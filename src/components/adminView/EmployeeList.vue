@@ -252,6 +252,8 @@ import SvgIcon from '@jamescoyle/vue-icon';
 import { mdiSort } from '@mdi/js';
 import LoopingRhombusesSpinner from '../../modal/Loading.vue';
 import { useToast } from "vue-toastification";
+import i18n from '../../i18n.ts';
+const { t } = i18n.global;
 
 const apiUrl = import.meta.env.VITE_API_URL;
 
@@ -738,11 +740,11 @@ const handleFetchAll = async () => {
   await handleFetchEmployees();
   await handleFetchTeams();
   await fetchSupervisors();
+  filterSupervisors();
   isLoading.value = false;
 }
 
 onMounted(() => {
   handleFetchAll();
-  filterSupervisors();
 });
 </script>
