@@ -174,6 +174,7 @@ export default {
           backgroundColor: record.absence ? 'red' : 'lightblue',
           extendedProps: {
             attendanceType: record.absence ? 'absence' : 'general',
+            breakTime: record.break_amount ? `${record.break_amount} min` : "None",
             totalHours: record.punch_in && record.punch_out
               ? (new Date(record.punch_out) - new Date(record.punch_in)) / (1000 * 60 * 60)
               : 0,
@@ -230,10 +231,14 @@ export default {
     },
     eventContent(arg) {
       if (arg.event.extendedProps.attendanceType === 'general' || arg.event.extendedProps.attendanceType === 'absence') {
-        return {
-          html: `<div style="color: black; background-color: ${arg.event.backgroundColor}; padding: 5px; border-radius: 4px;">
-            <b>${arg.event.title}</b>
-          </div>`,
+        const breakTimeHtml = arg.event.extendedProps.breakTime
+      ? `<div style="font-size: 0.8vw; color: gray; margin-top: 0.2em;">Break: ${arg.event.extendedProps.breakTime}</div>`
+      : '';
+    return {
+      html: `<div style="text-align: left; font-size: 1vw; color: black; background-color: ${arg.event.backgroundColor}; padding: .5vw; border-radius: 4px; width: 100%; word-wrap: break-word; white-space: normal;">
+        <b>${arg.event.title}</b>
+        ${breakTimeHtml}
+      </div>`,
         };
       } else if (arg.event.extendedProps.attendanceType === 'pto' || arg.event.extendedProps.attendanceType === 'Special PTO' || arg.event.extendedProps.attendanceType === 'halfpto') {
         return {
