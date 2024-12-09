@@ -12,30 +12,30 @@
           </div>
           <!-- Hours Worked Title -->
           <div>
-            <div class="text-3xl text-slate-600">Total Worked</div>
-            <div class="text-xs">Current Month</div>
+            <div class="text-3xl text-slate-600">{{ $t('calendar.headers.totalWorked') }}</div>
+            <div class="text-xs">{{ $t('calendar.headers.currentMonth') }}</div>
           </div>
           <hr class="w-px h-10 border-l border-slate-300 mx-4">
           <!-- Hours Worked -->
-          <div class="text-3xl text-slate-600"> {{ calculatedTotalHours.toFixed(2) }} Hrs(s)</div>
+          <div class="text-3xl text-slate-600"> {{ calculatedTotalHours.toFixed(2) }} {{ $t('calendar.headers.hours') }}</div>
         </div>
         <!-- OT Card -->
         <div class="bg-white shadow-sm border border-slate-200 rounded-lg p-2 flex flex-row justify-evenly items-center">
           <div>
-            <div class="text-3xl text-slate-600">Overtime</div>
-            <div class="text-xs">Current Month</div>
+            <div class="text-3xl text-slate-600">{{ $t('calendar.headers.overtime') }}</div>
+            <div class="text-xs">{{ $t('calendar.headers.currentMonth') }}</div>
           </div>
           <hr class="w-px h-10 border-l border-slate-300 mx-4">
-          <div class="text-3xl text-slate-600"> {{ extraHours }} Hr(s)</div>
+          <div class="text-3xl text-slate-600"> {{ extraHours }} {{ $t('calendar.headers.hours') }}</div>
         </div>
         <!-- PTO Card -->
         <div class="bg-white shadow-sm border border-slate-200 rounded-lg p-2 flex flex-row justify-evenly items-center">
           <div>
-            <div class="text-3xl text-slate-600">Paid Time Off</div>
-            <div class="text-xs">Total Remaining</div>
+            <div class="text-3xl text-slate-600">{{ $t('calendar.headers.pto') }}</div>
+            <div class="text-xs">{{ $t('calendar.headers.totalRemaining') }}</div>
           </div>
           <hr class="w-px h-10 border-l border-slate-300 mx-4">
-          <div class="text-3xl text-slate-600">{{ remainingPto }} Day(s)</div>
+          <div class="text-3xl text-slate-600">{{ remainingPto }} {{ $t('calendar.headers.days') }}</div>
         </div>
       </div>
 
@@ -53,13 +53,13 @@
           :class="{'bg-blue-500 text-white': tab === 'attendance', 'text-blue-500': tab !== 'attendance'}"
           class="px-4 py-2 text-sm font-bold flex-1 rounded"
         >
-          Attendance
+        {{ $t('calendar.attendance') }}
         </button>
         <button
           @click="tab = 'pto', attendanceType = 'pto'"
           :class="{'bg-blue-500 text-white': tab === 'pto', 'text-blue-500': tab !== 'pto'}"
           class="px-4 py-2 text-sm font-bold flex-1 rounded"
-        >PTO</button>
+        >{{ $t('calendar.types.pto') }}</button>
       </div>
 
       <!-- Attendance Form Tab -->
@@ -119,7 +119,7 @@
         class="px-2 py-1 rounded border text-xs bg-gray-100 border-gray-300 hover:bg-blue-500 hover:text-white">
         +
       </button>
-      <span class="ml-1 text-sm">hr</span>
+      <span class="ml-1 text-sm">{{ $t('calendar.types.hr') }}</span>
     </div>
 
     <!-- Minutes Input -->
@@ -142,7 +142,7 @@
         class="px-2 py-1 rounded border text-xs bg-gray-100 border-gray-300 hover:bg-blue-500 hover:text-white">
         +
       </button>
-      <span class="ml-1 text-sm">min</span>
+      <span class="ml-1 text-sm">{{ $t('calendar.types.min') }}</span>
     </div>
   </div>
 </div>
@@ -160,7 +160,7 @@
           'bg-red-500 text-white py-1 px-3 rounded hover:bg-red-600 w-full text-base mb-3': selectionRange}"
           :disabled="!selectionRange"
         >
-          Clear Attendance
+        {{  $t('calendar.clearAttendance') }}
         </button>
       </div>
 
@@ -209,12 +209,12 @@
           />
         </div>
         <div class="mb-3">
-          <label class="block mb-1 font-bold text-sm">Supervisor</label>
+          <label class="block mb-1 font-bold text-sm">{{  $t('employeeList.modal.userType.supervisor') }}</label>
           <select
             v-model="selectedSupervisorId"
             class="border border-gray-300 rounded p-1 text-xs w-full"
           >
-            <option value="" disabled>Select Supervisor</option>
+            <option value="" disabled>{{  $t('employeeList.modal.placeholders.supervisor') }}</option>
             <option
               v-for="supervisor in supervisors"
               :key="supervisor.id"
@@ -225,11 +225,11 @@
           </select>
         </div>
         <div class="mb-3">
-          <label class="block mb-1 font-bold text-sm">Memo</label>
+          <label class="block mb-1 font-bold text-sm">{{  $t('approval.memo') }}</label>
           <input
             v-model="memo"
             type="text"
-            placeholder="Optional Memo"
+            :placeholder="$t('approval.enterMemo')"
             class="border border-gray-300 rounded p-1 text-xs w-full"
           />
         </div>  
@@ -240,23 +240,30 @@
           }"
           :disabled="!isSubmitFormValid"
         >
-          Submit
+        {{ $t('calendar.submit') }}
         </button>
       </div>
 
       <!-- Monthly Submit Button -->
       <div class="flex flex-col items-start space-y-4 mt-auto">
-        <div class="text-lg mt-auto">
+        <div class="text-lg font-semibold mt-auto text-center">
           {{"Approval Status"}}
         </div>
-        <div class="text-lg"> 
+        <div 
+        :class="{
+          'bg-yellow-100 text-yellow-800': monthSubmitApprovalStatus === 'Pending',
+          'bg-green-100 text-green-800': monthSubmitApprovalStatus === 'Approved',
+          'bg-red-100 text-red-800': monthSubmitApprovalStatus === 'Denied',
+          'bg-gray-100 text-gray-800': monthSubmitApprovalStatus === 'No Request'
+        }"
+        class="text-lg font-medium px-4 py-2 rounded-md w-full text-center">
           {{ monthSubmitApprovalStatus }}
         </div>
         <button
           class="bg-green-500 text-white py-1 px-3 rounded hover:bg-gray-600 w-full text-lg mb-2 h-16"
           @click.stop="openSubmitMonthModal"
         >
-          Monthly Submit
+        {{$t('calendar.monthlySubmit')}}
         </button>
       </div>
 
@@ -379,7 +386,6 @@ export default {
 
       const authStore = useAuthStore();
       const requests = authStore.approvals.sent;
-      console.log("monthSubmitApprovalStatus: ", requests)
 
       const selectedDate = new Date(selectedMonth.value);
       selectedDate.setDate(selectedDate.getDate() + 7);
@@ -393,10 +399,8 @@ export default {
 
       // Return the status of the existing request if found, otherwise return 'No Request'
       if (existingRequest) {
-        console.log("Existing Request Status:", existingRequest.status);
         return existingRequest.status;
       } else {
-        console.log("No Request Found");
         return 'No Request'; // Return a default value when no request exists
       }
     }
@@ -417,8 +421,6 @@ export default {
   this.holidays = this.generateJapaneseHolidays(new Date().getFullYear()); 
 
   const activeAccountSupervisorId = authStore.user.supervisor_id;
-  console.log("store values", authStore.user)
-  console.log("active account supervisor id", activeAccountSupervisorId)
   if (activeAccountSupervisorId) {
     this.selectedSupervisorId = activeAccountSupervisorId;
   }
@@ -503,13 +505,11 @@ if (arg.event.extendedProps.status) {
 
 },
     datesSet: (info) => {
-      console.log('Month changed:', info.start); 
       this.handleMonthChange(info.start); // Funzione per gestire il cambio mese
       selectedMonth.value = info.start;
     },
   });
 
-  console.log(this.calendar);
   this.calendar.render();
 
   
@@ -560,10 +560,8 @@ if (arg.event.extendedProps.status) {
   
   const year = startDate.getFullYear();
   const month = startDate.getMonth() + 1; //for now i put +2 because it looks 2 months before every time
-  console.log("year and month", year, month);
 
   this.maxHours = this.calculateMaxHours(year, month);
-  console.log('Updated maxHours:', this.maxHours);
   
   totalHours.value = 0;
   const authStore = useAuthStore();
@@ -572,7 +570,6 @@ if (arg.event.extendedProps.status) {
 
 calculateMaxHours(year, month) {
     const daysInMonth = new Date(year, month, 0).getDate(); 
-    console.log(daysInMonth);
     let workingDays = 0;
 
     for (let day = 1; day <= daysInMonth; day++) {
@@ -635,8 +632,6 @@ setEndTimeFourHoursAhead() {
       return;
     }
 
-  console.log("Initializing chart with maxHours:", this.maxHours);
-
   this.attendanceChart = new Chart(ctx, {
     type: "doughnut",
     data: {
@@ -668,13 +663,6 @@ updateChart() {
   const extraHours = workedHours > this.maxHours ? workedHours - this.maxHours : 0; 
   const remainingHours = Math.max(this.maxHours - workedHours, 0); 
 
-  console.log("Updating chart with data:", {
-    workedHours,
-    remainingHours,
-    extraHours,
-    maxHours: this.maxHours,
-  });
-
   try {
     // Aggiorna i dati del grafico
     this.attendanceChart.data.datasets[0].data = [
@@ -691,7 +679,6 @@ updateChart() {
 
     this.extraHours = extraHours; // Mantieni la variabile per l'uso nella card
     this.attendanceChart.update();
-    console.log("Chart updated successfully.");
   } catch (err) {
     console.error("Error updating chart:", err);
   }
@@ -789,8 +776,6 @@ async fetchAttendanceData(accountId) {
   return sum + Math.max(eventTotalHours, 0); // Ensure no negative hours
 }, 0);
 
-      console.log("Calculated Total Hours:", calculatedTotalHours);
-
     if (!isNaN(calculatedTotalHours) && calculatedTotalHours >= 0) {
       totalHours.value = calculatedTotalHours;
     } else {
@@ -835,8 +820,6 @@ getEventTypeFromColor(color) {
       this.startTime = event.extendedProps.startTime || '';
       this.endTime = event.extendedProps.endTime || '';
       this.attendanceType = this.getEventTypeFromColor(event.backgroundColor);
-
-      console.log("attendanceType",attendanceType);
     },
 
     selectAll(event) {
@@ -1193,7 +1176,7 @@ deleteGeneralAttendance() {
         break
 
         default:
-          console.log("Unkown attendance type");
+          console.error("Unkown attendance type");
       }    
       
       try {
@@ -1237,7 +1220,6 @@ deleteGeneralAttendance() {
 
       // Check if a request already exists for the selected month and year
       const requests = authStore.approvals.sent;
-      // console.log("requests", requests)
       const existingRequest = requests.find(request => {
         const [month, year] = request.date.split('-').map(Number); // Split date into month and year
         return year === currentYear && month === currentMonth;
@@ -1294,13 +1276,11 @@ deleteGeneralAttendance() {
     try {
       const response = await axios.get(`${apiUrl}/accounts/${authStore.user.id}/remainingPto`);
       this.remainingPto = response.data.remaining_pto;
-      console.log("frontend response for pto: ", response.data)
     } catch(err) {
       console.error('Error fetching remaining PTO: ', err);
     }
   },
   openSubmitMonthModal() {
-    console.log("passing")
     this.isSubmitMonthModalVisible = true;
     this.fetchSupervisors();
   },

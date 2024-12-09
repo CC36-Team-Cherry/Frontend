@@ -203,14 +203,28 @@
     "attendance": "Attendance",
     "submission": "Submission",
     "logAttendance": "Log Attendance",
+    "clearAttendance": "Clear Attendance",
     "submit": "Submit",
-    "supervisorPlaceholder": "List of Supervisor",
+    "supervisorPlaceholder": "List of Supervisors",
+    "approvalStatus": "Approval Status",
+    "monthlySubmit": "Monthly Submit",
     "types": {
       "general": "General Attendance",
       "pto": "PTO",
       "specialPto": "Special PTO",
       "halfPto": "Half PTO",
-      "absence": "Absence"
+      "absence": "Absence",
+      "hr": "hr",
+      "min": "min"
+    },
+    "headers": {
+      "totalWorked": "Total Worked",
+      "overtime": "Overtime",
+      "currentMonth": "Current Month",
+      "hours": "Hrs",
+      "pto": "Paid Time Off",
+      "totalRemaining": "Total remaining",
+      "days": "Days"
     },
     "toast": {
       "attendanceWarning": "Attendance has already been logged for all selected days",
@@ -273,12 +287,13 @@
       "denied": "Request has been denied",
       "deleted": "Request has been deleted"
     },
-    "enterMemo": "Enter a memo to send with your reminder",
+    "enterMemo": "Enter a memo to send with your request",
     "remindSuccess": "Reminder sent!",
     "closed": "This request is closed and cannot be edited"
   },
   "supervisorCalendar": {
     "title": "Supervisor Calendar",
-    "selectPlaceholder": "Select a team member"
+    "selectPlaceholder": "Select a team member",
+    "teamMembers": "Team members"
   }
 }

@@ -77,4 +77,20 @@ const pendingApprovalsCount = computed(() => {
   return pendingSent + pendingReceived;
 });
 
+// TODO: Try implement fetch in sidebar to update approvals notification.
+// const getApprovals = async() => {
+//   const response = await axios.get(`${apiUrl}/accounts/${authStore.user.id}/approvals`);
+
+//   requests.sent = response.data.approvalsSentData;
+//   requests.received = response.data.approvalsReceivedData;
+
+//   const pendingSent = requests.sent.filter(approval => approval.status === 'Pending').length;
+//   const pendingReceived = requests.received.filter(approval => approval.status === 'Pending').length;
+//   return pendingSent + pendingReceived;
+// };
+
+// onMounted(() => {
+//   getApprovals();
+// });
+
 </script>

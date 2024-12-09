@@ -284,8 +284,6 @@ const stopEditing = async () => {
   const specialPto = specialPtos.value[editingSpecialPtoIndex.value];
   
   try {
-    
-    console.log("specialPto", specialPto);
 
     const response = await axios.patch(`${apiUrl}/specialPto/${specialPto.id}`, {
       specialPto
