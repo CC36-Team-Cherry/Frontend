@@ -54,6 +54,7 @@ import { Calendar } from '@fullcalendar/core';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import interactionPlugin from '@fullcalendar/interaction';
 import axios from 'axios';
+import { useAuthStore } from '@/stores/authStore';
 
 const apiUrl = import.meta.env.VITE_API_URL;
 axios.defaults.withCredentials = true;
@@ -80,12 +81,14 @@ export default {
   },
   methods: {
     async fetchUsers() {
+      const authStore = useAuthStore();
       try {
-        const response = await axios.get(`${apiUrl}/approvals/1`);
+        const response = await axios.get(`${apiUrl}/approvals/${authStore.user.id}`);
         this.users = response.data.approvees.map((user) => ({
           id: user.id,
           name: `${user.first_name} ${user.last_name}`,
         }));
+        console.log("fetch users", this.users)
       } catch (error) {
         console.error('Error fetching users:', error);
       }
