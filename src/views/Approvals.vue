@@ -22,7 +22,7 @@
         <div class="max-h-[90%] overflow-scroll mt-5">
             <!-- Team Table -->
             <table class="w-full border-collapse border border-gray-300 table-fixed">
-                <thead class="bg-gray-200 sticky top-0 shadow-[0_0px_0.5px_1px_rgba(229,231,235,1)]">
+                <thead class="bg-gray-400 sticky top-0 shadow-[0_0px_0.5px_1px_rgba(229,231,235,1)]">
                     <tr>
                         <th v-if="activeTab === 'sent'" class="border p-2 text-left">{{$t('approval.sentTo')}}</th>
                         <th v-if="activeTab === 'received'" class="border p-2 text-left">{{$t('approval.from')}}</th>
@@ -41,7 +41,7 @@
                         </td>
                     </tr>
                     <tr v-for="(request, index) in filteredRequests" :key="index"
-                        class="hover:bg-gray-300 even:bg-gray-100 odd:bg-white">
+                        class="hover:bg-gray-300 even:bg-gray-200 odd:bg-white">
                         <td v-if="activeTab === 'sent'" class="border p-2">{{ request.supervisorName }}</td>
                         <td v-if="activeTab === 'received'" class="border p-2">{{ request.employeeName }}</td>
                         <td class="border p-2" v-if="request.attendanceType === 'Month Attendance'">

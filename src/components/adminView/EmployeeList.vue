@@ -19,9 +19,9 @@
               <svg-icon v-if="!isNameSorted" :path="path" type="mdi" class="cursor-pointer w-5 h-5 min-w-5"
                 @click="handleNameSort"></svg-icon>
               <svg-icon v-if="isNameSorted && !isNameSortedRev" :path="path" type="mdi"
-                class="cursor-pointer w-5 h-5 min-w-5 bg-gray-400 rounded" @click="handleNameSort"></svg-icon>
+                class="cursor-pointer w-5 h-5 min-w-5 bg-gray-500 rounded" @click="handleNameSort"></svg-icon>
               <svg-icon v-if="isNameSorted && isNameSortedRev" :path="path" type="mdi"
-                class="cursor-pointer w-5 h-5 min-w-5 bg-gray-400 rounded" @click="resetSort"></svg-icon>
+                class="cursor-pointer w-5 h-5 min-w-5 bg-gray-500 rounded" @click="resetSort"></svg-icon>
             </div>
           </th>
           <th class="border p-2 text-left">
@@ -30,9 +30,9 @@
               <svg-icon v-if="!isTeamSorted" :path="path" type="mdi" class="cursor-pointer w-5 h-5 min-w-5"
                 @click="handleTeamSort"></svg-icon>
               <svg-icon v-if="isTeamSorted && !isTeamSortedRev" :path="path" type="mdi"
-                class="cursor-pointer w-5 h-5 min-w-5 bg-gray-400 rounded" @click="handleTeamSort"></svg-icon>
+                class="cursor-pointer w-5 h-5 min-w-5 bg-gray-500 rounded" @click="handleTeamSort"></svg-icon>
               <svg-icon v-if="isTeamSorted && isTeamSortedRev" :path="path" type="mdi"
-                class="cursor-pointer w-5 h-5 min-w-5 bg-gray-400 rounded" @click="resetSort"></svg-icon>
+                class="cursor-pointer w-5 h-5 min-w-5 bg-gray-500 rounded" @click="resetSort"></svg-icon>
             </div>
           </th>
           <th class="border p-2 text-left">
@@ -41,9 +41,9 @@
               <svg-icon v-if="!isRoleSorted" :path="path" type="mdi" class="cursor-pointer w-5 h-5 min-w-5"
                 @click="handleRoleSort"></svg-icon>
               <svg-icon v-if="isRoleSorted && !isRoleSortedRev" :path="path" type="mdi"
-                class="cursor-pointer w-5 h-5 min-w-5 bg-gray-400 rounded" @click="handleRoleSort"></svg-icon>
+                class="cursor-pointer w-5 h-5 min-w-5 bg-gray-500 rounded" @click="handleRoleSort"></svg-icon>
               <svg-icon v-if="isRoleSorted && isRoleSortedRev" :path="path" type="mdi"
-                class="cursor-pointer w-5 h-5 min-w-5 bg-gray-400 rounded" @click="resetSort"></svg-icon>
+                class="cursor-pointer w-5 h-5 min-w-5 bg-gray-500 rounded" @click="resetSort"></svg-icon>
             </div>
           </th>
           <th class="border p-2 text-left">
@@ -52,9 +52,9 @@
               <svg-icon v-if="!isJoinDateSorted" :path="path" type="mdi" class="cursor-pointer w-5 h-5 min-w-5"
                 @click="handleJoinDateSort"></svg-icon>
               <svg-icon v-if="isJoinDateSorted && !isJoinDateSortedRev" :path="path" type="mdi"
-                class="cursor-pointer w-5 h-5 min-w-5 bg-gray-400 rounded" @click="handleJoinDateSort"></svg-icon>
+                class="cursor-pointer w-5 h-5 min-w-5 bg-gray-500 rounded" @click="handleJoinDateSort"></svg-icon>
               <svg-icon v-if="isJoinDateSorted && isJoinDateSortedRev" :path="path" type="mdi"
-                class="cursor-pointer w-5 h-5 min-w-5 bg-gray-400 rounded" @click="resetSort"></svg-icon>
+                class="cursor-pointer w-5 h-5 min-w-5 bg-gray-500 rounded" @click="resetSort"></svg-icon>
             </div>
           </th>
           <th class="border p-2 text-left">
@@ -63,9 +63,9 @@
               <svg-icon v-if="!isLastDateSorted" :path="path" type="mdi" class="cursor-pointer w-5 h-5 min-w-5"
                 @click="handleLastDateSort"></svg-icon>
               <svg-icon v-if="isLastDateSorted && !isLastDateSortedRev" :path="path" type="mdi"
-                class="cursor-pointer w-5 h-5 min-w-5 bg-gray-400 rounded" @click="handleLastDateSort"></svg-icon>
+                class="cursor-pointer w-5 h-5 min-w-5 bg-gray-500 rounded" @click="handleLastDateSort"></svg-icon>
               <svg-icon v-if="isLastDateSorted && isLastDateSortedRev" :path="path" type="mdi"
-                class="cursor-pointer w-5 h-5 min-w-5 bg-gray-400 rounded" @click="resetSort"></svg-icon>
+                class="cursor-pointer w-5 h-5 min-w-5 bg-gray-500 rounded" @click="resetSort"></svg-icon>
             </div>
           </th>
           <th class="border p-2 text-left">
@@ -74,9 +74,9 @@
               <svg-icon v-if="!isPrivSorted" :path="path" type="mdi" class="cursor-pointer w-5 h-5 min-w-5"
                 @click="handlePrivilegesSort"></svg-icon>
               <svg-icon v-if="isPrivSorted && !isPrivSortedRev" :path="path" type="mdi"
-                class="cursor-pointer w-5 h-5 min-w-5 bg-gray-400 rounded" @click="handlePrivilegesSort"></svg-icon>
+                class="cursor-pointer w-5 h-5 min-w-5 bg-gray-500 rounded" @click="handlePrivilegesSort"></svg-icon>
               <svg-icon v-if="isPrivSorted && isPrivSortedRev" :path="path" type="mdi"
-                class="cursor-pointer w-5 h-5 min-w-5 bg-gray-400 rounded" @click="resetSort"></svg-icon>
+                class="cursor-pointer w-5 h-5 min-w-5 bg-gray-500 rounded" @click="resetSort"></svg-icon>
             </div>
           </th>
           <th v-if="authStore.user.Privileges?.is_admin || authStore.user.Privileges?.is_supervisor"
@@ -86,9 +86,9 @@
               <svg-icon v-if="!isLastLoginSorted" :path="path" type="mdi" class="cursor-pointer w-5 h-5 min-w-5"
                 @click="handleLastLoginSort"></svg-icon>
               <svg-icon v-if="isLastLoginSorted && !isLastLoginSortedRev" :path="path" type="mdi"
-                class="cursor-pointer w-5 h-5 min-w-5 bg-gray-400 rounded" @click="handleLastLoginSort"></svg-icon>
+                class="cursor-pointer w-5 h-5 min-w-5 bg-gray-500 rounded" @click="handleLastLoginSort"></svg-icon>
               <svg-icon v-if="isLastLoginSorted && isLastLoginSortedRev" :path="path" type="mdi"
-                class="cursor-pointer w-5 h-5 min-w-5 bg-gray-400 rounded" @click="resetSort"></svg-icon>
+                class="cursor-pointer w-5 h-5 min-w-5 bg-gray-500 rounded" @click="resetSort"></svg-icon>
             </div>
           </th>
           <th class="border p-2 text-left">
@@ -97,9 +97,9 @@
               <svg-icon v-if="!isEmailSorted" :path="path" type="mdi" class="cursor-pointer w-5 h-5 min-w-5"
                 @click="handleEmailSort"></svg-icon>
               <svg-icon v-if="isEmailSorted && !isEmailSortedRev" :path="path" type="mdi"
-                class="cursor-pointer w-5 h-5 min-w-5 bg-gray-400 rounded" @click="handleEmailSort"></svg-icon>
+                class="cursor-pointer w-5 h-5 min-w-5 bg-gray-500 rounded" @click="handleEmailSort"></svg-icon>
               <svg-icon v-if="isEmailSorted && isEmailSortedRev" :path="path" type="mdi"
-                class="cursor-pointer w-5 h-5 min-w-5 bg-gray-400 rounded" @click="resetSort"></svg-icon>
+                class="cursor-pointer w-5 h-5 min-w-5 bg-gray-500 rounded" @click="resetSort"></svg-icon>
             </div>
           </th>
           <th v-if="authStore.user.Privileges?.is_admin"
