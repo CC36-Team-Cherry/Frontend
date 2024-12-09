@@ -61,6 +61,7 @@ import { auth } from '../../firebase/firebaseConfig.ts'
 import { useI18n } from 'vue-i18n';
 import axios from "axios";
 import LoopingRhombusesSpinner from '../../modal/Loading.vue';
+import { useToast } from "vue-toastification";
 axios.defaults.withCredentials = true;
 
 const apiUrl = import.meta.env.VITE_API_URL;
@@ -71,6 +72,7 @@ const { locale } = useI18n();
 const authStore = useAuthStore();
 const isLoading = ref(false);
 const accountExists = ref(true);
+const toast = useToast();
 
 const handleSubmit = async () => {
   isLoading.value = true;
@@ -83,12 +85,7 @@ const handleSubmit = async () => {
   await resetEmail();
   router.push({ path: `/login` });
   isLoading.value = false;
-
-  //TODO: add toast popup on success
-  //Success! Please check your email
-    
-  //TODO: add validation to confirm if account exists
-
+  toast.success("Success! Please check your email");
 };
 
 const resetEmail = async () => {

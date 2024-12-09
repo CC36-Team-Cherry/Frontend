@@ -62,14 +62,15 @@ import { useAuthStore } from '@/stores/authStore';
 import { verifyPasswordResetCode, confirmPasswordReset, signInWithEmailAndPassword } from "firebase/auth";
 import { auth } from '../../firebase/firebaseConfig.ts';
 import { useI18n } from 'vue-i18n';
-
 import axios from "axios";
 import LoopingRhombusesSpinner from '../../modal/Loading.vue';
+import { useToast } from "vue-toastification";
 
 const apiUrl = import.meta.env.VITE_API_URL;
 axios.defaults.withCredentials = true;
 const { locale } = useI18n();
 const isLoading = ref(false);
+const toast = useToast();
 
 const newPassword = ref('');
 const confirmNewPassword = ref('');
@@ -80,7 +81,7 @@ let accountEmail = '';
 
 const handleResetPassword = () => {
   if (newPassword.value !== confirmNewPassword.value) {
-    alert("Passwords don't match.");
+    toast.warning("Passwords don't match");
     return;
   }
   isLoading.value = true;
