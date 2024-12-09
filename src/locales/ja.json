@@ -293,6 +293,7 @@
   },
   "supervisorCalendar": {
     "title": "監督者カレンダー",
-    "selectPlaceholder": "チームメンバーを選択してください"
+    "selectPlaceholder": "チームメンバーを選択してください",
+    "teamMembers": "チームメンバー"
   }
 }

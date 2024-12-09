@@ -293,6 +293,7 @@
   },
   "supervisorCalendar": {
     "title": "Supervisor Calendar",
-    "selectPlaceholder": "Select a team member"
+    "selectPlaceholder": "Select a team member",
+    "teamMembers": "Team members"
   }
 }
