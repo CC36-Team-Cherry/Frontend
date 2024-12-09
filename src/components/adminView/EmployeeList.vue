@@ -333,7 +333,7 @@ const openConfirmModal = () => {
 //adding a new user
 const handleSubmit = async () => {
   if (!formData.email || !formData.first_name || !formData.last_name || !formData.birthdate || !formData.join_date || !formData.role) {
-    toast.warning('Please fill out all required fields');
+    toast.warning(t('register.errorFillAllFields'));
     return;
   }
   modalLoading.value = true;
@@ -347,7 +347,7 @@ const handleSubmit = async () => {
     return;
   }
   modalLoading.value = false;
-  toast.success('New user successfully invited');
+  toast.success(t('employeeList.toast.newInvite'));
   closeAddUserModal();
   // send email to the new user, delayed by two seconds to allow time for new account to post to Firebase
   await new Promise(resolve => { setTimeout(resolve, 2000) });
@@ -428,15 +428,15 @@ const handleUpdate = async (updatedData) => {
       await handleFetchEmployees(authStore.user.company_id);
       closeEmployeeDetailsModal();
       isLoading.value = false;
-      toast.success('Account updated successfully');
+      toast.success(t('employeeList.toast.accountUpdate'));
     } else {
       isLoading.value = false;
-      toast.error('Failed to update account');
+      toast.error(t('employeeList.toast.accountUpdateFail'));
     }
   } catch (err) {
     //console.error("Error updating employee: ", err);
     isLoading.value = false;
-    toast.error('Error updating account');
+    toast.error(t('employeeList.toast.accountUpdateError'));
   }
 }
 
@@ -452,15 +452,15 @@ const handleDelete = async () => {
       isConfirmModalVisible.value = false;
       closeEmployeeDetailsModal();
       isLoading.value = false;
-      toast.info('Account deleted successfully');
+      toast.info(t('employeeList.toast.deleteAccount'));
     } else {
       isLoading.value = false;
-      toast.error('Failed to delete account');
+      toast.error(t('employeeList.toast.deleteAccountFail'));
     }
   } catch (err) {
     //console.error("Error deleting employee: ", err);
     isLoading.value = false;
-    toast.error('Error deleting employee');
+    toast.error(t('employeeList.toast.deleteAccountError'));
   }
 }
 

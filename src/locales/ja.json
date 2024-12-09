@@ -78,6 +78,17 @@
       "save": "保存",
       "saveName": "新しい名前を保存",
       "deleteOrganization": "組織を削除"
+    },
+    "toast": {
+      "teamUpdate": "チーム名が正常に更新されました",
+      "teamFail": "チーム名の更新に失敗しました",
+      "teamDelete": "チームが正常に削除されました",
+      "teamDeleteFail": "チームの削除に失敗しました",
+      "teamDeleteError": "チームの削除中にエラーが発生しました",
+      "newTeam": "新しいチームが正常に保存されました",
+      "newTeamFail": "チームの追加中にエラーが発生しました",
+      "orgUpdate": "組織名が正常に更新されました",
+      "orgDelete": "組織が削除されました。さようなら！"
     }
   },
   "employeeList": {
@@ -134,6 +145,15 @@
         "admin": " 管理者"
       },
       "sendInvitation": "招待を送信"
+    },
+    "toast": {
+      "newInvite": "新しいユーザーが正常に招待されました",
+      "accountUpdate": "アカウントが正常に更新されました",
+      "accountUpdateFail": "アカウントの更新に失敗しました",
+      "accountUpdateError": "アカウントの更新中にエラーが発生しました",
+      "deleteAccount": "アカウントが正常に削除されました",
+      "deleteAccountFail": "アカウントの削除に失敗しました",
+      "deleteAccountError": "アカウントの削除中にエラーが発生しました"
     }
   },
   "employeeDetails": {

@@ -89,7 +89,6 @@
       "newTeamFail": "Error adding team",
       "orgUpdate": "Organization name updated successfully",
       "orgDelete": "Organization deleted. Goodbye!"
-
     }
   },
   "employeeList": {
@@ -146,6 +145,15 @@
         "admin": " Admin"
       },
       "sendInvitation": "Send Invitation"
+    },
+    "toast": {
+      "newInvite": "New user successfully invited",
+      "accountUpdate": "Account updated successfully",
+      "accountUpdateFail": "Failed to update account",
+      "accountUpdateError": "Error updating account",
+      "deleteAccount": "Account deleted successfully",
+      "deleteAccountFail": "Failed to delete account",
+      "deleteAccountError": "Error deleting account"
     }
   },
   "employeeDetails": {
