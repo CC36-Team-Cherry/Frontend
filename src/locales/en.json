@@ -25,7 +25,9 @@
       "type": "Type",
       "languagePreference": "Language Preference"
     },
-    "save": "Save"
+    "save": "Save",
+    "updateSuccess": "Account updated successfully",
+    "updateFail": "Failed to update account"
   },
   "language": {
     "en": "EN",

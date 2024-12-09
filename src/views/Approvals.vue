@@ -273,10 +273,6 @@ const cancelEditing = (request) => {
 // Button click to see attendance, reroute OR modal to see that person's calendar view
 const seeAttendanceClick = async (requestId) => {
     try {
-
-        console.log("router check: ", router)
-        console.log("requested id", requestId)
-
         router.push({ name: 'supervisorCalendar', params: { userId: requestId }})
     } catch (err) {
         console.error('Error seeing attendance of selected account:', err)
@@ -287,7 +283,6 @@ const deleteClick = async (approvalsId, requestType) => {
     try {
         // Optimistic rendering
         const tabRequests = requests[activeTab.value]; // Get the requests for the active tab
-        console.log(tabRequests)
 
         requests[activeTab.value] = tabRequests.filter(request => !(request.id === approvalsId && request.attendanceType === requestType))
 
@@ -303,7 +298,6 @@ const deleteClick = async (approvalsId, requestType) => {
 // Fetch approvals when the component is mounted
 onMounted(() => {
     getApprovals();
-    console.log("request approvals", requests)
 });
 
 </script>
