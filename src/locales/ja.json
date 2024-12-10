@@ -63,7 +63,7 @@
     "organizationName": "組織名を入力してください",
     "organizationDetails": "組織の詳細",
     "joinDate": "組織加入日",
-    "submit": "送信",
+    "submit": "組織を登録する",
     "success": "登録が成功しました",
     "errorFillAllFields": "すべての項目を入力してください",
     "goBack": "戻る",
