@@ -117,6 +117,7 @@
     },
     "none": "なし",
     "view": "表示",
+    "viewAttendance": "出席を確認する",
     "employeeHeader": {
       "currentMonthInfo": "今月の出席情報",
       "expectedHours": "最低勤務時間",
@@ -172,6 +173,10 @@
     "title": "従業員の詳細",
     "accountInfo": "アカウント情報",
     "attendanceSettings": "出席設定",
+    "ptoUpdate": "特別休暇が更新されました",
+    "ptoUpdateFail": "特別休暇の更新に失敗しました",
+    "ptoDelete": "特別休暇が削除されました",
+    "ptoDeleteFail": "特別休暇の削除に失敗しました",
     "fields": {
       "firstName": "名",
       "lastName": "姓",
