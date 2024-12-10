@@ -13,8 +13,8 @@
           </div>
           <!-- Hours Worked Title -->
           <div>
-            <div class="text-3xl text-slate-600">{{ $t('calendar.headers.totalWorked') }}</div>
-            <div class="text-xs">{{ $t('calendar.headers.currentMonth') }}</div>
+            <div class="text-3xl text-slate-600 truncate">{{ $t('calendar.headers.totalWorked') }}</div>
+            <div class="text-xs truncate">{{ $t('calendar.headers.currentMonth') }}</div>
           </div>
           <hr class="w-px h-10 border-l border-slate-300 mx-4">
           <!-- Hours Worked -->
@@ -352,7 +352,6 @@ export default {
 
     this.initializeChart();
     this.fetchSupervisors();
-    this.holidays = this.generateJapaneseHolidays(new Date().getFullYear());
 
     const activeAccountSupervisorId = authStore.user.supervisor_id;
     if (activeAccountSupervisorId) {
@@ -689,6 +688,8 @@ export default {
           };
         });
 
+        this.holidays = this.generateJapaneseHolidays(currentYear);
+
         // Aggiungi gli eventi delle attendance e delle PTO al calendario
         this.events = [...attendanceEvents, ...ptoEvents];
 
@@ -957,13 +958,12 @@ export default {
     },
     generateJapaneseHolidays(year) {
       return [
-        { title: "New Year's Day", start: `${year}-01-01`, isHoliday: true },
         { title: 'Coming of Age Day', start: `${year}-01-08`, isHoliday: true },
-        { title: 'National Foundation Day', start: `${year}-02-11`, isHoliday: true },
+        { title: 'Foundation Day', start: `${year}-02-11`, isHoliday: true },
         { title: "Emperor's Birthday", start: `${year}-02-23`, isHoliday: true },
         { title: 'Spring Equinox', start: `${year}-03-21`, isHoliday: true },
         { title: 'Showa Day', start: `${year}-04-29`, isHoliday: true },
-        { title: 'Constitution Memorial Day', start: `${year}-05-03`, isHoliday: true },
+        { title: 'Memorial Day', start: `${year}-05-03`, isHoliday: true },
         { title: 'Greenery Day', start: `${year}-05-04`, isHoliday: true },
         { title: "Children's Day", start: `${year}-05-05`, isHoliday: true },
         { title: 'Marine Day', start: `${year}-07-15`, isHoliday: true },
@@ -971,14 +971,14 @@ export default {
         { title: 'Autumn Equinox', start: `${year}-09-23`, isHoliday: true },
         { title: 'Sports Day', start: `${year}-10-14`, isHoliday: true },
         { title: 'Culture Day', start: `${year}-11-03`, isHoliday: true },
-        { title: 'Labor Thanksgiving Day', start: `${year}-11-23`, isHoliday: true },
+        { title: 'Thanksgiving', start: `${year}-11-23`, isHoliday: true },
         { title: 'Christmas Holiday', start: `${year}-12-28`, isHoliday: true },
         { title: 'Christmas Holiday', start: `${year}-12-29`, isHoliday: true },
         { title: 'Christmas Holiday', start: `${year}-12-30`, isHoliday: true },
         { title: 'Christmas Holiday', start: `${year}-12-31`, isHoliday: true },
-        { title: 'Christmas Holiday', start: `2025-01-01`, isHoliday: true },
-        { title: 'Christmas Holiday', start: `2025-01-02`, isHoliday: true },
-        { title: 'Christmas Holiday', start: `2025-01-03`, isHoliday: true }
+        { title: 'Christmas Holiday', start: `${year}-01-01`, isHoliday: true },
+        { title: 'Christmas Holiday', start: `${year}-01-02`, isHoliday: true },
+        { title: 'Christmas Holiday', start: `${year}-01-03`, isHoliday: true }
       ];
     },
     isHoliday(date) {
