@@ -117,6 +117,7 @@
     },
     "none": "なし",
     "view": "表示",
+    "viewAttendance": "出席を確認する",
     "employeeHeader": {
       "currentMonthInfo": "今月の出席情報",
       "expectedHours": "最低勤務時間",
