@@ -972,13 +972,13 @@ export default {
         { title: `${t('holidays.sportsDay')}`, start: `${year}-10-14`, isHoliday: true },
         { title: `${t('holidays.cultureDay')}`, start: `${year}-11-03`, isHoliday: true },
         { title: `${t('holidays.thanksgiving')}`, start: `${year}-11-23`, isHoliday: true },
-        { title: `${t('holidays.christmasHoliday')}`, start: `${year}-12-28`, isHoliday: true },
-        { title: `${t('holidays.christmasHoliday')}`, start: `${year}-12-29`, isHoliday: true },
-        { title: `${t('holidays.christmasHoliday')}`, start: `${year}-12-30`, isHoliday: true },
-        { title: `${t('holidays.christmasHoliday')}`, start: `${year}-12-31`, isHoliday: true },
-        { title: `${t('holidays.christmasHoliday')}`, start: `${year}-01-01`, isHoliday: true },
-        { title: `${t('holidays.christmasHoliday')}`, start: `${year}-01-02`, isHoliday: true },
-        { title: `${t('holidays.christmasHoliday')}`, start: `${year}-01-03`, isHoliday: true }
+        { title: `${t('holidays.newYearsHoliday')}`, start: `${year}-12-28`, isHoliday: true },
+        { title: `${t('holidays.newYearsHoliday')}`, start: `${year}-12-29`, isHoliday: true },
+        { title: `${t('holidays.newYearsHoliday')}`, start: `${year}-12-30`, isHoliday: true },
+        { title: `${t('holidays.newYearsHoliday')}`, start: `${year}-12-31`, isHoliday: true },
+        { title: `${t('holidays.newYearsHoliday')}`, start: `${year}-01-01`, isHoliday: true },
+        { title: `${t('holidays.newYearsHoliday')}`, start: `${year}-01-02`, isHoliday: true },
+        { title: `${t('holidays.newYearsHoliday')}`, start: `${year}-01-03`, isHoliday: true }
       ];
     },
     isHoliday(date) {

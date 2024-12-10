@@ -22,7 +22,7 @@
           <div class="text-xs">{{$t('calendar.headers.currentMonth')}}</div>
         </div>
         <hr class="w-px h-10 border-l border-slate-300 mx-4">
-        <div class="text-3xl text-slate-600">{{ totalWorkedHours % 1 === 0 ? totalWorkedHours : totalWorkedHours.toFixed(2) ?? 0 }} Hrs</div>
+        <div class="text-3xl text-slate-600">{{ totalWorkedHours % 1 === 0 ? totalWorkedHours : totalWorkedHours.toFixed(2) ?? 0 }} {{ $t('calendar.headers.hours') }}</div>
       </div>
 
       <div class="bg-white shadow-sm border border-slate-200 rounded-lg p-2 flex flex-row justify-evenly items-center">
@@ -121,13 +121,13 @@ export default {
         { title: `${t('holidays.sportsDay')}`, start: `${year}-10-14`, isHoliday: true },
         { title: `${t('holidays.cultureDay')}`, start: `${year}-11-03`, isHoliday: true },
         { title: `${t('holidays.thanksgiving')}`, start: `${year}-11-23`, isHoliday: true },
-        { title: `${t('holidays.christmasHoliday')}`, start: `${year}-12-28`, isHoliday: true },
-        { title: `${t('holidays.christmasHoliday')}`, start: `${year}-12-29`, isHoliday: true },
-        { title: `${t('holidays.christmasHoliday')}`, start: `${year}-12-30`, isHoliday: true },
-        { title: `${t('holidays.christmasHoliday')}`, start: `${year}-12-31`, isHoliday: true },
-        { title: `${t('holidays.christmasHoliday')}`, start: `${year}-01-01`, isHoliday: true },
-        { title: `${t('holidays.christmasHoliday')}`, start: `${year}-01-02`, isHoliday: true },
-        { title: `${t('holidays.christmasHoliday')}`, start: `${year}-01-03`, isHoliday: true }
+        { title: `${t('holidays.newYearsHoliday')}`, start: `${year}-12-28`, isHoliday: true },
+        { title: `${t('holidays.newYearsHoliday')}`, start: `${year}-12-29`, isHoliday: true },
+        { title: `${t('holidays.newYearsHoliday')}`, start: `${year}-12-30`, isHoliday: true },
+        { title: `${t('holidays.newYearsHoliday')}`, start: `${year}-12-31`, isHoliday: true },
+        { title: `${t('holidays.newYearsHoliday')}`, start: `${year}-01-01`, isHoliday: true },
+        { title: `${t('holidays.newYearsHoliday')}`, start: `${year}-01-02`, isHoliday: true },
+        { title: `${t('holidays.newYearsHoliday')}`, start: `${year}-01-03`, isHoliday: true }
       ];
     },
     initializeCalendar() {
@@ -272,7 +272,7 @@ async fetchAttendanceDataForMonth(year, month) {
   if (arg.event.extendedProps.isHoliday) {
     return {
       html: `
-        <div style="text-align: left; font-size: 1vw; color: black; background-color: rgba(255, 0, 0, 0.2); padding: .5vw; border-radius: 4px; width: 100%; word-wrap: break-word; white-space: normal;">
+        <div style="text-align: left; font-size: 1vw; color: white; background-color: rgba(255, 0, 0, 0.2); padding: .5vw; border-radius: 4px; width: 100%; word-wrap: break-word; white-space: normal;">
           <b>${arg.event.title}</b>
         </div>
       `,
