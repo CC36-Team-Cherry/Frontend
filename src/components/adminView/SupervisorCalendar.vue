@@ -53,7 +53,9 @@
     </div>
 
     <!-- Calendar -->
-    <div ref="calendar" id="calendar" class="h-full"></div>
+    <div class="flex-1 bg-white shadow-sm border border-slate-200 rounded-lg p-4 overflow-hidden" style="height: calc(100vh - 200px);">
+     <div ref="calendar" class="h-full"></div>
+    </div>
   </div>
 </template>
 
@@ -208,7 +210,7 @@ async fetchAttendanceDataForMonth(year, month) {
         id: record.id,
         title: `${punchInTime} - ${punchOutTime}`,
         start: record.day,
-        backgroundColor: record.absence ? 'red' : 'lightblue',
+        backgroundColor: record.absence ? 'pink' : 'lightblue',
         extendedProps: {
           attendanceType: record.absence ? 'absence' : 'general',
           startTime: punchInTime,  

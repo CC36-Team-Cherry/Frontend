@@ -33,13 +33,13 @@
                         </span>
                     </td>
                     <td class="border p-2 flex space-x-2 justify-center">
-                        <button @click="startEditing(index)" v-if="editingIndex !== index" class="bg-yellow-500 hover:bg-yellow-600 text-white px-6 py-2 rounded mr-2 w-20">
+                        <button @click="startEditing(index)" v-if="editingIndex !== index" :title="$t('adminConsole.buttons.edit')" class="bg-yellow-500 hover:bg-yellow-600 text-white px-6 py-2 rounded mr-2 w-20">
                             <i class="fas fa-edit"></i>
                         </button>
-                        <button @click="stopEditing" v-else class="bg-blue-500 hover:bg-blue-600 text-white px-6 py-2 rounded mr-2 w-20">
+                        <button @click="stopEditing" v-else :title="$t('adminConsole.buttons.save')" class="bg-blue-500 hover:bg-blue-600 text-white px-6 py-2 rounded mr-2 w-20">
                             <i class="fas fa-save"></i>
                         </button>
-                        <button @click="deleteTeam(team.id)" class="bg-red-500 hover:bg-red-600 text-white px-6 py-2 rounded w-20">
+                        <button @click="deleteTeam(team.id)" :title="$t('adminConsole.buttons.delete')" class="bg-red-500 hover:bg-red-600 text-white px-6 py-2 rounded w-20">
                             <i class="fas fa-trash-alt"></i>
                         </button>
                     </td>
@@ -60,10 +60,10 @@
             <!-- <label class="font-medium text-left">{{ $t('adminConsole.fields.organizationName') }}</label> -->
             <input type="text" v-model="formData.organizationName" class="border rounded p-2 w-1/6" :placeholder=authStore.user.company.name />
                     <!-- Save and Delete buttons -->
-            <button @click="saveSettings" class="my-1 w-1/12 py-2 px-3 rounded bg-blue-500 hover:bg-blue-600 transition text-white">
+            <button @click="saveSettings" class="my-1 w-40 py-2 px-3 rounded bg-blue-500 hover:bg-blue-600 transition text-white">
                 {{ $t('adminConsole.buttons.saveName') }}
             </button>
-            <button @click="openConfirmModal" class="my-4 w-1/12 py-2 rounded bg-red-500 hover:bg-red-600 transition text-white">
+            <button @click="openConfirmModal" class="my-4 w-40 py-2 rounded bg-red-500 hover:bg-red-600 transition text-white">
                 {{ $t('adminConsole.buttons.deleteOrganization') }}
             </button>
         </div>
