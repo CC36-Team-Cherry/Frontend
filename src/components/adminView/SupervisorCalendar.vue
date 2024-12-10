@@ -161,7 +161,6 @@ export default {
 },
 async fetchAttendanceDataForMonth(year, month) {
   if (!this.selectedUserId) {
-    console.error('No user selected');
     return;
   }
   try {

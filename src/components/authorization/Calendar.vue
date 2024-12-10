@@ -49,7 +49,7 @@
       </div>
     </div>
     <!-- Right Sidebar -->
-    <div class="bg-white shadow-sm border border-slate-200 rounded-lg p-2 flex flex-col w-80">
+    <div class="bg-white shadow-sm border border-slate-200 rounded-lg p-3 m-2 flex flex-col w-72">
       <!-- Tabs -->
       <div class="flex mb-3">
         <button @click="tab = 'attendance', attendanceType = 'general'"
@@ -187,7 +187,7 @@
       <div class="flex flex-col items-center space-y-3 mt-auto">
 
         <div class="text-lg font-semibold mt-auto text-center">
-          {{ "Month Approval " }}
+          {{ "Month Approval Status" }}
         </div>
         <div :class="{
           'bg-yellow-100 text-yellow-800': monthSubmitApprovalStatus === 'Pending',

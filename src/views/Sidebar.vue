@@ -1,7 +1,10 @@
 <template>
   <div class="flex">
   <aside class="w-64 bg-gray-100 h-full shadow-md flex flex-col fixed top-0 left-0">
-    <div class="p-4 flex justify-center items-center"><img src="/favicon.png" alt="Breeze logo" width="80" height="80">
+    <div class="p-4 flex justify-center items-center">
+      <router-link to="/calendar">
+        <img src="/favicon.png" alt="Breeze logo" width="80" height="80">
+      </router-link>
     </div>
     <div class="text-center"> {{ authStore.user.company.name }} </div>
     <div class="border-b p-2 text-center"> {{ $t('Sidebar.Welcome') }} {{ authStore.user.first_name + " " +
