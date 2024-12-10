@@ -57,6 +57,9 @@ import dayGridPlugin from '@fullcalendar/daygrid';
 import interactionPlugin from '@fullcalendar/interaction';
 import axios from 'axios';
 import { useAuthStore } from '@/stores/authStore';
+import enLocale from '@fullcalendar/core/locales/en-gb';
+import jaLocale from '@fullcalendar/core/locales/ja';
+import { useI18n } from 'vue-i18n';
 
 const apiUrl = import.meta.env.VITE_API_URL;
 axios.defaults.withCredentials = true;
@@ -80,6 +83,10 @@ export default {
       overtimeHours: 0,
       remainingPtoDays: 0,
       breakTime: null,
+      locales: {
+        'en-US': enLocale,
+        'ja-JP': jaLocale,
+      },
     };
   },
   methods: {
@@ -130,12 +137,14 @@ export default {
       ];
     },
     initializeCalendar() {
+      const { locale } = useI18n();
       const calendarEl = this.$refs.calendar;
       if (calendarEl) {
         this.calendar = new Calendar(calendarEl, {
           plugins: [dayGridPlugin, interactionPlugin],
           initialView: 'dayGridMonth',
           events: [],
+          locale: this.locales[locale.value],
           businessHours: {
             daysOfWeek: [1, 2, 3, 4, 5],
           },
@@ -152,15 +161,13 @@ export default {
       }
     },
   handleMonthChange(startDate) {
-  // Calcola la data centrale del calendario (media tra inizio e fine)
     const midViewDate = new Date(
     (this.calendar.view.activeStart.getTime() + this.calendar.view.activeEnd.getTime()) / 2
    );
 
   const year = midViewDate.getFullYear();
-  const month = midViewDate.getMonth() + 1; // Mese corrente
+  const month = midViewDate.getMonth() + 1; 
 
-  // Carica i dati del mese effettivo
   this.fetchAttendanceDataForMonth(year, month);
 },
 async fetchAttendanceDataForMonth(year, month) {
@@ -271,7 +278,7 @@ async fetchAttendanceDataForMonth(year, month) {
   if (arg.event.extendedProps.isHoliday) {
     return {
       html: `
-        <div style="text-align: left; font-size: 1vw; color: black; background-color: rgba(255, 0, 0, 0.2); padding: .5vw; border-radius: 4px; width: 100%; word-wrap: break-word; white-space: normal;">
+        <div style="text-align: left; font-size: 1vw; color: white; background-color: rgba(255, 0, 0, 0.2); padding: .5vw; border-radius: 4px; width: 100%; word-wrap: break-word; white-space: normal;">
           <b>${arg.event.title}</b>
         </div>
       `,

@@ -50,6 +50,9 @@ import { Calendar } from '@fullcalendar/core';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import interactionPlugin from '@fullcalendar/interaction';
 import axios from 'axios';
+import enLocale from '@fullcalendar/core/locales/en-gb';
+import jaLocale from '@fullcalendar/core/locales/ja';
+import { useI18n } from 'vue-i18n';
 
 const apiUrl = import.meta.env.VITE_API_URL;
 axios.defaults.withCredentials = true;
@@ -77,6 +80,10 @@ export default {
       totalWorkedHours: 0,
       overtimeHours: 0,
       remainingPtoDays: 0,
+      locales: {
+        'en-US': enLocale,
+        'ja-JP': jaLocale,
+      },
     };
   },
   methods: {
@@ -115,12 +122,17 @@ export default {
       ];
     },
     initializeCalendar() {
+      const { locale } = useI18n();
       const calendarEl = this.$refs.calendar;
       if (calendarEl) {
         this.calendar = new Calendar(calendarEl, {
           plugins: [dayGridPlugin, interactionPlugin],
           initialView: 'dayGridMonth',
           events: [],
+          locale: this.locales[locale.value],
+          businessHours: {
+            daysOfWeek: [1, 2, 3, 4, 5],
+          },
           buttonText: {
           today: 'Today',
           },
@@ -252,7 +264,7 @@ export default {
         };
       } else if (arg.event.extendedProps.isHoliday) {
         return {
-          html: `<div style="color: black; background-color: rgba(255, 0, 0, 0.2); padding: 5px; border-radius: 4px;">
+          html: `<div style="color: white; background-color: rgba(255, 0, 0, 0.2); padding: 5px; border-radius: 4px;">
             <b>${arg.event.title}</b>
           </div>`,
         };
