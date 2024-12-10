@@ -194,6 +194,23 @@
       "delete": "削除"
     }
   },
+"holidays": {
+  "comingOfAgeDay": "成人の日",
+  "foundationDay": "建国記念の日",
+  "emperorsBirthday": "天皇誕生日",
+  "springEquinox": "春分の日",
+  "showaDay": "昭和の日",
+  "memorialDay": "憲法記念日",
+  "greeneryDay": "みどりの日",
+  "childrensDay": "こどもの日",
+  "marineDay": "海の日",
+  "mountainDay": "山の日",
+  "autumnEquinox": "秋分の日",
+  "sportsDay": "体育の日",
+  "cultureDay": "文化の日",
+  "thanksgiving": "勤労感謝の日",
+  "christmasHoliday": "クリスマス休暇"
+},
   "calendar": {
     "selection": "YYYY-MM-DD",
     "type": "タイプを選択",
