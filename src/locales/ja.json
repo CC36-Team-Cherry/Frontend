@@ -56,15 +56,18 @@
   },
   "register": {
     "title": "組織を登録",
-    "firstName": "氏名を入力してください",
-    "lastName": "苗字を入力してください",
+    "firstName": "氏名",
+    "lastName": "苗字",
+    "password": "新しいパスワード",
+    "organization": "組織情報",
     "organizationName": "組織名を入力してください",
     "organizationDetails": "組織の詳細",
-    "submit": "送信",
+    "joinDate": "組織加入日",
+    "submit": "組織を登録する",
     "success": "登録が成功しました",
-    "errorFillAllFields": "すべての必須項目に入力してください",
+    "errorFillAllFields": "すべての項目を入力してください",
     "goBack": "戻る",
-    "role": "ユーザー役割を入力してください"
+    "role": "あなたの職位"
   },
   "adminConsole": {
     "title": "管理コンソール",
