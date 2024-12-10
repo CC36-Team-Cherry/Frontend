@@ -407,7 +407,7 @@ export default {
         if (arg.event.extendedProps.isHoliday) {
           return {
             html: `
-      <div style="text-align: left; font-size: 1vw; color: black; background-color: rgba(255, 0, 0, 0.2); padding: .5vw; border-radius: 4px; width: 100%; word-wrap: break-word; white-space: normal;">
+      <div style="text-align: left; font-size: 1vw; color: white; background-color: rgba(255, 0, 0, 0.2); padding: .5vw; border-radius: 4px; width: 100%; word-wrap: break-word; white-space: normal;">
         <b>${arg.event.title}</b>
       </div>
     `,
@@ -1009,8 +1009,16 @@ export default {
       const authStore = useAuthStore();
       const requests = authStore.approvals;
 
+      const selectedPtoDates = this.selectionRange.split(', ');
+
       // Check if PTO or HalfPTO is being requested and remainingPto is 0
       if ((this.attendanceType === "pto" || this.attendanceType === "halfpto") && this.remainingPto <= 0) {
+        toast.warning(t('calendar.toast.notEnoughPTO'));
+        return;
+      }
+
+      const totalPtoDaysRequested = selectedPtoDates.length;
+      if (this.remainingPto < totalPtoDaysRequested) {
         toast.warning(t('calendar.toast.notEnoughPTO'));
         return;
       }
