@@ -50,6 +50,9 @@ import { Calendar } from '@fullcalendar/core';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import interactionPlugin from '@fullcalendar/interaction';
 import axios from 'axios';
+import i18n from '../i18n.ts';
+import { useI18n } from 'vue-i18n';
+const { t } = i18n.global;
 
 const apiUrl = import.meta.env.VITE_API_URL;
 axios.defaults.withCredentials = true;
