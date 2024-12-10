@@ -56,8 +56,8 @@
   },
   "register": {
     "title": "組織を登録",
-    "firstName": "氏名を入力してください",
-    "lastName": "苗字を入力してください",
+    "firstName": "氏名",
+    "lastName": "苗字",
     "organizationName": "組織名を入力してください",
     "organizationDetails": "組織の詳細",
     "submit": "送信",

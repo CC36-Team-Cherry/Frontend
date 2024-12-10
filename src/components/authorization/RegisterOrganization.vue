@@ -20,6 +20,14 @@
       <div class="bg-white p-8 rounded shadow-md w-full max-w-lg">
         <h1 class="text-2xl font-bold mb-6 text-gray-800">{{ $t('register.title') }}</h1>
         <form @submit.prevent="handleSubmit" class="flex flex-col space-y-4">
+          <div class="flex items-center justify-center gap-5">
+            <input v-model="formData.first_name" type="text" :placeholder="$t('register.firstName')"
+              data-test="reg-first-name"
+              class="w-full p-3 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-400" />
+            <input v-model="formData.last_name" type="text" :placeholder="$t('register.lastName')"
+              data-test="reg-last-name"
+              class="w-full p-3 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-400" />
+          </div>
           <div>
             <label class="block text-gray-700 font-medium mb-2">
               <span class="text-red-500 font-bold">*</span>{{ $t('login.email') }}:
@@ -35,14 +43,6 @@
             </label>
             <input v-model="formData.password" type="password" :placeholder="$t('login.placeholders.password')"
               data-test="reg-password"
-              class="w-full p-3 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-400" />
-          </div>
-          <div>
-            <label class="block text-gray-700 font-medium mb-2">
-              <span class="text-red-500 font-bold">*</span>{{ $t('register.firstName') }}:
-            </label>
-            <input v-model="formData.first_name" type="text" :placeholder="$t('register.firstName')"
-              data-test="reg-first-name"
               class="w-full p-3 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-400" />
           </div>
           <div>
