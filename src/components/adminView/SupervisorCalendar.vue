@@ -16,31 +16,39 @@
 
     <!-- Stats Cards -->
     <div class="grid grid-cols-3 gap-4 mb-4">
-      <div class="bg-white shadow-sm border border-slate-200 rounded-lg p-2 flex flex-row justify-evenly items-center">
+      <div class="bg-white shadow-sm border border-slate-200 rounded-lg p-2 flex flex-row justify-evenly items-center min-w-[200px]">
         <div>
-          <div class="text-3xl text-slate-600">{{$t('calendar.headers.totalWorked')}}</div>
-          <div class="text-xs">{{$t('calendar.headers.currentMonth')}}</div>
+          <div class="text-xl sm:text-2xl md:text-3xl text-slate-600" style="font-size: clamp(1rem, 2vw, 2rem)">
+            {{$t('calendar.headers.totalWorked')}}</div>
+            <div class="text-xs sm:text-sm md:text-base" style="font-size: clamp(0.75rem, 2vw, 1rem)">{{$t('calendar.headers.currentMonth')}}</div>
         </div>
         <hr class="w-px h-10 border-l border-slate-300 mx-4">
-        <div class="text-3xl text-slate-600">{{ totalWorkedHours % 1 === 0 ? totalWorkedHours : totalWorkedHours.toFixed(2) ?? 0 }} {{ $t('calendar.headers.hours') }}</div>
+        <div class="text-xl sm:text-2xl md:text-3xl text-slate-600" style="font-size: clamp(1rem, 2vw, 2rem)">
+          {{ totalWorkedHours % 1 === 0 ? totalWorkedHours : totalWorkedHours.toFixed(2) ?? 0 }} {{ $t('calendar.headers.hours') }}</div>
       </div>
 
-      <div class="bg-white shadow-sm border border-slate-200 rounded-lg p-2 flex flex-row justify-evenly items-center">
+      <div class="bg-white shadow-sm border border-slate-200 rounded-lg p-4 flex flex-row justify-evenly items-center min-w-[200px]">
         <div>
-          <div class="text-3xl text-slate-600">{{$t('calendar.headers.overtime')}}</div>
-          <div class="text-xs">{{$t('calendar.headers.currentMonth')}}</div>
+          <div class="text-xl sm:text-2xl md:text-3xl text-slate-600" style="font-size: clamp(1rem, 2vw, 2rem)">
+            {{$t('calendar.headers.overtime')}}</div>
+            <div class="text-xs sm:text-sm md:text-base" style="font-size: clamp(0.75rem, 2vw, 1rem)">
+              {{$t('calendar.headers.currentMonth')}}</div>
         </div>
         <hr class="w-px h-10 border-l border-slate-300 mx-4">
-        <div class="text-3xl text-slate-600">{{ overtimeHours ?? 0 }} {{$t('calendar.headers.hours')}}</div>
+        <div class="text-xl sm:text-2xl md:text-3xl text-slate-600" style="font-size: clamp(1rem, 2vw, 2rem)">
+          {{ overtimeHours ?? 0 }} {{$t('calendar.headers.hours')}}</div>
       </div>
 
-      <div class="bg-white shadow-sm border border-slate-200 rounded-lg p-2 flex flex-row justify-evenly items-center">
+      <div class="bg-white shadow-sm border border-slate-200 rounded-lg p-4 flex flex-row justify-evenly items-center min-w-[200px]">
         <div>
-          <div class="text-3xl text-slate-600">{{$t('calendar.headers.pto')}}</div>
-          <div class="text-xs">{{$t('calendar.headers.totalRemaining')}}</div>
+          <div class="text-xl sm:text-2xl md:text-3xl text-slate-600" style="font-size: clamp(1rem, 2vw, 2rem)">
+            {{$t('calendar.headers.pto')}}</div>
+            <div class="text-xs sm:text-sm md:text-base" style="font-size: clamp(0.75rem, 2vw, 1rem)">
+              {{$t('calendar.headers.totalRemaining')}}</div>
         </div>
         <hr class="w-px h-10 border-l border-slate-300 mx-4">
-        <div class="text-3xl text-slate-600">{{ remainingPtoDays ?? 0 }} {{$t('calendar.headers.days')}}</div>
+        <div class="text-xl sm:text-2xl md:text-3xl text-slate-600" style="font-size: clamp(1rem, 2vw, 2rem)">
+          {{ remainingPtoDays ?? 0 }} {{$t('calendar.headers.days')}}</div>
       </div>
     </div>
 

@@ -5,41 +5,47 @@
       <!-- Chart and PTO Card -->
       <div class="grid grid-cols-3 justify-items-stretch gap-2 mb-2">
         <!-- Total Hours Worked Card -->
-        <div
-          class="bg-white shadow-sm border border-slate-200 rounded-lg p-2 pr-3 flex flex-row justify-evenly items-center ">
+        <div class="bg-white shadow-sm border border-slate-200 rounded-lg p-4 flex flex-row justify-evenly items-center min-w-[200px]">
           <!-- Chart -->
-          <div class="flex-1">
+          <div class="flex-shrink-0">
             <canvas ref="attendanceChart" class="w-full custom-chart-height" style="height: 80px;"></canvas>
           </div>
           <!-- Hours Worked Title -->
           <div>
-            <div class="text-3xl text-slate-600 truncate">{{ $t('calendar.headers.totalWorked') }}</div>
-            <div class="text-xs truncate">{{ $t('calendar.headers.currentMonth') }}</div>
+            <div class="text-xl sm:text-2xl md:text-3xl text-slate-600" style="font-size: clamp(1rem, 2vw, 2rem)">
+              {{ $t('calendar.headers.totalWorked') }}</div>
+              <div class="text-xs sm:text-sm md:text-base" style="font-size: clamp(0.75rem, 2vw, 1rem)">
+                {{ $t('calendar.headers.currentMonth') }}</div>
           </div>
           <hr class="w-px h-10 border-l border-slate-300 mx-4">
           <!-- Hours Worked -->
-          <div class="text-3xl text-slate-600"> {{ calculatedTotalHours % 1 === 0 ? calculatedTotalHours :
+          <div class="text-xl sm:text-2xl md:text-3xl text-slate-600" style="font-size: clamp(1rem, 2vw, 2rem)">
+            {{ calculatedTotalHours % 1 === 0 ? calculatedTotalHours :
             calculatedTotalHours.toFixed(2) ?? 0 }} {{ $t('calendar.headers.hours') }}</div>
         </div>
         <!-- OT Card -->
-        <div
-          class="bg-white shadow-sm border border-slate-200 rounded-lg p-2 flex flex-row justify-evenly items-center">
+        <div class="bg-white shadow-sm border border-slate-200 rounded-lg p-4 flex flex-row justify-evenly items-center min-w-[200px]">
           <div>
-            <div class="text-3xl text-slate-600">{{ $t('calendar.headers.overtime') }}</div>
-            <div class="text-xs">{{ $t('calendar.headers.currentMonth') }}</div>
+            <div class="text-xl sm:text-2xl md:text-3xl text-slate-600" style="font-size: clamp(1rem, 2vw, 2rem)">
+              {{ $t('calendar.headers.overtime') }}</div>
+              <div class="text-xs sm:text-sm md:text-base" style="font-size: clamp(0.75rem, 2vw, 1rem)">
+                {{ $t('calendar.headers.currentMonth') }}</div>
           </div>
           <hr class="w-px h-10 border-l border-slate-300 mx-4">
-          <div class="text-3xl text-slate-600"> {{ extraHours }} {{ $t('calendar.headers.hours') }}</div>
+          <div class="text-xl sm:text-2xl md:text-3xl text-slate-600" style="font-size: clamp(1rem, 2vw, 2rem)">
+            {{ extraHours }} {{ $t('calendar.headers.hours') }}</div>
         </div>
         <!-- PTO Card -->
-        <div
-          class="bg-white shadow-sm border border-slate-200 rounded-lg p-2 flex flex-row justify-evenly items-center">
+        <div class="bg-white shadow-sm border border-slate-200 rounded-lg p-4 flex flex-row justify-evenly items-center min-w-[200px]">
           <div>
-            <div class="text-3xl text-slate-600">{{ $t('calendar.headers.pto') }}</div>
-            <div class="text-xs">{{ $t('calendar.headers.totalRemaining') }}</div>
+            <div class="text-xl sm:text-2xl md:text-3xl text-slate-600" style="font-size: clamp(1rem, 2vw, 2rem)">
+              {{ $t('calendar.headers.pto') }}</div>
+              <div class="text-xs sm:text-sm md:text-base" style="font-size: clamp(0.75rem, 2vw, 1rem)">
+                {{ $t('calendar.headers.totalRemaining') }}</div>
           </div>
           <hr class="w-px h-10 border-l border-slate-300 mx-4">
-          <div class="text-3xl text-slate-600">{{ remainingPto }} {{ $t('calendar.headers.days') }}</div>
+          <div class="text-xl sm:text-2xl md:text-3xl text-slate-600" style="font-size: clamp(1rem, 2vw, 2rem)">
+            {{ remainingPto }} {{ $t('calendar.headers.days') }}</div>
         </div>
       </div>
 
