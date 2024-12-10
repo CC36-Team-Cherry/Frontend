@@ -171,7 +171,7 @@ export default {
           id: record.id,
           title: `${record.punch_in ? record.punch_in.split('T')[1].slice(0, 5) : ''} - ${record.punch_out ? record.punch_out.split('T')[1].slice(0, 5) : ''}`,
           start: record.day,
-          backgroundColor: record.absence ? 'red' : 'lightblue',
+          backgroundColor: record.absence ? 'pink' : 'lightblue',
           extendedProps: {
             attendanceType: record.absence ? 'absence' : 'general',
             breakTime: record.break_amount ? `${record.break_amount} min` : "None",

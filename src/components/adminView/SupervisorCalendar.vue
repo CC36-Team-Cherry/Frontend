@@ -196,7 +196,7 @@ async fetchAttendanceDataForMonth(year, month) {
         id: record.id,
         title: `${punchInTime} - ${punchOutTime}`,
         start: record.day,
-        backgroundColor: record.absence ? 'red' : 'lightblue',
+        backgroundColor: record.absence ? 'pink' : 'lightblue',
         extendedProps: {
           attendanceType: record.absence ? 'absence' : 'general',
           startTime: punchInTime,  
