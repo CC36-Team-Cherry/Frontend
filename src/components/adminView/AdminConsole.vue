@@ -16,7 +16,7 @@
             </div>
 
         <div class="overflow-x-auto flex justify-center">
-            <table class="w-1/2 table-auto border-collapse">
+            <table class="w-4/6 table-auto border-collapse">
                 <thead class="bg-blue-100">
                     <tr>
                         <th class="border p-2 text-left w-5/6">{{$t('adminConsole.teamName')}}</th>
@@ -28,7 +28,7 @@
                         <div v-if="editingIndex === index">
                             <input v-model="teams[index].team_name" @blur="stopEditing" @keyup.enter="stopEditing" class="border rounded p-2 w-48"/>
                         </div>   
-                        <span v-else class="p-2">
+                        <span v-else class="p-2 text-lg">
                             {{ team.team_name }}
                         </span>
                     </td>
