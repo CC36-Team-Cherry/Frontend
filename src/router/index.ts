@@ -11,8 +11,9 @@ import NewLogin from '@/components/authorization/NewLogin.vue';
 import ForgotPassword from '@/components/authorization/ForgotPassword.vue';
 import Settings from '@/views/Settings.vue'; 
 import AdminConsole from '@/components/adminView/AdminConsole.vue';
-import Approvals from '@/views/Approvals.vue'
-import SupervisorCalendar from '@/components/adminView/SupervisorCalendar.vue'
+import Approvals from '@/views/Approvals.vue';
+import SupervisorCalendar from '@/components/adminView/SupervisorCalendar.vue';
+import MobileLanding from '@/views/MobileLanding.vue'
 
 //THIS IS FOR TESTING FIREBASE, DELETE THIS LATER
 import Playground from "@/components/authorization/Playground.vue";
@@ -91,6 +92,11 @@ const router = createRouter({
       name: 'forgotpassword',
       component: ForgotPassword,
     },
+    {
+      path: '/landing',
+      name: 'landing',
+      component: MobileLanding,
+    },
     //THIS IS FOR TESTING FIREBASE, DELETE THIS LATER
     {
       path: "/playground",
@@ -119,6 +125,10 @@ router.beforeEach(async (to) => {
 });
 
 router.beforeEach((to, from, next) => {
+  if ((to.path === '/' || to.path === '/login') && screen.width < screen.height) {
+    return next('/landing');
+  }
+
   const authStore = useAuthStore();
 
   switch (to.name) {
@@ -150,5 +160,3 @@ router.beforeEach((to, from, next) => {
   
 
 export default router;
-
-
