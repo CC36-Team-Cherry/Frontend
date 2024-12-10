@@ -14,16 +14,16 @@
   "settings": {
     "title": "Settings",
     "fields": {
-      "firstName": "First Name",
-      "lastName": "Last Name",
+      "firstName": "First name",
+      "lastName": "Last name",
       "email": "Email",
-      "dateOfBirth": "Date of Birth",
+      "dateOfBirth": "Date of birth",
       "team": "Team",
       "defaultSupervisor": "Default Supervisor",
       "role": "Role",
-      "joinDate": "Join Date",
+      "joinDate": "Join date",
       "type": "Type",
-      "languagePreference": "Language Preference"
+      "languagePreference": "Language preference"
     },
     "save": "Save",
     "updateSuccess": "Account updated successfully",
@@ -35,7 +35,7 @@
   },
   "login": {
     "title": "Login",
-    "email": "Email",
+    "email": "Email address",
     "password": "Password",
     "submit": "Login",
     "invalidLogin": "Invalid username/password",
@@ -55,16 +55,19 @@
     }
   },
   "register": {
-    "title": "Register new organization",
+    "title": "Register a new organization",
     "firstName": "First name",
     "lastName": "Last name",
-    "organizationName": "Enter the name of your organization",
+    "password": "New password",
+    "organization": "Organization info",
+    "organizationName": "Organization name",
     "organizationDetails": "Organization Details",
+    "joinDate": "Organization join date",
     "submit": "Submit",
     "success": "Registration successful",
-    "errorFillAllFields": "Please fill all required fields",
+    "errorFillAllFields": "Please complete all fields",
     "goBack": "Go back",
-    "role": "Enter your user role"
+    "role": "Your user role"
   },
   "adminConsole": {
     "title": "Admin Console",
@@ -130,15 +133,15 @@
     "modal": {
       "modalTitle": "Add New User",
       "fields": {
-        "firstName": "First Name",
-        "lastName": "Last Name",
+        "firstName": "First name",
+        "lastName": "Last name",
         "email": "Email",
-        "dateOfBirth": "Date of Birth",
+        "dateOfBirth": "Date of birth",
         "team": "Team",
         "noTeam": "No team",
         "supervisor": "Default Supervisor",
         "role": "Role",
-        "joinDate": "Join Date",
+        "joinDate": "Join date",
         "type": "Type",
         "pto": "PTO"
       },
@@ -178,10 +181,10 @@
     "ptoDelete": "Special PTO deleted",
     "ptoDeleteFail": "Failed to delete Special PTO",
     "fields": {
-      "firstName": "First Name",
-      "lastName": "Last Name",
+      "firstName": "First name",
+      "lastName": "Last name",
       "email": "Email",
-      "dateOfBirth": "Date of Birth",
+      "dateOfBirth": "Date of birth",
       "team": "Team",
       "supervisor": "Supervisor",
       "pto": "Paid Time Off (PTO)",
