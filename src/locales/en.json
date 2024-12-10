@@ -172,6 +172,10 @@
     "title": "Employee Details",
     "accountInfo": "Account Info",
     "attendanceSettings": "Attendance Settings",
+    "ptoUpdate": "Special PTO updated",
+    "ptoUpdateFail": "Failed to update Special PTO",
+    "ptoDelete": "Special PTO deleted",
+    "ptoDeleteFail": "Failed to delete Special PTO",
     "fields": {
       "firstName": "First Name",
       "lastName": "Last Name",

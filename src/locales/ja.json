@@ -172,6 +172,10 @@
     "title": "従業員の詳細",
     "accountInfo": "アカウント情報",
     "attendanceSettings": "出席設定",
+    "ptoUpdate": "特別休暇が更新されました",
+    "ptoUpdateFail": "特別休暇の更新に失敗しました",
+    "ptoDelete": "特別休暇が削除されました",
+    "ptoDeleteFail": "特別休暇の削除に失敗しました",
     "fields": {
       "firstName": "名",
       "lastName": "姓",
