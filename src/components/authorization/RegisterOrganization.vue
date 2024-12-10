@@ -61,7 +61,7 @@
               class="w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-400" />
           </div>
           <button type="submit" data-test="org-register-button"
-            class="bg-green-500 text-white py-3 px-4 rounded hover:bg-green-600 transition duration-200">
+            class="bg-blue-500 text-white py-3 px-4 rounded hover:bg-blue-600 transition duration-200">
             {{ $t('register.submit') }}
           </button>
           <button @click="goToLogin()" class="text-blue-500 text-sm hover:underline">
