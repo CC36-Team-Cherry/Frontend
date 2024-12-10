@@ -26,17 +26,17 @@
                 <tr v-for="(team, index) in teams" :key="team.id" class="hover:bg-gray-100 even:bg-gray-50">
                     <td class="border p-2">
                         <div v-if="editingIndex === index">
-                            <input v-model="teams[index].team_name" @blur="stopEditing" @keyup.enter="stopEditing" class="border rounded p-2 w-48"/>
+                            <input v-model="teams[index].team_name" @blur="stopEditing" @keyup.enter="stopEditing" class="border rounded p-2 w-48" :data-test="`team-name-${index}`"/>
                         </div>   
                         <span v-else class="p-2">
                             {{ team.team_name }}
                         </span>
                     </td>
                     <td class="border p-2 flex space-x-2 justify-center">
-                        <button @click="startEditing(index)" v-if="editingIndex !== index" class="bg-yellow-500 hover:bg-yellow-600 text-white px-6 py-2 rounded mr-2 w-20">
+                        <button @click="startEditing(index)" v-if="editingIndex !== index" class="bg-yellow-500 hover:bg-yellow-600 text-white px-6 py-2 rounded mr-2 w-20" data-test="edit-team">
                             <i class="fas fa-edit"></i>
                         </button>
-                        <button @click="stopEditing" v-else class="bg-blue-500 hover:bg-blue-600 text-white px-6 py-2 rounded mr-2 w-20">
+                        <button @click="stopEditing" v-else class="bg-blue-500 hover:bg-blue-600 text-white px-6 py-2 rounded mr-2 w-20" data-test="save-team">
                             <i class="fas fa-save"></i>
                         </button>
                         <button @click="deleteTeam(team.id)" class="bg-red-500 hover:bg-red-600 text-white px-6 py-2 rounded w-20">
