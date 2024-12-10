@@ -131,8 +131,8 @@
                 employee.last_login ? employee.last_login.split('T')[0] : 'Invite Sent' }}</td>
             <td class="border p-2">{{ employee.email }}</td>
             <td v-if="authStore.user.Privileges?.is_admin"
-              class="border p-2 flex justify-center items-center">
-              <button class="bg-sky-500 text-white px-6 py-2 rounded w-20" @click.stop="openCalendarModal(employee)">
+              class="p-2 flex justify-center items-center">
+              <button :title="$t('employeeList.viewAttendance') "class="bg-sky-500 text-white px-6 py-2 rounded w-20" @click.stop="openCalendarModal(employee)">
                 <!-- {{ $t('employeeList.view') }} -->
                 <i class="fas fa-calendar-alt"></i>
               </button>

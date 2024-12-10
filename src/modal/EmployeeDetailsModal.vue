@@ -132,14 +132,14 @@
                       <span v-else class="w-full">
                         {{ specialPto.type }}</span>
                       <button @click="startEditingSpecialPto(index)" v-if="editingSpecialPtoIndex !== index"
-                        class="bg-yellow-500 hover:bg-yellow-600 text-white px-5 py-2 rounded mr-2 w-1/12">
+                        :title="$t('adminConsole.buttons.edit')" class="bg-yellow-500 hover:bg-yellow-600 text-white px-5 py-2 rounded mr-2 w-1/12">
                         <i class="fas fa-edit"></i>
                       </button>
                       <button @click="stopEditing" v-if="editingSpecialPtoIndex === index"
-                        class="bg-blue-500 hover:bg-blue-600 text-white px-5 py-2 rounded mr-2 w-1/12">
+                      :title="$t('adminConsole.buttons.save')" class="bg-blue-500 hover:bg-blue-600 text-white px-5 py-2 rounded mr-2 w-1/12">
                         <i class="fas fa-save"></i>
                       </button>
-                      <button @click="deleteSpecialPto(specialPto.id)" class="bg-red-500 hover:bg-red-600 text-white px-5 py-2 rounded w-1/12">
+                      <button @click="deleteSpecialPto(specialPto.id)" :title="$t('adminConsole.buttons.delete')" class="bg-red-500 hover:bg-red-600 text-white px-5 py-2 rounded w-1/12">
                         <i class="fas fa-trash-alt"></i>
                       </button>
                     </li>
@@ -177,7 +177,11 @@ import { defineProps, defineEmits, ref, watch, reactive, onMounted, toRaw, compu
 import { onClickOutside } from '@vueuse/core';
 import axios from 'axios';
 import { useAuthStore } from '@/stores/authStore';
+import { useToast } from "vue-toastification";
+import i18n from '../i18n.ts';
 
+const { t } = i18n.global;
+const toast = useToast();
 const authStore = useAuthStore();
 axios.defaults.withCredentials = true;
 
@@ -294,9 +298,11 @@ const stopEditing = async () => {
     }
 
     editingSpecialPtoIndex.value = null;
+    toast.success(t('employeeDetails.ptoUpdate'));
 
   } catch (err) {
     console.error(err);
+    toast.error(t('employeeDetails.ptoUpdateFail'));
   }
 }
 
@@ -310,13 +316,14 @@ const deleteSpecialPto = async (specialPtoId) => {
 
     if (response.status !== 200) {
       specialPtos.value = originalSpecialPto;
-      console.error('Failed to delete the special pto');
+      toast.error(t('employeeDetails.ptoDeleteFail'));
     } else {
-      console.error('Special pto delete successful');
+      toast.info(t('employeeDetails.ptoDelete'));
     }
 
   } catch (err) {
     console.error(err);
+    toast.error(t('employeeDetails.ptoDeleteFail'));
   }
 }
 
