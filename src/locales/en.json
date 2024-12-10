@@ -67,7 +67,7 @@
     "success": "Registration successful",
     "errorFillAllFields": "Please complete all fields",
     "goBack": "Go back",
-    "role": "Your user role"
+    "role": "Your job title"
   },
   "adminConsole": {
     "title": "Admin Console",

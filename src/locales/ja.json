@@ -67,7 +67,7 @@
     "success": "登録が成功しました",
     "errorFillAllFields": "すべての項目を入力してください",
     "goBack": "戻る",
-    "role": "あなたのユーザー役割"
+    "role": "あなたの職位"
   },
   "adminConsole": {
     "title": "管理コンソール",
