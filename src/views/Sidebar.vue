@@ -25,14 +25,14 @@
       <router-link to="/employee" class="block p-2 hover:bg-gray-400 rounded" active-class="bg-blue-500 text-white">
         {{ $t('Sidebar.EmployeeList') }}
       </router-link>
-      <router-link to="/admin" class="block p-2 hover:bg-gray-400 rounded" active-class="bg-blue-500 text-white" v-if="authStore.user.Privileges.is_admin">
-        {{ $t('Sidebar.AdminPage') }}
-      </router-link>
       <!-- Supervisor-specific link -->
       <router-link to="/supervisor-calendar" active-class="bg-blue-500 text-white" v-if="authStore.user.Privileges.is_supervisor"
-        class="block p-2 hover:bg-gray-400 rounded">
-        {{ $t('Sidebar.SupervisorCalendar') }}
-      </router-link>
+      class="block p-2 hover:bg-gray-400 rounded">
+      {{ $t('Sidebar.SupervisorCalendar') }}
+    </router-link>
+    <router-link to="/admin" class="block p-2 hover:bg-gray-400 rounded" active-class="bg-blue-500 text-white" v-if="authStore.user.Privileges.is_admin">
+      {{ $t('Sidebar.AdminPage') }}
+    </router-link>
     </nav>
     <div class="w-64 flex items-center justify-center gap-10 p-4 m-1 border-t">
       <router-link to="/settings">
