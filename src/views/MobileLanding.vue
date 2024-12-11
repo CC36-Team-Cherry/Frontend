@@ -65,7 +65,7 @@
         </div>
 
         <div class="flex flex-col justify-start items-start p-6 bg-white shadow-lg rounded-lg w-11/12 max-w-md mx-auto">
-            <h2 class="text-2xl font-semibold text-blue-500 mb-3">{{ $t('landing.multiSelect') }}</h2>
+            <h2 class="text-2xl font-semibold text-blue-500 mb-3">{{ $t('landing.ptoReview') }}</h2>
             <video class="w-full rounded" src="/src/assets/multiselectvideo.mp4" autoplay loop muted
                 playsinline></video>
         </div>
