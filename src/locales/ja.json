@@ -57,7 +57,7 @@
   "register": {
     "title": "組織を登録",
     "firstName": "氏名",
-    "lastName": "苗字",
+    "lastName": "名字",
     "password": "新しいパスワード",
     "organization": "組織情報",
     "organizationName": "組織名を入力してください",
@@ -202,6 +202,23 @@
       "delete": "削除"
     }
   },
+"holidays": {
+  "comingOfAgeDay": "成人の日",
+  "foundationDay": "建国記念の日",
+  "emperorsBirthday": "天皇誕生日",
+  "springEquinox": "春分の日",
+  "showaDay": "昭和の日",
+  "memorialDay": "憲法記念日",
+  "greeneryDay": "みどりの日",
+  "childrensDay": "こどもの日",
+  "marineDay": "海の日",
+  "mountainDay": "山の日",
+  "autumnEquinox": "秋分の日",
+  "sportsDay": "体育の日",
+  "cultureDay": "文化の日",
+  "thanksgiving": "勤労感謝の日",
+  "newYearsHoliday": "正月休暇"
+},
   "calendar": {
     "selection": "YYYY-MM-DD",
     "type": "タイプを選択",
@@ -237,10 +254,10 @@
     "toast": {
       "attendanceWarning": "選択したすべての日に対する出席はすでに記録されています",
       "noAttDelete": "選択した日には削除する出席情報がありません",
-      "attDeleted": "選択した日に対する一般出席が削除されました",
-      "notEnoughPTO": "提出するのに十分なPTO残高がありません",
-      "halfRequest": "複数の日に対して半日PTOリクエストを提出することはできません",
-      "specialRequest": "複数の日に対して特別PTOリクエストを提出することはできません",
+      "attDeleted": "選択した日に対する出席記録が削除されました",
+      "notEnoughPTO": "提出するのに十分な有給残高がありません",
+      "halfRequest": "複数の日に対して半日有給リクエストを提出することはできません",
+      "specialRequest": "複数の日に対して特別有給リクエストを提出することはできません",
       "alreadySubmittedMonth": "今月のリクエストはすでに承認のために提出されています",
       "submittedMonth": "月次出席承認リクエストが正常に提出されました",
       "submitMonthFail": "月次承認リクエストの提出に失敗しました",

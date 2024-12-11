@@ -202,6 +202,23 @@
       "delete": "Delete Employee"
     }
   },
+  "holidays": {
+    "comingOfAgeDay": "Coming of Age Day",
+    "foundationDay": "Foundation Day",
+    "emperorsBirthday": "Emperor's Birthday",
+    "springEquinox": "Spring Equinox",
+    "showaDay": "Showa Day",
+    "memorialDay": "Memorial Day",
+    "greeneryDay": "Greenery Day",
+    "childrensDay": "Children's Day",
+    "marineDay": "Marine Day",
+    "mountainDay": "Mountain Day",
+    "autumnEquinox": "Autumn Equinox",
+    "sportsDay": "Sports Day",
+    "cultureDay": "Culture Day",
+    "thanksgiving": "Thanksgiving",
+    "newYearsHoliday": "New Years Holiday"
+  },
   "calendar": {
     "selection": "Date Selection",
     "type": "Type",

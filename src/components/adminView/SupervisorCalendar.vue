@@ -16,31 +16,39 @@
 
     <!-- Stats Cards -->
     <div class="grid grid-cols-3 gap-4 mb-4">
-      <div class="bg-white shadow-sm border border-slate-200 rounded-lg p-2 flex flex-row justify-evenly items-center">
+      <div class="bg-white shadow-sm border border-slate-200 rounded-lg p-2 flex flex-row justify-evenly items-center min-w-[200px]">
         <div>
-          <div class="text-3xl text-slate-600">{{$t('calendar.headers.totalWorked')}}</div>
-          <div class="text-xs">{{$t('calendar.headers.currentMonth')}}</div>
+          <div class="text-xl sm:text-2xl md:text-3xl text-slate-600" style="font-size: clamp(1rem, 2vw, 2rem)">
+            {{$t('calendar.headers.totalWorked')}}</div>
+            <div class="text-xs sm:text-sm md:text-base" style="font-size: clamp(0.75rem, 2vw, 1rem)">{{$t('calendar.headers.currentMonth')}}</div>
         </div>
         <hr class="w-px h-10 border-l border-slate-300 mx-4">
-        <div class="text-3xl text-slate-600">{{ totalWorkedHours % 1 === 0 ? totalWorkedHours : totalWorkedHours.toFixed(2) ?? 0 }} Hrs</div>
+        <div class="text-xl sm:text-2xl md:text-3xl text-slate-600" style="font-size: clamp(1rem, 2vw, 2rem)">
+          {{ totalWorkedHours % 1 === 0 ? totalWorkedHours : totalWorkedHours.toFixed(2) ?? 0 }} {{ $t('calendar.headers.hours') }}</div>
       </div>
 
-      <div class="bg-white shadow-sm border border-slate-200 rounded-lg p-2 flex flex-row justify-evenly items-center">
+      <div class="bg-white shadow-sm border border-slate-200 rounded-lg p-4 flex flex-row justify-evenly items-center min-w-[200px]">
         <div>
-          <div class="text-3xl text-slate-600">{{$t('calendar.headers.overtime')}}</div>
-          <div class="text-xs">{{$t('calendar.headers.currentMonth')}}</div>
+          <div class="text-xl sm:text-2xl md:text-3xl text-slate-600" style="font-size: clamp(1rem, 2vw, 2rem)">
+            {{$t('calendar.headers.overtime')}}</div>
+            <div class="text-xs sm:text-sm md:text-base" style="font-size: clamp(0.75rem, 2vw, 1rem)">
+              {{$t('calendar.headers.currentMonth')}}</div>
         </div>
         <hr class="w-px h-10 border-l border-slate-300 mx-4">
-        <div class="text-3xl text-slate-600">{{ overtimeHours ?? 0 }} {{$t('calendar.headers.hours')}}</div>
+        <div class="text-xl sm:text-2xl md:text-3xl text-slate-600" style="font-size: clamp(1rem, 2vw, 2rem)">
+          {{ overtimeHours ?? 0 }} {{$t('calendar.headers.hours')}}</div>
       </div>
 
-      <div class="bg-white shadow-sm border border-slate-200 rounded-lg p-2 flex flex-row justify-evenly items-center">
+      <div class="bg-white shadow-sm border border-slate-200 rounded-lg p-4 flex flex-row justify-evenly items-center min-w-[200px]">
         <div>
-          <div class="text-3xl text-slate-600">{{$t('calendar.headers.pto')}}</div>
-          <div class="text-xs">{{$t('calendar.headers.totalRemaining')}}</div>
+          <div class="text-xl sm:text-2xl md:text-3xl text-slate-600" style="font-size: clamp(1rem, 2vw, 2rem)">
+            {{$t('calendar.headers.pto')}}</div>
+            <div class="text-xs sm:text-sm md:text-base" style="font-size: clamp(0.75rem, 2vw, 1rem)">
+              {{$t('calendar.headers.totalRemaining')}}</div>
         </div>
         <hr class="w-px h-10 border-l border-slate-300 mx-4">
-        <div class="text-3xl text-slate-600">{{ remainingPtoDays ?? 0 }} {{$t('calendar.headers.days')}}</div>
+        <div class="text-xl sm:text-2xl md:text-3xl text-slate-600" style="font-size: clamp(1rem, 2vw, 2rem)">
+          {{ remainingPtoDays ?? 0 }} {{$t('calendar.headers.days')}}</div>
       </div>
     </div>
 
@@ -60,6 +68,8 @@ import { useAuthStore } from '@/stores/authStore';
 import enLocale from '@fullcalendar/core/locales/en-gb';
 import jaLocale from '@fullcalendar/core/locales/ja';
 import { useI18n } from 'vue-i18n';
+import i18n from '../../i18n.ts';
+const { t } = i18n.global;
 
 const apiUrl = import.meta.env.VITE_API_URL;
 axios.defaults.withCredentials = true;
@@ -113,27 +123,27 @@ export default {
     },
     generateJapaneseHolidays(year) {
       return [
-        { title: 'Coming of Age Day', start: `${year}-01-08`, isHoliday: true },
-        { title: 'Foundation Day', start: `${year}-02-11`, isHoliday: true },
-        { title: "Emperor's Birthday", start: `${year}-02-23`, isHoliday: true },
-        { title: 'Spring Equinox', start: `${year}-03-21`, isHoliday: true },
-        { title: 'Showa Day', start: `${year}-04-29`, isHoliday: true },
-        { title: 'Memorial Day', start: `${year}-05-03`, isHoliday: true },
-        { title: 'Greenery Day', start: `${year}-05-04`, isHoliday: true },
-        { title: "Children's Day", start: `${year}-05-05`, isHoliday: true },
-        { title: 'Marine Day', start: `${year}-07-15`, isHoliday: true },
-        { title: 'Mountain Day', start: `${year}-08-11`, isHoliday: true },
-        { title: 'Autumn Equinox', start: `${year}-09-23`, isHoliday: true },
-        { title: 'Sports Day', start: `${year}-10-14`, isHoliday: true },
-        { title: 'Culture Day', start: `${year}-11-03`, isHoliday: true },
-        { title: 'Thanksgiving', start: `${year}-11-23`, isHoliday: true },
-        { title: 'Christmas Holiday', start: `${year}-12-28`, isHoliday: true },
-        { title: 'Christmas Holiday', start: `${year}-12-29`, isHoliday: true },
-        { title: 'Christmas Holiday', start: `${year}-12-30`, isHoliday: true },
-        { title: 'Christmas Holiday', start: `${year}-12-31`, isHoliday: true },
-        { title: "New Year's Day", start: `${year}-01-01`, isHoliday: true },
-        { title: 'Christmas Holiday', start: `${year}-01-02`, isHoliday: true },
-        { title: 'Christmas Holiday', start: `${year}-01-03`, isHoliday: true },
+        { title: `${t('holidays.comingOfAgeDay')}`, start: `${year}-01-08`, isHoliday: true },
+        { title: `${t('holidays.foundationDay')}`, start: `${year}-02-11`, isHoliday: true },
+        { title: `${t('holidays.emperorsBirthday')}`, start: `${year}-02-23`, isHoliday: true },
+        { title: `${t('holidays.springEquinox')}`, start: `${year}-03-21`, isHoliday: true },
+        { title: `${t('holidays.showaDay')}`, start: `${year}-04-29`, isHoliday: true },
+        { title: `${t('holidays.memorialDay')}`, start: `${year}-05-03`, isHoliday: true },
+        { title: `${t('holidays.greeneryDay')}`, start: `${year}-05-04`, isHoliday: true },
+        { title: `${t('holidays.childrensDay')}`, start: `${year}-05-05`, isHoliday: true },
+        { title: `${t('holidays.marineDay')}`, start: `${year}-07-15`, isHoliday: true },
+        { title: `${t('holidays.mountainDay')}`, start: `${year}-08-11`, isHoliday: true },
+        { title: `${t('holidays.autumnEquinox')}`, start: `${year}-09-23`, isHoliday: true },
+        { title: `${t('holidays.sportsDay')}`, start: `${year}-10-14`, isHoliday: true },
+        { title: `${t('holidays.cultureDay')}`, start: `${year}-11-03`, isHoliday: true },
+        { title: `${t('holidays.thanksgiving')}`, start: `${year}-11-23`, isHoliday: true },
+        { title: `${t('holidays.newYearsHoliday')}`, start: `${year}-12-28`, isHoliday: true },
+        { title: `${t('holidays.newYearsHoliday')}`, start: `${year}-12-29`, isHoliday: true },
+        { title: `${t('holidays.newYearsHoliday')}`, start: `${year}-12-30`, isHoliday: true },
+        { title: `${t('holidays.newYearsHoliday')}`, start: `${year}-12-31`, isHoliday: true },
+        { title: `${t('holidays.newYearsHoliday')}`, start: `${year}-01-01`, isHoliday: true },
+        { title: `${t('holidays.newYearsHoliday')}`, start: `${year}-01-02`, isHoliday: true },
+        { title: `${t('holidays.newYearsHoliday')}`, start: `${year}-01-03`, isHoliday: true }
       ];
     },
     initializeCalendar() {
