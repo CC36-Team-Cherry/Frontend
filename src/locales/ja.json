@@ -320,5 +320,9 @@
     "title": "監督者カレンダー",
     "selectPlaceholder": "チームメンバーを選択してください",
     "teamMembers": "チームメンバー"
+  },
+  "landing": {
+    "whyBreeze": "なぜBreezeを選ぶのですか？",
+    "simpleApp": "シンプルな勤怠管理アプリ"
   }
 }

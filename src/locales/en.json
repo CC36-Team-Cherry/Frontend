@@ -320,5 +320,9 @@
     "title": "Supervisor Calendar",
     "selectPlaceholder": "Select a team member",
     "teamMembers": "Team members"
+  },
+  "landing": {
+    "whyBreeze": "Why choose Breeze?",
+    "simpleApp": "The simple attendance management app"
   }
 }
