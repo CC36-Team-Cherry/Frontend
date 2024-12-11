@@ -38,9 +38,32 @@
                 Come visit us after the demos!
             </p>
         </div>
+        <div class="flex flex-col">
+        <label class="font-medium">{{ $t('settings.fields.languagePreference') }}</label>
+        <div class="flex space-x-2 mt-2">
+          <button @click="switchLanguage('en-US')"
+            :class="locale === 'en-US' ? 'bg-blue-500 text-white' : 'bg-gray-300 text-gray-700'"
+            class="py-1 px-3 rounded hover:bg-blue-600 transition duration-200">
+            {{ $t('language.en') }}
+          </button>
+          <button @click="switchLanguage('ja-JP')"
+            :class="locale === 'ja-JP' ? 'bg-blue-500 text-white' : 'bg-gray-300 text-gray-700'"
+            class="py-1 px-3 rounded hover:bg-blue-600 transition duration-200">
+            {{ $t('language.jp') }}
+          </button>
+        </div>
+      </div>
     </div>
 </template>
 
-<script>
+<script setup>
 
+import { useI18n } from 'vue-i18n';
+
+
+const { locale } = useI18n();
+
+const switchLanguage = (lang) => {
+  locale.value = lang;
+};
 </script>
