@@ -58,8 +58,10 @@ import { Calendar } from '@fullcalendar/core';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import interactionPlugin from '@fullcalendar/interaction';
 import axios from 'axios';
-import i18n from '../i18n.ts';
+import enLocale from '@fullcalendar/core/locales/en-gb';
+import jaLocale from '@fullcalendar/core/locales/ja';
 import { useI18n } from 'vue-i18n';
+import i18n from '../i18n.ts';
 const { t } = i18n.global;
 
 const apiUrl = import.meta.env.VITE_API_URL;
@@ -88,6 +90,10 @@ export default {
       totalWorkedHours: 0,
       overtimeHours: 0,
       remainingPtoDays: 0,
+      locales: {
+        'en-US': enLocale,
+        'ja-JP': jaLocale,
+      },
     };
   },
   methods: {
@@ -126,12 +132,17 @@ export default {
       ];
     },
     initializeCalendar() {
+      const { locale } = useI18n();
       const calendarEl = this.$refs.calendar;
       if (calendarEl) {
         this.calendar = new Calendar(calendarEl, {
           plugins: [dayGridPlugin, interactionPlugin],
           initialView: 'dayGridMonth',
           events: [],
+          locale: this.locales[locale.value],
+          businessHours: {
+            daysOfWeek: [1, 2, 3, 4, 5],
+          },
           buttonText: {
           today: 'Today',
           },

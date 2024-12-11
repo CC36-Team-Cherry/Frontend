@@ -65,8 +65,10 @@ import dayGridPlugin from '@fullcalendar/daygrid';
 import interactionPlugin from '@fullcalendar/interaction';
 import axios from 'axios';
 import { useAuthStore } from '@/stores/authStore';
-import i18n from '../../i18n.ts';
+import enLocale from '@fullcalendar/core/locales/en-gb';
+import jaLocale from '@fullcalendar/core/locales/ja';
 import { useI18n } from 'vue-i18n';
+import i18n from '../../i18n.ts';
 const { t } = i18n.global;
 
 const apiUrl = import.meta.env.VITE_API_URL;
@@ -91,6 +93,10 @@ export default {
       overtimeHours: 0,
       remainingPtoDays: 0,
       breakTime: null,
+      locales: {
+        'en-US': enLocale,
+        'ja-JP': jaLocale,
+      },
     };
   },
   methods: {
@@ -141,12 +147,14 @@ export default {
       ];
     },
     initializeCalendar() {
+      const { locale } = useI18n();
       const calendarEl = this.$refs.calendar;
       if (calendarEl) {
         this.calendar = new Calendar(calendarEl, {
           plugins: [dayGridPlugin, interactionPlugin],
           initialView: 'dayGridMonth',
           events: [],
+          locale: this.locales[locale.value],
           businessHours: {
             daysOfWeek: [1, 2, 3, 4, 5],
           },
@@ -163,15 +171,13 @@ export default {
       }
     },
   handleMonthChange(startDate) {
-  // Calcola la data centrale del calendario (media tra inizio e fine)
     const midViewDate = new Date(
     (this.calendar.view.activeStart.getTime() + this.calendar.view.activeEnd.getTime()) / 2
    );
 
   const year = midViewDate.getFullYear();
-  const month = midViewDate.getMonth() + 1; // Mese corrente
+  const month = midViewDate.getMonth() + 1; 
 
-  // Carica i dati del mese effettivo
   this.fetchAttendanceDataForMonth(year, month);
 },
 async fetchAttendanceDataForMonth(year, month) {
