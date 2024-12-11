@@ -202,10 +202,10 @@
             <input type="date" v-model="formData.join_date" class="border rounded p-2 w-full" />
           </div>
           <div>
-            <input type="checkbox" v-model="formData.is_supervisor" />{{ $t('employeeList.modal.userType.supervisor')
+            <input type="checkbox" v-model="formData.is_supervisor"  class="scale-150 m-5" />{{ $t('employeeList.modal.userType.supervisor')
             }}
             <template v-if="authStore.user.Privileges.is_admin">
-              <input type="checkbox" v-model="formData.is_admin" />{{
+              <input type="checkbox" v-model="formData.is_admin" class="scale-150 m-5" />{{
                 $t('employeeList.modal.userType.admin') }}
             </template>
           </div>
