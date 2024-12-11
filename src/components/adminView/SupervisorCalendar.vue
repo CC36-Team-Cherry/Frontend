@@ -233,7 +233,7 @@ async fetchAttendanceDataForMonth(year, month) {
       id: pto.id,
       title: `${pto.type}`,
       start: pto.date,
-      backgroundColor: pto.status === 'Approved' ? 'purple' : 'gray',
+      backgroundColor: pto.status === 'Approved' ? 'green' : 'gray',
       extendedProps: {
         attendanceType: pto.type === 'Special PTO'
           ? 'Special PTO'
