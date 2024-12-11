@@ -26,8 +26,8 @@
         </div>
 
         <div class="flex flex-col justify-start items-start p-6 bg-white shadow-lg rounded-lg w-11/12 max-w-md mx-auto">
-            <h2 class="text-2xl font-semibold text-blue-500 mb-3">Why Choose Breeze?</h2>
-            <img src="/src/assets/testimg.gif">
+            <h2 class="text-2xl font-semibold text-blue-500 mb-3">Quick and Easy Multi-Select</h2>
+            <video class="w-full rounded" src="/src/assets/multiselectvideo.mp4" autoplay loop muted playsinline></video>
         </div>
 
         <!-- Footer Section -->
