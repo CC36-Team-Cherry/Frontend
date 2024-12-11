@@ -1,4 +1,19 @@
 <template>
+    <div class="flex flex-col">
+        <label class="font-medium">{{ $t('settings.fields.languagePreference') }}</label>
+        <div class="flex space-x-2 mt-2">
+          <button @click="switchLanguage('en-US')"
+            :class="locale === 'en-US' ? 'bg-blue-500 text-white' : 'bg-gray-300 text-gray-700'"
+            class="py-1 px-3 rounded hover:bg-blue-600 transition duration-200">
+            {{ $t('language.en') }}
+          </button>
+          <button @click="switchLanguage('ja-JP')"
+            :class="locale === 'ja-JP' ? 'bg-blue-500 text-white' : 'bg-gray-300 text-gray-700'"
+            class="py-1 px-3 rounded hover:bg-blue-600 transition duration-200">
+            {{ $t('language.jp') }}
+          </button>
+        </div>
+      </div>
     <div class="flex flex-col h-full bg-gradient-to-b from-green-300 to-blue-500 text-white gap-3">
         <!-- Header Section -->
         <div class="flex flex-col justify-center items-center py-8 px-4 bg-white text-gray-800 shadow-lg rounded-lg w-11/12 max-w-md mx-auto mt-5">
@@ -38,21 +53,6 @@
                 Come visit us after the demos!
             </p>
         </div>
-        <div class="flex flex-col">
-        <label class="font-medium">{{ $t('settings.fields.languagePreference') }}</label>
-        <div class="flex space-x-2 mt-2">
-          <button @click="switchLanguage('en-US')"
-            :class="locale === 'en-US' ? 'bg-blue-500 text-white' : 'bg-gray-300 text-gray-700'"
-            class="py-1 px-3 rounded hover:bg-blue-600 transition duration-200">
-            {{ $t('language.en') }}
-          </button>
-          <button @click="switchLanguage('ja-JP')"
-            :class="locale === 'ja-JP' ? 'bg-blue-500 text-white' : 'bg-gray-300 text-gray-700'"
-            class="py-1 px-3 rounded hover:bg-blue-600 transition duration-200">
-            {{ $t('language.jp') }}
-          </button>
-        </div>
-      </div>
     </div>
 </template>
 
