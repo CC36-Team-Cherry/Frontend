@@ -323,6 +323,10 @@
   },
   "landing": {
     "whyBreeze": "なぜBreezeを選ぶのですか？",
-    "simpleApp": "シンプルな勤怠管理アプリ"
+    "simpleApp": "シンプルな勤怠管理アプリ",
+    "multiSelect": "迅速で簡単なマルチセレクト",
+    "team": "チームと繋がる！",
+    "sticky1": "Breezeはデスクトップでの利用が最適です。",
+    "sticky2": "デモの後にぜひお越しください！"
   }
 }
