@@ -10,7 +10,7 @@
             <hr class="border-gray-300 w-full my-4">
             <p class="text-gray-700 text-center">
                 Our app eliminates the administrative hassles for small companies and startups in Tokyo.
-                With our intuitive and simple user interface, attendance logging and PTO requests simply become a 
+                With our intuitive and simple user interface, attendance logging and PTO requests simply becomes a 
                 <span class="text-blue-500 font-bold">breeze</span>.
             </p>
         </div>
@@ -25,6 +25,7 @@
             </ul>
         </div>
 
+        <!-- Multi-Select Video -->
         <div class="flex flex-col justify-start items-start p-6 bg-white shadow-lg rounded-lg w-11/12 max-w-md mx-auto">
             <h2 class="text-2xl font-semibold text-blue-500 mb-3">Quick and Easy Multi-Select</h2>
             <video class="w-full rounded" src="/src/assets/multiselectvideo.mp4" autoplay loop muted playsinline></video>
