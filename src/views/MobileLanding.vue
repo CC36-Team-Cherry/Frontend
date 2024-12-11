@@ -136,7 +136,7 @@
         <!-- Footer Section -->
         <div
             class="flex flex-col items-center p-6 bg-green-300 shadow-md rounded-lg w-full max-w-md mx-auto text-center sticky bottom-3">
-            <p class="text-blue-500 font-bold text-xl">
+            <p class="text-blue-500 font-bold text-lg">
                 {{ $t('landing.sticky1') }} <br>
                 {{ $t('landing.sticky2') }}
             </p>
