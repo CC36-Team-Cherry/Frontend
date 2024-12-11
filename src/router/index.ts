@@ -15,9 +15,6 @@ import Approvals from '@/views/Approvals.vue';
 import SupervisorCalendar from '@/components/adminView/SupervisorCalendar.vue';
 import MobileLanding from '@/views/MobileLanding.vue'
 
-//THIS IS FOR TESTING FIREBASE, DELETE THIS LATER
-import Playground from "@/components/authorization/Playground.vue";
-
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
@@ -96,15 +93,6 @@ const router = createRouter({
       path: '/landing',
       name: 'landing',
       component: MobileLanding,
-    },
-    //THIS IS FOR TESTING FIREBASE, DELETE THIS LATER
-    {
-      path: "/playground",
-      name: "playground",
-      component: Playground,
-      meta: {
-        requiresAuth: true
-      }
     },
   ],
 });

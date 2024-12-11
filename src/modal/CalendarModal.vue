@@ -258,17 +258,17 @@ export default {
     eventContent(arg) {
       if (arg.event.extendedProps.attendanceType === 'general' || arg.event.extendedProps.attendanceType === 'absence') {
         const breakTimeHtml = arg.event.extendedProps.breakTime
-      ? `<div style="font-size: 0.8vw; color: gray; margin-top: 0.2em;">Break: ${arg.event.extendedProps.breakTime}</div>`
+      ? `<div style="font-size: 0.7vw; color: gray; margin-top: 0.2em;">Break: ${arg.event.extendedProps.breakTime}</div>`
       : '';
     return {
-      html: `<div style="text-align: left; font-size: 1vw; color: black; background-color: ${arg.event.backgroundColor}; padding: .5vw; border-radius: 4px; width: 100%; word-wrap: break-word; white-space: normal;">
+      html: `<div style="text-align: left; font-size: 0.7vw; color: black; background-color: ${arg.event.backgroundColor}; padding: .5vw; border-radius: 4px; width: 100%; word-wrap: break-word; white-space: normal;">
         <b>${arg.event.title}</b>
         ${breakTimeHtml}
       </div>`,
         };
       } else if (arg.event.extendedProps.attendanceType === 'pto' || arg.event.extendedProps.attendanceType === 'Special PTO' || arg.event.extendedProps.attendanceType === 'halfpto') {
         return {
-          html: `<div style="color: white; background-color: ${arg.event.backgroundColor}; padding: 5px; border-radius: 4px;">
+          html: `<div style="color: white; background-color: ${arg.event.backgroundColor}; padding: 5px; border-radius: 4px; width: 100%;">
             <b>${arg.event.title}</b><br><i>${arg.event.extendedProps.status}</i>
           </div>`,
         };
