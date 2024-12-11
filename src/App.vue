@@ -1,5 +1,5 @@
 <template>
-  <div class="flex h-screen">
+  <div class="flex min-h-screen">
     <Sidebar v-if="showSidebar" class="w-64 flex-shrink-0" />
     <div class="flex-1 flex flex-col bg-gray-50">
       <component :is="currentHeader" class="flex-shrink-0" />
