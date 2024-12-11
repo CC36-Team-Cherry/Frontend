@@ -6,9 +6,9 @@
         <img src="/favicon.png" alt="Breeze logo" width="80" height="80">
       </router-link>
     </div>
-    <div class="text-center"> {{ authStore.user.company.name }} </div>
-    <div class="border-b p-2 text-center"> {{ $t('Sidebar.Welcome') }} {{ authStore.user.first_name + " " +
-      authStore.user.last_name}} </div>
+    <div class="text-center font-semibold"> {{ authStore.user.company.name }} </div>
+    <div class="border-b p-2 text-center" > {{ $t('Sidebar.Welcome') }} <span class="italic">{{ authStore.user.first_name + " " +
+      authStore.user.last_name}}</span> </div>
     <nav class="flex-1 p-4 space-y-2">
       <router-link to="/calendar" class="block p-2 hover:bg-gray-400 rounded" active-class="bg-blue-500 text-white">
         {{ $t('Sidebar.Calendar') }}
