@@ -14,9 +14,6 @@ import AdminConsole from '@/components/adminView/AdminConsole.vue';
 import Approvals from '@/views/Approvals.vue'
 import SupervisorCalendar from '@/components/adminView/SupervisorCalendar.vue'
 
-//THIS IS FOR TESTING FIREBASE, DELETE THIS LATER
-import Playground from "@/components/authorization/Playground.vue";
-
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
@@ -90,15 +87,6 @@ const router = createRouter({
       path: '/forgotpassword',
       name: 'forgotpassword',
       component: ForgotPassword,
-    },
-    //THIS IS FOR TESTING FIREBASE, DELETE THIS LATER
-    {
-      path: "/playground",
-      name: "playground",
-      component: Playground,
-      meta: {
-        requiresAuth: true
-      }
     },
   ],
 });
