@@ -43,13 +43,15 @@
         <div class="flex flex-col justify-start items-start p-6 bg-white shadow-lg rounded-lg w-11/12 max-w-md mx-auto">
             <h2 class="text-2xl font-semibold text-blue-500 mb-3">{{$t('landing.whyBreeze')}}</h2>
             <ul class="list-disc pl-5 space-y-2 text-gray-700">
-              <div>
+              <div v-if="language==='en-US'" class="min-h-32">
                 <li><span class="font-bold">Effortlessly</span> log and track attendance</li>
                 <li><span class="font-bold">Quickly</span> and securely onboard new employees</li>
                 <li><span class="font-bold">Intuitive</span> design for hassle-free management</li>
               </div>
-              <div>
-
+              <div v-if="language==='ja-JP'" class="min-h-32">
+                <li><span class="font-bold">簡単に</span> 出勤記録をログ・追跡</li>
+                <li><span class="font-bold">迅速に</span> かつ安全に新しい従業員をオンボーディング</li>
+                <li><span class="font-bold">直感的な</span> デザインで手間のかからない管理</li>
               </div>
             </ul>
         </div>
