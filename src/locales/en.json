@@ -14,16 +14,16 @@
   "settings": {
     "title": "Settings",
     "fields": {
-      "firstName": "First Name",
-      "lastName": "Last Name",
+      "firstName": "First name",
+      "lastName": "Last name",
       "email": "Email",
-      "dateOfBirth": "Date of Birth",
+      "dateOfBirth": "Date of birth",
       "team": "Team",
       "defaultSupervisor": "Default Supervisor",
       "role": "Role",
-      "joinDate": "Join Date",
+      "joinDate": "Join date",
       "type": "Type",
-      "languagePreference": "Language Preference"
+      "languagePreference": "Language preference"
     },
     "save": "Save",
     "updateSuccess": "Account updated successfully",
@@ -35,7 +35,7 @@
   },
   "login": {
     "title": "Login",
-    "email": "Email",
+    "email": "Email address",
     "password": "Password",
     "submit": "Login",
     "invalidLogin": "Invalid username/password",
@@ -55,16 +55,19 @@
     }
   },
   "register": {
-    "title": "Register New Organization",
-    "firstName": "Enter your first name",
-    "lastName": "Enter your last name",
-    "organizationName": "Enter the name of your organization",
+    "title": "Register a new organization",
+    "firstName": "First name",
+    "lastName": "Last name",
+    "password": "New password",
+    "organization": "Organization info",
+    "organizationName": "Organization name",
     "organizationDetails": "Organization Details",
-    "submit": "Submit",
+    "joinDate": "Organization join date",
+    "submit": "Register organization",
     "success": "Registration successful",
-    "errorFillAllFields": "Please fill all required fields",
+    "errorFillAllFields": "Please complete all fields",
     "goBack": "Go back",
-    "role": "Enter your user role"
+    "role": "Your job title"
   },
   "adminConsole": {
     "title": "Admin Console",
@@ -117,6 +120,7 @@
     },
     "none": "None",
     "view": "View",
+    "viewAttendance": "View attendance",
     "employeeHeader": {
       "currentMonthInfo": "Current Month Attendance Info",
       "expectedHours": "Minimum Expected Work Hours",
@@ -129,15 +133,15 @@
     "modal": {
       "modalTitle": "Add New User",
       "fields": {
-        "firstName": "First Name",
-        "lastName": "Last Name",
+        "firstName": "First name",
+        "lastName": "Last name",
         "email": "Email",
-        "dateOfBirth": "Date of Birth",
+        "dateOfBirth": "Date of birth",
         "team": "Team",
         "noTeam": "No team",
         "supervisor": "Default Supervisor",
         "role": "Role",
-        "joinDate": "Join Date",
+        "joinDate": "Join date",
         "type": "Type",
         "pto": "PTO"
       },
@@ -172,11 +176,15 @@
     "title": "Employee Details",
     "accountInfo": "Account Info",
     "attendanceSettings": "Attendance Settings",
+    "ptoUpdate": "Special PTO updated",
+    "ptoUpdateFail": "Failed to update Special PTO",
+    "ptoDelete": "Special PTO deleted",
+    "ptoDeleteFail": "Failed to delete Special PTO",
     "fields": {
-      "firstName": "First Name",
-      "lastName": "Last Name",
+      "firstName": "First name",
+      "lastName": "Last name",
       "email": "Email",
-      "dateOfBirth": "Date of Birth",
+      "dateOfBirth": "Date of birth",
       "team": "Team",
       "supervisor": "Supervisor",
       "pto": "Paid Time Off (PTO)",
@@ -193,6 +201,23 @@
       "save": "Save",
       "delete": "Delete Employee"
     }
+  },
+  "holidays": {
+    "comingOfAgeDay": "Coming of Age Day",
+    "foundationDay": "Foundation Day",
+    "emperorsBirthday": "Emperor's Birthday",
+    "springEquinox": "Spring Equinox",
+    "showaDay": "Showa Day",
+    "memorialDay": "Memorial Day",
+    "greeneryDay": "Greenery Day",
+    "childrensDay": "Children's Day",
+    "marineDay": "Marine Day",
+    "mountainDay": "Mountain Day",
+    "autumnEquinox": "Autumn Equinox",
+    "sportsDay": "Sports Day",
+    "cultureDay": "Culture Day",
+    "thanksgiving": "Thanksgiving",
+    "newYearsHoliday": "New Years Holiday"
   },
   "calendar": {
     "selection": "Date Selection",

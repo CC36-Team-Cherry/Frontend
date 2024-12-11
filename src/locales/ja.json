@@ -56,15 +56,18 @@
   },
   "register": {
     "title": "組織を登録",
-    "firstName": "氏名を入力してください",
-    "lastName": "苗字を入力してください",
+    "firstName": "氏名",
+    "lastName": "名字",
+    "password": "新しいパスワード",
+    "organization": "組織情報",
     "organizationName": "組織名を入力してください",
     "organizationDetails": "組織の詳細",
-    "submit": "送信",
+    "joinDate": "組織加入日",
+    "submit": "組織を登録する",
     "success": "登録が成功しました",
-    "errorFillAllFields": "すべての必須項目に入力してください",
+    "errorFillAllFields": "すべての項目を入力してください",
     "goBack": "戻る",
-    "role": "ユーザー役割を入力してください"
+    "role": "あなたの職位"
   },
   "adminConsole": {
     "title": "管理コンソール",
@@ -117,6 +120,7 @@
     },
     "none": "なし",
     "view": "表示",
+    "viewAttendance": "出席を確認する",
     "employeeHeader": {
       "currentMonthInfo": "今月の出席情報",
       "expectedHours": "最低勤務時間",
@@ -172,6 +176,10 @@
     "title": "従業員の詳細",
     "accountInfo": "アカウント情報",
     "attendanceSettings": "出席設定",
+    "ptoUpdate": "特別休暇が更新されました",
+    "ptoUpdateFail": "特別休暇の更新に失敗しました",
+    "ptoDelete": "特別休暇が削除されました",
+    "ptoDeleteFail": "特別休暇の削除に失敗しました",
     "fields": {
       "firstName": "名",
       "lastName": "姓",
@@ -194,6 +202,23 @@
       "delete": "削除"
     }
   },
+"holidays": {
+  "comingOfAgeDay": "成人の日",
+  "foundationDay": "建国記念の日",
+  "emperorsBirthday": "天皇誕生日",
+  "springEquinox": "春分の日",
+  "showaDay": "昭和の日",
+  "memorialDay": "憲法記念日",
+  "greeneryDay": "みどりの日",
+  "childrensDay": "こどもの日",
+  "marineDay": "海の日",
+  "mountainDay": "山の日",
+  "autumnEquinox": "秋分の日",
+  "sportsDay": "体育の日",
+  "cultureDay": "文化の日",
+  "thanksgiving": "勤労感謝の日",
+  "newYearsHoliday": "正月休暇"
+},
   "calendar": {
     "selection": "YYYY-MM-DD",
     "type": "タイプを選択",
@@ -229,10 +254,10 @@
     "toast": {
       "attendanceWarning": "選択したすべての日に対する出席はすでに記録されています",
       "noAttDelete": "選択した日には削除する出席情報がありません",
-      "attDeleted": "選択した日に対する一般出席が削除されました",
-      "notEnoughPTO": "提出するのに十分なPTO残高がありません",
-      "halfRequest": "複数の日に対して半日PTOリクエストを提出することはできません",
-      "specialRequest": "複数の日に対して特別PTOリクエストを提出することはできません",
+      "attDeleted": "選択した日に対する出席記録が削除されました",
+      "notEnoughPTO": "提出するのに十分な有給残高がありません",
+      "halfRequest": "複数の日に対して半日有給リクエストを提出することはできません",
+      "specialRequest": "複数の日に対して特別有給リクエストを提出することはできません",
       "alreadySubmittedMonth": "今月のリクエストはすでに承認のために提出されています",
       "submittedMonth": "月次出席承認リクエストが正常に提出されました",
       "submitMonthFail": "月次承認リクエストの提出に失敗しました",

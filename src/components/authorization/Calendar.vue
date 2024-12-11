@@ -5,41 +5,47 @@
       <!-- Chart and PTO Card -->
       <div class="grid grid-cols-3 justify-items-stretch gap-2 mb-2">
         <!-- Total Hours Worked Card -->
-        <div
-          class="bg-white shadow-sm border border-slate-200 rounded-lg p-2 pr-3 flex flex-row justify-evenly items-center ">
+        <div class="bg-white shadow-sm border border-slate-200 rounded-lg p-4 flex flex-row justify-evenly items-center min-w-[200px]">
           <!-- Chart -->
-          <div class="flex-1">
+          <div class="flex-shrink-0">
             <canvas ref="attendanceChart" class="w-full custom-chart-height" style="height: 80px;"></canvas>
           </div>
           <!-- Hours Worked Title -->
           <div>
-            <div class="text-3xl text-slate-600">{{ $t('calendar.headers.totalWorked') }}</div>
-            <div class="text-xs">{{ $t('calendar.headers.currentMonth') }}</div>
+            <div class="text-xl sm:text-2xl md:text-3xl text-slate-600" style="font-size: clamp(1rem, 2vw, 2rem)">
+              {{ $t('calendar.headers.totalWorked') }}</div>
+              <div class="text-xs sm:text-sm md:text-base" style="font-size: clamp(0.75rem, 2vw, 1rem)">
+                {{ $t('calendar.headers.currentMonth') }}</div>
           </div>
           <hr class="w-px h-10 border-l border-slate-300 mx-4">
           <!-- Hours Worked -->
-          <div class="text-3xl text-slate-600"> {{ calculatedTotalHours % 1 === 0 ? calculatedTotalHours :
+          <div class="text-xl sm:text-2xl md:text-3xl text-slate-600" style="font-size: clamp(1rem, 2vw, 2rem)">
+            {{ calculatedTotalHours % 1 === 0 ? calculatedTotalHours :
             calculatedTotalHours.toFixed(2) ?? 0 }} {{ $t('calendar.headers.hours') }}</div>
         </div>
         <!-- OT Card -->
-        <div
-          class="bg-white shadow-sm border border-slate-200 rounded-lg p-2 flex flex-row justify-evenly items-center">
+        <div class="bg-white shadow-sm border border-slate-200 rounded-lg p-4 flex flex-row justify-evenly items-center min-w-[200px]">
           <div>
-            <div class="text-3xl text-slate-600">{{ $t('calendar.headers.overtime') }}</div>
-            <div class="text-xs">{{ $t('calendar.headers.currentMonth') }}</div>
+            <div class="text-xl sm:text-2xl md:text-3xl text-slate-600" style="font-size: clamp(1rem, 2vw, 2rem)">
+              {{ $t('calendar.headers.overtime') }}</div>
+              <div class="text-xs sm:text-sm md:text-base" style="font-size: clamp(0.75rem, 2vw, 1rem)">
+                {{ $t('calendar.headers.currentMonth') }}</div>
           </div>
           <hr class="w-px h-10 border-l border-slate-300 mx-4">
-          <div class="text-3xl text-slate-600"> {{ extraHours }} {{ $t('calendar.headers.hours') }}</div>
+          <div class="text-xl sm:text-2xl md:text-3xl text-slate-600" style="font-size: clamp(1rem, 2vw, 2rem)">
+            {{ extraHours }} {{ $t('calendar.headers.hours') }}</div>
         </div>
         <!-- PTO Card -->
-        <div
-          class="bg-white shadow-sm border border-slate-200 rounded-lg p-2 flex flex-row justify-evenly items-center">
+        <div class="bg-white shadow-sm border border-slate-200 rounded-lg p-4 flex flex-row justify-evenly items-center min-w-[200px]">
           <div>
-            <div class="text-3xl text-slate-600">{{ $t('calendar.headers.pto') }}</div>
-            <div class="text-xs">{{ $t('calendar.headers.totalRemaining') }}</div>
+            <div class="text-xl sm:text-2xl md:text-3xl text-slate-600" style="font-size: clamp(1rem, 2vw, 2rem)">
+              {{ $t('calendar.headers.pto') }}</div>
+              <div class="text-xs sm:text-sm md:text-base" style="font-size: clamp(0.75rem, 2vw, 1rem)">
+                {{ $t('calendar.headers.totalRemaining') }}</div>
           </div>
           <hr class="w-px h-10 border-l border-slate-300 mx-4">
-          <div class="text-3xl text-slate-600">{{ remainingPto }} {{ $t('calendar.headers.days') }}</div>
+          <div class="text-xl sm:text-2xl md:text-3xl text-slate-600" style="font-size: clamp(1rem, 2vw, 2rem)">
+            {{ remainingPto }} {{ $t('calendar.headers.days') }}</div>
         </div>
       </div>
 
@@ -49,7 +55,7 @@
       </div>
     </div>
     <!-- Right Sidebar -->
-    <div class="bg-white shadow-sm border border-slate-200 rounded-lg p-2 flex flex-col w-80">
+    <div class="bg-white shadow-sm border border-slate-200 rounded-lg p-3 m-2 flex flex-col w-72">
       <!-- Tabs -->
       <div class="flex mb-3">
         <button @click="tab = 'attendance', attendanceType = 'general'"
@@ -187,7 +193,7 @@
       <div class="flex flex-col items-center space-y-3 mt-auto">
 
         <div class="text-lg font-semibold mt-auto text-center">
-          {{ "Month Approval " }}
+          {{ "Month Approval Status" }}
         </div>
         <div :class="{
           'bg-yellow-100 text-yellow-800': monthSubmitApprovalStatus === 'Pending',
@@ -352,7 +358,6 @@ export default {
 
     this.initializeChart();
     this.fetchSupervisors();
-    this.holidays = this.generateJapaneseHolidays(new Date().getFullYear());
 
     const activeAccountSupervisorId = authStore.user.supervisor_id;
     if (activeAccountSupervisorId) {
@@ -407,7 +412,7 @@ export default {
         if (arg.event.extendedProps.isHoliday) {
           return {
             html: `
-      <div style="text-align: left; font-size: 1vw; color: black; background-color: rgba(255, 0, 0, 0.2); padding: .5vw; border-radius: 4px; width: 100%; word-wrap: break-word; white-space: normal;">
+      <div style="text-align: left; font-size: 1vw; color: white; background-color: rgba(255, 0, 0, 0.2); padding: .5vw; border-radius: 4px; width: 100%; word-wrap: break-word; white-space: normal;">
         <b>${arg.event.title}</b>
       </div>
     `,
@@ -689,6 +694,8 @@ export default {
           };
         });
 
+        this.holidays = this.generateJapaneseHolidays(currentYear);
+
         // Aggiungi gli eventi delle attendance e delle PTO al calendario
         this.events = [...attendanceEvents, ...ptoEvents];
 
@@ -957,28 +964,27 @@ export default {
     },
     generateJapaneseHolidays(year) {
       return [
-        { title: "New Year's Day", start: `${year}-01-01`, isHoliday: true },
-        { title: 'Coming of Age Day', start: `${year}-01-08`, isHoliday: true },
-        { title: 'National Foundation Day', start: `${year}-02-11`, isHoliday: true },
-        { title: "Emperor's Birthday", start: `${year}-02-23`, isHoliday: true },
-        { title: 'Spring Equinox', start: `${year}-03-21`, isHoliday: true },
-        { title: 'Showa Day', start: `${year}-04-29`, isHoliday: true },
-        { title: 'Constitution Memorial Day', start: `${year}-05-03`, isHoliday: true },
-        { title: 'Greenery Day', start: `${year}-05-04`, isHoliday: true },
-        { title: "Children's Day", start: `${year}-05-05`, isHoliday: true },
-        { title: 'Marine Day', start: `${year}-07-15`, isHoliday: true },
-        { title: 'Mountain Day', start: `${year}-08-11`, isHoliday: true },
-        { title: 'Autumn Equinox', start: `${year}-09-23`, isHoliday: true },
-        { title: 'Sports Day', start: `${year}-10-14`, isHoliday: true },
-        { title: 'Culture Day', start: `${year}-11-03`, isHoliday: true },
-        { title: 'Labor Thanksgiving Day', start: `${year}-11-23`, isHoliday: true },
-        { title: 'Christmas Holiday', start: `${year}-12-28`, isHoliday: true },
-        { title: 'Christmas Holiday', start: `${year}-12-29`, isHoliday: true },
-        { title: 'Christmas Holiday', start: `${year}-12-30`, isHoliday: true },
-        { title: 'Christmas Holiday', start: `${year}-12-31`, isHoliday: true },
-        { title: 'Christmas Holiday', start: `2025-01-01`, isHoliday: true },
-        { title: 'Christmas Holiday', start: `2025-01-02`, isHoliday: true },
-        { title: 'Christmas Holiday', start: `2025-01-03`, isHoliday: true }
+        { title: `${t('holidays.comingOfAgeDay')}`, start: `${year}-01-08`, isHoliday: true },
+        { title: `${t('holidays.foundationDay')}`, start: `${year}-02-11`, isHoliday: true },
+        { title: `${t('holidays.emperorsBirthday')}`, start: `${year}-02-23`, isHoliday: true },
+        { title: `${t('holidays.springEquinox')}`, start: `${year}-03-21`, isHoliday: true },
+        { title: `${t('holidays.showaDay')}`, start: `${year}-04-29`, isHoliday: true },
+        { title: `${t('holidays.memorialDay')}`, start: `${year}-05-03`, isHoliday: true },
+        { title: `${t('holidays.greeneryDay')}`, start: `${year}-05-04`, isHoliday: true },
+        { title: `${t('holidays.childrensDay')}`, start: `${year}-05-05`, isHoliday: true },
+        { title: `${t('holidays.marineDay')}`, start: `${year}-07-15`, isHoliday: true },
+        { title: `${t('holidays.mountainDay')}`, start: `${year}-08-11`, isHoliday: true },
+        { title: `${t('holidays.autumnEquinox')}`, start: `${year}-09-23`, isHoliday: true },
+        { title: `${t('holidays.sportsDay')}`, start: `${year}-10-14`, isHoliday: true },
+        { title: `${t('holidays.cultureDay')}`, start: `${year}-11-03`, isHoliday: true },
+        { title: `${t('holidays.thanksgiving')}`, start: `${year}-11-23`, isHoliday: true },
+        { title: `${t('holidays.newYearsHoliday')}`, start: `${year}-12-28`, isHoliday: true },
+        { title: `${t('holidays.newYearsHoliday')}`, start: `${year}-12-29`, isHoliday: true },
+        { title: `${t('holidays.newYearsHoliday')}`, start: `${year}-12-30`, isHoliday: true },
+        { title: `${t('holidays.newYearsHoliday')}`, start: `${year}-12-31`, isHoliday: true },
+        { title: `${t('holidays.newYearsHoliday')}`, start: `${year}-01-01`, isHoliday: true },
+        { title: `${t('holidays.newYearsHoliday')}`, start: `${year}-01-02`, isHoliday: true },
+        { title: `${t('holidays.newYearsHoliday')}`, start: `${year}-01-03`, isHoliday: true }
       ];
     },
     isHoliday(date) {
@@ -1009,8 +1015,16 @@ export default {
       const authStore = useAuthStore();
       const requests = authStore.approvals;
 
+      const selectedPtoDates = this.selectionRange.split(', ');
+
       // Check if PTO or HalfPTO is being requested and remainingPto is 0
       if ((this.attendanceType === "pto" || this.attendanceType === "halfpto") && this.remainingPto <= 0) {
+        toast.warning(t('calendar.toast.notEnoughPTO'));
+        return;
+      }
+
+      const totalPtoDaysRequested = selectedPtoDates.length;
+      if (this.remainingPto < totalPtoDaysRequested) {
         toast.warning(t('calendar.toast.notEnoughPTO'));
         return;
       }

@@ -16,36 +16,46 @@
 
     <!-- Stats Cards -->
     <div class="grid grid-cols-3 gap-4 mb-4">
-      <div class="bg-white shadow-sm border border-slate-200 rounded-lg p-2 flex flex-row justify-evenly items-center">
+      <div class="bg-white shadow-sm border border-slate-200 rounded-lg p-2 flex flex-row justify-evenly items-center min-w-[200px]">
         <div>
-          <div class="text-3xl text-slate-600">{{$t('calendar.headers.totalWorked')}}</div>
-          <div class="text-xs">{{$t('calendar.headers.currentMonth')}}</div>
+          <div class="text-xl sm:text-2xl md:text-3xl text-slate-600" style="font-size: clamp(1rem, 2vw, 2rem)">
+            {{$t('calendar.headers.totalWorked')}}</div>
+            <div class="text-xs sm:text-sm md:text-base" style="font-size: clamp(0.75rem, 2vw, 1rem)">{{$t('calendar.headers.currentMonth')}}</div>
         </div>
         <hr class="w-px h-10 border-l border-slate-300 mx-4">
-        <div class="text-3xl text-slate-600">{{ totalWorkedHours % 1 === 0 ? totalWorkedHours : totalWorkedHours.toFixed(2) ?? 0 }} Hrs</div>
+        <div class="text-xl sm:text-2xl md:text-3xl text-slate-600" style="font-size: clamp(1rem, 2vw, 2rem)">
+          {{ totalWorkedHours % 1 === 0 ? totalWorkedHours : totalWorkedHours.toFixed(2) ?? 0 }} {{ $t('calendar.headers.hours') }}</div>
       </div>
 
-      <div class="bg-white shadow-sm border border-slate-200 rounded-lg p-2 flex flex-row justify-evenly items-center">
+      <div class="bg-white shadow-sm border border-slate-200 rounded-lg p-4 flex flex-row justify-evenly items-center min-w-[200px]">
         <div>
-          <div class="text-3xl text-slate-600">{{$t('calendar.headers.overtime')}}</div>
-          <div class="text-xs">{{$t('calendar.headers.currentMonth')}}</div>
+          <div class="text-xl sm:text-2xl md:text-3xl text-slate-600" style="font-size: clamp(1rem, 2vw, 2rem)">
+            {{$t('calendar.headers.overtime')}}</div>
+            <div class="text-xs sm:text-sm md:text-base" style="font-size: clamp(0.75rem, 2vw, 1rem)">
+              {{$t('calendar.headers.currentMonth')}}</div>
         </div>
         <hr class="w-px h-10 border-l border-slate-300 mx-4">
-        <div class="text-3xl text-slate-600">{{ overtimeHours ?? 0 }} {{$t('calendar.headers.hours')}}</div>
+        <div class="text-xl sm:text-2xl md:text-3xl text-slate-600" style="font-size: clamp(1rem, 2vw, 2rem)">
+          {{ overtimeHours ?? 0 }} {{$t('calendar.headers.hours')}}</div>
       </div>
 
-      <div class="bg-white shadow-sm border border-slate-200 rounded-lg p-2 flex flex-row justify-evenly items-center">
+      <div class="bg-white shadow-sm border border-slate-200 rounded-lg p-4 flex flex-row justify-evenly items-center min-w-[200px]">
         <div>
-          <div class="text-3xl text-slate-600">{{$t('calendar.headers.pto')}}</div>
-          <div class="text-xs">{{$t('calendar.headers.totalRemaining')}}</div>
+          <div class="text-xl sm:text-2xl md:text-3xl text-slate-600" style="font-size: clamp(1rem, 2vw, 2rem)">
+            {{$t('calendar.headers.pto')}}</div>
+            <div class="text-xs sm:text-sm md:text-base" style="font-size: clamp(0.75rem, 2vw, 1rem)">
+              {{$t('calendar.headers.totalRemaining')}}</div>
         </div>
         <hr class="w-px h-10 border-l border-slate-300 mx-4">
-        <div class="text-3xl text-slate-600">{{ remainingPtoDays ?? 0 }} {{$t('calendar.headers.days')}}</div>
+        <div class="text-xl sm:text-2xl md:text-3xl text-slate-600" style="font-size: clamp(1rem, 2vw, 2rem)">
+          {{ remainingPtoDays ?? 0 }} {{$t('calendar.headers.days')}}</div>
       </div>
     </div>
 
     <!-- Calendar -->
-    <div ref="calendar" id="calendar" class="h-full"></div>
+    <div class="flex-1 bg-white shadow-sm border border-slate-200 rounded-lg p-4 overflow-hidden" style="height: calc(100vh - 200px);">
+     <div ref="calendar" class="h-full"></div>
+    </div>
   </div>
 </template>
 
@@ -55,6 +65,11 @@ import dayGridPlugin from '@fullcalendar/daygrid';
 import interactionPlugin from '@fullcalendar/interaction';
 import axios from 'axios';
 import { useAuthStore } from '@/stores/authStore';
+import enLocale from '@fullcalendar/core/locales/en-gb';
+import jaLocale from '@fullcalendar/core/locales/ja';
+import { useI18n } from 'vue-i18n';
+import i18n from '../../i18n.ts';
+const { t } = i18n.global;
 
 const apiUrl = import.meta.env.VITE_API_URL;
 axios.defaults.withCredentials = true;
@@ -78,6 +93,10 @@ export default {
       overtimeHours: 0,
       remainingPtoDays: 0,
       breakTime: null,
+      locales: {
+        'en-US': enLocale,
+        'ja-JP': jaLocale,
+      },
     };
   },
   methods: {
@@ -104,37 +123,41 @@ export default {
     },
     generateJapaneseHolidays(year) {
       return [
-        { title: "New Year's Day", start: `${year}-01-01`, isHoliday: true },
-        { title: 'Coming of Age Day', start: `${year}-01-08`, isHoliday: true },
-        { title: 'National Foundation Day', start: `${year}-02-11`, isHoliday: true },
-        { title: "Emperor's Birthday", start: `${year}-02-23`, isHoliday: true },
-        { title: 'Spring Equinox', start: `${year}-03-21`, isHoliday: true },
-        { title: 'Showa Day', start: `${year}-04-29`, isHoliday: true },
-        { title: 'Constitution Memorial Day', start: `${year}-05-03`, isHoliday: true },
-        { title: 'Greenery Day', start: `${year}-05-04`, isHoliday: true },
-        { title: "Children's Day", start: `${year}-05-05`, isHoliday: true },
-        { title: 'Marine Day', start: `${year}-07-15`, isHoliday: true },
-        { title: 'Mountain Day', start: `${year}-08-11`, isHoliday: true },
-        { title: 'Autumn Equinox', start: `${year}-09-23`, isHoliday: true },
-        { title: 'Sports Day', start: `${year}-10-14`, isHoliday: true },
-        { title: 'Culture Day', start: `${year}-11-03`, isHoliday: true },
-        { title: 'Labor Thanksgiving Day', start: `${year}-11-23`, isHoliday: true },
-        { title: 'Christmas Holiday', start: `${year}-12-28`, isHoliday: true },
-        { title: 'Christmas Holiday', start: `${year}-12-29`, isHoliday: true },
-        { title: 'Christmas Holiday', start: `${year}-12-30`, isHoliday: true },
-        { title: 'Christmas Holiday', start: `${year}-12-31`, isHoliday: true },
-        { title: "New Year's Day", start: `${year + 1}-01-01`, isHoliday: true },
-        { title: 'Christmas Holiday', start: `2025-01-02`, isHoliday: true },
-        { title: 'Christmas Holiday', start: `2025-01-03`, isHoliday: true },
+        { title: `${t('holidays.comingOfAgeDay')}`, start: `${year}-01-08`, isHoliday: true },
+        { title: `${t('holidays.foundationDay')}`, start: `${year}-02-11`, isHoliday: true },
+        { title: `${t('holidays.emperorsBirthday')}`, start: `${year}-02-23`, isHoliday: true },
+        { title: `${t('holidays.springEquinox')}`, start: `${year}-03-21`, isHoliday: true },
+        { title: `${t('holidays.showaDay')}`, start: `${year}-04-29`, isHoliday: true },
+        { title: `${t('holidays.memorialDay')}`, start: `${year}-05-03`, isHoliday: true },
+        { title: `${t('holidays.greeneryDay')}`, start: `${year}-05-04`, isHoliday: true },
+        { title: `${t('holidays.childrensDay')}`, start: `${year}-05-05`, isHoliday: true },
+        { title: `${t('holidays.marineDay')}`, start: `${year}-07-15`, isHoliday: true },
+        { title: `${t('holidays.mountainDay')}`, start: `${year}-08-11`, isHoliday: true },
+        { title: `${t('holidays.autumnEquinox')}`, start: `${year}-09-23`, isHoliday: true },
+        { title: `${t('holidays.sportsDay')}`, start: `${year}-10-14`, isHoliday: true },
+        { title: `${t('holidays.cultureDay')}`, start: `${year}-11-03`, isHoliday: true },
+        { title: `${t('holidays.thanksgiving')}`, start: `${year}-11-23`, isHoliday: true },
+        { title: `${t('holidays.newYearsHoliday')}`, start: `${year}-12-28`, isHoliday: true },
+        { title: `${t('holidays.newYearsHoliday')}`, start: `${year}-12-29`, isHoliday: true },
+        { title: `${t('holidays.newYearsHoliday')}`, start: `${year}-12-30`, isHoliday: true },
+        { title: `${t('holidays.newYearsHoliday')}`, start: `${year}-12-31`, isHoliday: true },
+        { title: `${t('holidays.newYearsHoliday')}`, start: `${year}-01-01`, isHoliday: true },
+        { title: `${t('holidays.newYearsHoliday')}`, start: `${year}-01-02`, isHoliday: true },
+        { title: `${t('holidays.newYearsHoliday')}`, start: `${year}-01-03`, isHoliday: true }
       ];
     },
     initializeCalendar() {
+      const { locale } = useI18n();
       const calendarEl = this.$refs.calendar;
       if (calendarEl) {
         this.calendar = new Calendar(calendarEl, {
           plugins: [dayGridPlugin, interactionPlugin],
           initialView: 'dayGridMonth',
           events: [],
+          locale: this.locales[locale.value],
+          businessHours: {
+            daysOfWeek: [1, 2, 3, 4, 5],
+          },
           buttonText: {
           today: 'Today',
           },
@@ -148,20 +171,17 @@ export default {
       }
     },
   handleMonthChange(startDate) {
-  // Calcola la data centrale del calendario (media tra inizio e fine)
     const midViewDate = new Date(
     (this.calendar.view.activeStart.getTime() + this.calendar.view.activeEnd.getTime()) / 2
    );
 
   const year = midViewDate.getFullYear();
-  const month = midViewDate.getMonth() + 1; // Mese corrente
+  const month = midViewDate.getMonth() + 1; 
 
-  // Carica i dati del mese effettivo
   this.fetchAttendanceDataForMonth(year, month);
 },
 async fetchAttendanceDataForMonth(year, month) {
   if (!this.selectedUserId) {
-    console.error('No user selected');
     return;
   }
   try {
@@ -196,7 +216,7 @@ async fetchAttendanceDataForMonth(year, month) {
         id: record.id,
         title: `${punchInTime} - ${punchOutTime}`,
         start: record.day,
-        backgroundColor: record.absence ? 'red' : 'lightblue',
+        backgroundColor: record.absence ? 'pink' : 'lightblue',
         extendedProps: {
           attendanceType: record.absence ? 'absence' : 'general',
           startTime: punchInTime,  
@@ -268,7 +288,7 @@ async fetchAttendanceDataForMonth(year, month) {
   if (arg.event.extendedProps.isHoliday) {
     return {
       html: `
-        <div style="text-align: left; font-size: 1vw; color: black; background-color: rgba(255, 0, 0, 0.2); padding: .5vw; border-radius: 4px; width: 100%; word-wrap: break-word; white-space: normal;">
+        <div style="text-align: left; font-size: 1vw; color: white; background-color: rgba(255, 0, 0, 0.2); padding: .5vw; border-radius: 4px; width: 100%; word-wrap: break-word; white-space: normal;">
           <b>${arg.event.title}</b>
         </div>
       `,
