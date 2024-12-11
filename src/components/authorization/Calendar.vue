@@ -737,7 +737,8 @@ export default {
     // Usa la tua funzione esistente per determinare il colore
     getEventColor(data) {
       if (data.absence) return 'pink';  // Assenza
-      if (data.status === "Approved") return 'blue';  // PTO completo
+      if (data.status === "Approved") return 'green';  // PTO completo
+      if (data.status === "Denied") return 'gray';  // PTO completo
       if (data.special_pto) return 'green';  // PTO speciale
       if (data.status === "Pending") return 'gray';  // PTO parziale
       return 'lightblue';  // Colore di default
@@ -1139,11 +1140,11 @@ export default {
         this.fetchAttendanceData(authStore.user.id);
         this.updateChart();
         this.clearForm();
+        this.memo = '';
 
       } catch (err) {
         console.error('Error fetching approvals:', err);
       }
-
 
 
       //   Promise.all(attendancePromises)

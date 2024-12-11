@@ -215,6 +215,10 @@ const statusClick = async (approvalsId, statusChange, requestType) => {
             tabRequests[requestIndex].updated_at = new Date().toISOString(); // Update the updated date in the local state
         }
 
+        console.log("request type: ", requestType)
+        console.log("statusChange: ", statusChange)
+        console.log("approvalsId: ", approvalsId)
+
         await axios.patch(`${apiUrl}/approvals/${requestType}/${approvalsId}`,
             {
                 // Send status change string
