@@ -1,5 +1,21 @@
 <template>
     <div class="flex flex-col h-full bg-gradient-to-b from-green-300 to-blue-500 text-white gap-3">
+      <!-- Switch language -->
+      <div class="flex flex-col absolute top-4 right-4">
+        <label class="font-medium">{{ $t('settings.fields.languagePreference') }}</label>
+        <div class="flex space-x-2 mt-2 absolute top-5 right-0">
+          <button @click="switchLanguage('en-US')"
+            :class="locale === 'en-US' ? 'bg-blue-500 text-white' : 'bg-gray-300 text-gray-700'"
+            class="py-1 px-3 rounded hover:bg-blue-600 transition duration-200">
+            {{ $t('language.en') }}
+          </button>
+          <button @click="switchLanguage('ja-JP')"
+            :class="locale === 'ja-JP' ? 'bg-blue-500 text-white' : 'bg-gray-300 text-gray-700'"
+            class="py-1 px-3 rounded hover:bg-blue-600 transition duration-200">
+            {{ $t('language.jp') }}
+          </button>
+        </div>
+        </div>
         <!-- Header Section -->
         <div class="flex flex-col justify-center items-center py-8 px-4 bg-white text-gray-800 shadow-lg rounded-lg w-11/12 max-w-md mx-auto mt-5">
             <img src="/favicon.png" alt="Breeze Logo" class="h-20 mb-3">
@@ -19,9 +35,14 @@
         <div class="flex flex-col justify-start items-start p-6 bg-white shadow-lg rounded-lg w-11/12 max-w-md mx-auto">
             <h2 class="text-2xl font-semibold text-blue-500 mb-3">Why Choose Breeze?</h2>
             <ul class="list-disc pl-5 space-y-2 text-gray-700">
+              <div>
                 <li><span class="font-bold">Effortlessly</span> log and track attendance</li>
                 <li><span class="font-bold">Quickly</span> and securely onboard new employees</li>
                 <li><span class="font-bold">Intuitive</span> design for hassle-free management</li>
+              </div>
+              <div>
+
+              </div>
             </ul>
         </div>
 
@@ -38,21 +59,6 @@
                 Come visit us after the demos!
             </p>
         </div>
-        <div class="flex flex-col">
-        <label class="font-medium">{{ $t('settings.fields.languagePreference') }}</label>
-        <div class="flex space-x-2 mt-2">
-          <button @click="switchLanguage('en-US')"
-            :class="locale === 'en-US' ? 'bg-blue-500 text-white' : 'bg-gray-300 text-gray-700'"
-            class="py-1 px-3 rounded hover:bg-blue-600 transition duration-200">
-            {{ $t('language.en') }}
-          </button>
-          <button @click="switchLanguage('ja-JP')"
-            :class="locale === 'ja-JP' ? 'bg-blue-500 text-white' : 'bg-gray-300 text-gray-700'"
-            class="py-1 px-3 rounded hover:bg-blue-600 transition duration-200">
-            {{ $t('language.jp') }}
-          </button>
-        </div>
-      </div>
     </div>
 </template>
 
