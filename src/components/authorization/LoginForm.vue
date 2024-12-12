@@ -23,7 +23,7 @@
       <div class="flex flex-col justify-center items-center">
         <img src="/favicon.png" title="Breeze">
         <h2 class="text-5xl font-bold mt-6">Breeze</h2>
-        <h1 class="italic mt-2">The simple attendance management app</h1>
+        <h1 class="italic mt-2">{{$t('landing.simpleApp')}}</h1>
       </div>
 
     <!-- login form -->
