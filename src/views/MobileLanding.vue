@@ -79,9 +79,10 @@
             <!-- 2x2 Grid -->
             <div class="grid grid-cols-2 gap-4 w-full">
                 <!-- First Person -->
-                <div class="flex flex-col items-center">
-                    <div class="flex space-x-2 mt-2">
-                        <a href="https://github.com/prestonb91" class="w-8 h-8">
+                <div class="flex flex-col items-center justify-center">
+                    <div class="flex flex-row items-center space-x-2 mt-2">
+                        <img src="/src/assets/TeamBreeze_Preston.png" alt="Preston Headshot" class="w-14 rounded-xl">
+                        <a href="https://github.com/prestonb91" class="w-10 h-10">
                             <img src="/src/assets/github_logo.png" alt="Logo 1" class="w-full h-full object-contain">
                         </a>
                         <a href="https://www.linkedin.com/in/preston-boardman-8210a671/" class="w-8 h-8">
@@ -93,7 +94,8 @@
 
                 <!-- Second Person -->
                 <div class="flex flex-col items-center">
-                    <div class="flex space-x-2 mt-2">
+                    <div class="flex flex-row items-center space-x-2 mt-2">
+                        <img src="/src/assets/TeamBreeze_Jackson.png" alt="Jackson Headshot" class="w-14 rounded-xl">
                         <a href="https://github.com/jacksontfm" class="w-8 h-8">
                             <img src="/src/assets/github_logo.png" alt="Logo 1" class="w-full h-full object-contain">
                         </a>
@@ -106,7 +108,8 @@
 
                 <!-- Third Person -->
                 <div class="flex flex-col items-center">
-                    <div class="flex space-x-2 mt-2">
+                    <div class="flex flex-row items-center space-x-2 mt-2">
+                        <img src="/src/assets/TeamBreeze_Davide.png" alt="Davide Headshot" class="w-14 rounded-xl">
                         <a href="https://github.com/Ghezz9" class="w-8 h-8">
                             <img src="/src/assets/github_logo.png" alt="Logo 1" class="w-full h-full object-contain">
                         </a>
@@ -119,7 +122,8 @@
 
                 <!-- Fourth Person -->
                 <div class="flex flex-col items-center">
-                    <div class="flex space-x-2 mt-2">
+                    <div class="flex flex-row items-center space-x-2 mt-2">
+                        <img src="/src/assets/TeamBreeze_Jason.png" alt="Jason Headshot" class="w-14 rounded-xl">
                         <a href="https://github.com/ConwayDecker" class="w-8 h-8">
                             <img src="/src/assets/github_logo.png" alt="Logo 1" class="w-full h-full object-contain">
                         </a>
