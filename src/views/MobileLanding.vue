@@ -142,31 +142,12 @@
         class="flex flex-col items-center p-6 bg-green-300 shadow-md rounded-lg w-full max-w-md mx-auto text-center sticky bottom-3">
         <p class="text-blue-500 font-bold text-lg">
                 {{ $t('landing.sticky1') }} <br>
-                {{ $t('landing.sticky2') }}
-            </p>
-        <p class="text-blue-500 font-bold text-xl">
-                Breeze is best experienced on desktop. <br>
-                Come visit our booth after the demos! <br>
+                {{ $t('landing.sticky2') }} <br>
                 <a href="https://breezehr.netlify.app/login" class="w-10 h-10 underline text-violet-700">
-                    Try us out on your desktop!
+                    {{ $t('landing.sticky3') }}
                 </a>
             </p>
         </div>
-        <div class="flex flex-col">
-        <label class="font-medium">{{ $t('settings.fields.languagePreference') }}</label>
-        <div class="flex space-x-2 mt-2">
-          <button @click="switchLanguage('en-US')"
-            :class="locale === 'en-US' ? 'bg-blue-500 text-white' : 'bg-gray-300 text-gray-700'"
-            class="py-1 px-3 rounded hover:bg-blue-600 transition duration-200">
-            {{ $t('language.en') }}
-          </button>
-          <button @click="switchLanguage('ja-JP')"
-            :class="locale === 'ja-JP' ? 'bg-blue-500 text-white' : 'bg-gray-300 text-gray-700'"
-            class="py-1 px-3 rounded hover:bg-blue-600 transition duration-200">
-            {{ $t('language.jp') }}
-          </button>
-        </div>
-      </div>
     </div>
 </template>
 
