@@ -111,7 +111,10 @@
             class="flex flex-col items-center p-6 bg-green-300 shadow-md rounded-lg w-11/12 max-w-md mx-auto text-center sticky bottom-3 left-1/2 transform -translate-x-1/2">
             <p class="text-blue-500 font-bold text-xl">
                 Breeze is best experienced on desktop. <br>
-                Come visit us after the demos!
+                Come visit our booth after the demos! <br>
+                <a href="https://breezehr.netlify.app/login" class="w-10 h-10 underline text-violet-700">
+                    Try us out on your desktop!
+                </a>
             </p>
         </div>
         <div class="flex flex-col">
