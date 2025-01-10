@@ -281,6 +281,7 @@ const filteredSupervisors = ref([]);
 const dropdown = ref(null);
 const showDropdown = ref(false);
 const duplicateEmail = ref(false);
+const activeCompanyId = authStore.user.company_id;
 
 const path = mdiSort;
 
@@ -507,7 +508,7 @@ const filteredEmployees = computed(() => {
 // get all supervisors
 const fetchSupervisors = async () => {
   try {
-    const response = await axios.get(`${apiUrl}/supervisors`);
+    const response = await axios.get(`${apiUrl}/organizations/${activeCompanyId}/supervisors`);
     fetchedSupervisors.value = response.data;
   } catch (err) {
     console.error('Error fetching supervisors:', err);

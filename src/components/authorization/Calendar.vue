@@ -250,6 +250,9 @@ const totalHours = ref(0);
 const selectedMonth = ref(null);
 const currentUserAtten = ref(null);
 
+// const authStore = useAuthStore();
+// const activeCompanyId = useAuthStore().user.company_id;
+
 export default {
   components: {
     SubmitMonthModal,
@@ -1004,8 +1007,9 @@ export default {
     },
     async fetchSupervisors() {
       const authStore = useAuthStore();
+      
       try {
-        const response = await axios.get(`${apiUrl}/supervisors`);
+        const response = await axios.get(`${apiUrl}/organizations/${authStore.user.company_id}/supervisors`);
         this.supervisors = response.data.filter(supervisor => supervisor.id !== authStore.user.id);;
       } catch (err) {
         console.error('Error fetching supervisors:', err);
