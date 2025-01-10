@@ -127,6 +127,7 @@ const showDropdown = ref(false);
 const isLoading = ref(false);
 
 const authStore = useAuthStore();
+const activeCompanyId = authStore.user.company_id;
 
 const { locale } = useI18n();
 
@@ -181,7 +182,7 @@ const switchLanguage = (lang) => {
  // get all supervisors
  const fetchSupervisors = async () => {
       try {
-        const response = await axios.get(`${apiUrl}/supervisors`);
+        const response = await axios.get(`${apiUrl}/organizations/${activeCompanyId}/supervisors`);
         fetchedSupervisors.value = response.data.filter(supervisor => supervisor.id !== authStore.user.id); 
       } catch (err) {
         console.error('Error fetching supervisors:', err);
