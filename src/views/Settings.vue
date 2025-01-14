@@ -112,7 +112,7 @@ import axios from 'axios';
 import { useI18n } from 'vue-i18n';
 import { useAuthStore } from '@/stores/authStore';
 import { onClickOutside } from '@vueuse/core';
-import LoopingRhombusesSpinner from '../modal/Loading.vue';
+import LoopingRhombusesSpinner from '@/components/Loading.vue';
 import { useToast } from "vue-toastification";
 
 const toast = useToast();

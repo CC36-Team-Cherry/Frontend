@@ -178,7 +178,7 @@ import { onClickOutside } from '@vueuse/core';
 import axios from 'axios';
 import { useAuthStore } from '@/stores/authStore';
 import { useToast } from "vue-toastification";
-import i18n from '../i18n.ts';
+import i18n from '../../i18n.ts';
 
 const { t } = i18n.global;
 const toast = useToast();

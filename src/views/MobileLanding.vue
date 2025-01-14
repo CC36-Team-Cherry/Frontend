@@ -60,13 +60,13 @@
         <!-- Multi-Select Video -->
         <div class="flex flex-col justify-start items-start p-6 bg-white shadow-lg rounded-lg w-11/12 max-w-md mx-auto">
             <h2 class="text-2xl font-semibold text-blue-500 mb-3">{{ $t('landing.multiSelect') }}</h2>
-            <video class="w-full rounded" src="/src/assets/multiselectvideo.mp4" autoplay loop muted
+            <video class="w-full rounded" src="/src/assets/landing_page/multiselectvideo.mp4" autoplay loop muted
                 playsinline></video>
         </div>
 
         <div class="flex flex-col justify-start items-start p-6 bg-white shadow-lg rounded-lg w-11/12 max-w-md mx-auto">
             <h2 class="text-2xl font-semibold text-blue-500 mb-3">{{ $t('landing.ptoReview') }}</h2>
-            <video class="w-full rounded" src="/src/assets/ptoapprovalsvideo.mp4" autoplay loop muted
+            <video class="w-full rounded" src="/src/assets/landing_page/ptoapprovalsvideo.mp4" autoplay loop muted
                 playsinline></video>
         </div>
 
@@ -81,12 +81,12 @@
                 <!-- First Person -->
                 <div class="flex flex-col items-center justify-center">
                     <div class="flex flex-row items-center space-x-2 mt-2">
-                        <img src="/src/assets/TeamBreeze_Preston.png" alt="Preston Headshot" class="w-14 rounded-xl">
+                        <img src="/src/assets/team_photos/TeamBreeze_Preston.png" alt="Preston Headshot" class="w-14 rounded-xl">
                         <a href="https://github.com/prestonb91" class="w-10 h-10">
-                            <img src="/src/assets/github_logo.png" alt="Logo 1" class="w-full h-full object-contain">
+                            <img src="/src/assets/landing_page/github_logo.png" alt="Logo 1" class="w-full h-full object-contain">
                         </a>
                         <a href="https://www.linkedin.com/in/preston-boardman-8210a671/" class="w-8 h-8">
-                            <img src="/src/assets/LinkedIn_logo.png" alt="Logo 2" class="w-full h-full object-contain">
+                            <img src="/src/assets/landing_page/LinkedIn_logo.png" alt="Logo 2" class="w-full h-full object-contain">
                         </a>
                     </div>
                     <p class="text-blue-500 font-bold">Preston Boardman</p>
@@ -95,12 +95,12 @@
                 <!-- Second Person -->
                 <div class="flex flex-col items-center">
                     <div class="flex flex-row items-center space-x-2 mt-2">
-                        <img src="/src/assets/TeamBreeze_Jackson.png" alt="Jackson Headshot" class="w-14 rounded-xl">
+                        <img src="/src/assets/team_photos/TeamBreeze_Jackson.png" alt="Jackson Headshot" class="w-14 rounded-xl">
                         <a href="https://github.com/jacksontfm" class="w-8 h-8">
-                            <img src="/src/assets/github_logo.png" alt="Logo 1" class="w-full h-full object-contain">
+                            <img src="/src/assets/landing_page/github_logo.png" alt="Logo 1" class="w-full h-full object-contain">
                         </a>
                         <a href="https://www.linkedin.com/in/jackson-merle-47ba7518a/" class="w-8 h-8">
-                            <img src="/src/assets/LinkedIn_logo.png" alt="Logo 2" class="w-full h-full object-contain">
+                            <img src="/src/assets/landing_page/LinkedIn_logo.png" alt="Logo 2" class="w-full h-full object-contain">
                         </a>
                     </div>
                     <p class="text-blue-500 font-bold">Jackson Merle</p>
@@ -109,12 +109,12 @@
                 <!-- Third Person -->
                 <div class="flex flex-col items-center">
                     <div class="flex flex-row items-center space-x-2 mt-2">
-                        <img src="/src/assets/TeamBreeze_Davide.png" alt="Davide Headshot" class="w-14 rounded-xl">
+                        <img src="/src/assets/team_photos/TeamBreeze_Davide.png" alt="Davide Headshot" class="w-14 rounded-xl">
                         <a href="https://github.com/Ghezz9" class="w-8 h-8">
-                            <img src="/src/assets/github_logo.png" alt="Logo 1" class="w-full h-full object-contain">
+                            <img src="/src/assets/landing_page/github_logo.png" alt="Logo 1" class="w-full h-full object-contain">
                         </a>
                         <a href="https://www.linkedin.com/in/davide-ghezzo-a91587206/?originalSubdomain=it" class="w-8 h-8">
-                            <img src="/src/assets/LinkedIn_logo.png" alt="Logo 2" class="w-full h-full object-contain">
+                            <img src="/src/assets/landing_page/LinkedIn_logo.png" alt="Logo 2" class="w-full h-full object-contain">
                         </a>
                     </div>
                     <p class="text-blue-500 font-bold">Davide Ghezzo</p>
@@ -123,13 +123,13 @@
                 <!-- Fourth Person -->
                 <div class="flex flex-col items-center">
                     <div class="flex flex-row items-center space-x-2 mt-2">
-                        <img src="/src/assets/TeamBreeze_Jason.png" alt="Jason Headshot" class="w-14 rounded-xl">
+                        <img src="/src/assets/team_photos/TeamBreeze_Jason.png" alt="Jason Headshot" class="w-14 rounded-xl">
                         <a href="https://github.com/ConwayDecker" class="w-8 h-8">
-                            <img src="/src/assets/github_logo.png" alt="Logo 1" class="w-full h-full object-contain">
+                            <img src="/src/assets/landing_page/github_logo.png" alt="Logo 1" class="w-full h-full object-contain">
                         </a>
                         <a href="https://www.linkedin.com/in/jason-sagalow-76047614b/"
                             class="w-8 h-8">
-                            <img src="/src/assets/LinkedIn_logo.png" alt="Logo 2" class="w-full h-full object-contain">
+                            <img src="/src/assets/landing_page/LinkedIn_logo.png" alt="Logo 2" class="w-full h-full object-contain">
                         </a>
                     </div>
                     <p class="text-blue-500 font-bold">Jason Sagalow</p>

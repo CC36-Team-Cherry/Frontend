@@ -87,11 +87,11 @@ import { ref, toRaw, onMounted } from 'vue';
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/authStore';
 import axios from 'axios';
-import LoopingRhombusesSpinner from '../../modal/Loading.vue';
-import ConfirmModal from '@/modal/ConfirmModal.vue';
+import LoopingRhombusesSpinner from '@/components/Loading.vue';
+import ConfirmModal from '@/components/modal/ConfirmModal.vue';
 import { useLogout } from "@/utils/useLogout";
 import { useToast } from "vue-toastification";
-import i18n from '../../i18n.ts';
+import i18n from '../i18n.ts';
 const { t } = i18n.global;
 
 const { handleLogout } = useLogout();

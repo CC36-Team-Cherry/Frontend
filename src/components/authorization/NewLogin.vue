@@ -63,7 +63,7 @@ import { verifyPasswordResetCode, confirmPasswordReset, signInWithEmailAndPasswo
 import { auth } from '../../firebase/firebaseConfig.ts';
 import { useI18n } from 'vue-i18n';
 import axios from "axios";
-import LoopingRhombusesSpinner from '../../modal/Loading.vue';
+import LoopingRhombusesSpinner from '@/components/Loading.vue';
 import { useToast } from "vue-toastification";
 
 const apiUrl = import.meta.env.VITE_API_URL;
