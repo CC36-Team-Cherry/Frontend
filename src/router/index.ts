@@ -5,14 +5,14 @@ import { useAuthStore } from '@/stores/authStore';
 import { AppPageType } from '@/types/AppState';
 import LoginForm from "@/components/authorization/LoginForm.vue";
 import RegisterOrganization from "@/components/authorization/RegisterOrganization.vue";
-import Calendar from "@/components/authorization/Calendar.vue";
-import EmployeeList from '@/components/adminView/EmployeeList.vue';
+import Calendar from "@/views/Calendar.vue";
+import EmployeeList from '@/views/EmployeeList.vue';
 import NewLogin from '@/components/authorization/NewLogin.vue';
 import ForgotPassword from '@/components/authorization/ForgotPassword.vue';
 import Settings from '@/views/Settings.vue'; 
-import AdminConsole from '@/components/adminView/AdminConsole.vue';
+import AdminConsole from '@/views/AdminConsole.vue';
 import Approvals from '@/views/Approvals.vue';
-import SupervisorCalendar from '@/components/adminView/SupervisorCalendar.vue';
+import SupervisorCalendar from '@/views/SupervisorCalendar.vue';
 import MobileLanding from '@/views/MobileLanding.vue'
 
 const router = createRouter({

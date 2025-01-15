@@ -61,7 +61,7 @@ import axios from 'axios';
 import enLocale from '@fullcalendar/core/locales/en-gb';
 import jaLocale from '@fullcalendar/core/locales/ja';
 import { useI18n } from 'vue-i18n';
-import i18n from '../i18n.ts';
+import i18n from '../../i18n.ts';
 const { t } = i18n.global;
 
 const apiUrl = import.meta.env.VITE_API_URL;

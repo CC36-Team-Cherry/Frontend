@@ -55,8 +55,8 @@ import { computed, ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router'
 import { useAuthStore } from "@/stores/authStore";
 import axios from "axios";
-import logout from "./svg/logout.vue";
-import settings from "./svg/settings.vue";
+import logout from "./logout.vue";
+import settings from "./settings.vue";
 import { useLogout } from "@/utils/useLogout";
 
 const { handleLogout } = useLogout();

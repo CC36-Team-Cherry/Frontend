@@ -241,19 +241,19 @@
 <script setup>
 import { ref, computed, reactive, onMounted } from 'vue';
 import axios from 'axios';
-import { auth } from '../../firebase/firebaseConfig.ts';
+import { auth } from '../firebase/firebaseConfig.ts';
 import { sendPasswordResetEmail } from 'firebase/auth';
-import Modal from '@/modal/ModalView.vue';
-import ConfirmModal from '@/modal/ConfirmModal.vue';
-import EmployeeDetailsModal from '@/modal/EmployeeDetailsModal.vue';
-import CalendarModal from '@/modal/CalendarModal.vue';
+import Modal from '@/components/modal/ModalView.vue';
+import ConfirmModal from '@/components/modal/ConfirmModal.vue';
+import EmployeeDetailsModal from '@/components/modal/EmployeeDetailsModal.vue';
+import CalendarModal from '@/components/modal/CalendarModal.vue';
 import { useAuthStore } from '@/stores/authStore';
 import { onClickOutside } from '@vueuse/core';
 import SvgIcon from '@jamescoyle/vue-icon';
 import { mdiSort } from '@mdi/js';
-import LoopingRhombusesSpinner from '../../modal/Loading.vue';
+import LoopingRhombusesSpinner from '@/components/Loading.vue';
 import { useToast } from "vue-toastification";
-import i18n from '../../i18n.ts';
+import i18n from '../i18n.ts';
 const { t } = i18n.global;
 
 const apiUrl = import.meta.env.VITE_API_URL;

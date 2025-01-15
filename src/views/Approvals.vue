@@ -114,7 +114,7 @@
 import { ref, computed, onMounted } from 'vue';
 import axios from 'axios';
 import { useAuthStore } from '@/stores/authStore';
-import LoopingRhombusesSpinner from '../modal/Loading.vue';
+import LoopingRhombusesSpinner from '@/components/Loading.vue';
 import { useRouter } from 'vue-router';
 import { useToast } from "vue-toastification";
 import { useI18n } from 'vue-i18n';

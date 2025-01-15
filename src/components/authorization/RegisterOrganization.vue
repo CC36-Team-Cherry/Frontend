@@ -82,7 +82,7 @@ import { useAuthStore } from '@/stores/authStore';
 import { createUserWithEmailAndPassword } from 'firebase/auth';
 import { auth } from '../../firebase/firebaseConfig.ts'
 import axios from 'axios';
-import LoopingRhombusesSpinner from '../../modal/Loading.vue';
+import LoopingRhombusesSpinner from '@/components/Loading.vue';
 import { useToast } from "vue-toastification";
 
 const { t } = useI18n();
