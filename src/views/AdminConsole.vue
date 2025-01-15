@@ -82,9 +82,8 @@
     </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { ref, toRaw, onMounted } from 'vue';
-import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/authStore';
 import axios from 'axios';
 import LoopingRhombusesSpinner from '@/components/Loading.vue';
@@ -92,49 +91,47 @@ import ConfirmModal from '@/components/modal/ConfirmModal.vue';
 import { useLogout } from "@/utils/useLogout";
 import { useToast } from "vue-toastification";
 import i18n from '../i18n.ts';
-const { t } = i18n.global;
-
-const { handleLogout } = useLogout();
 
 axios.defaults.withCredentials = true;
-
 const apiUrl = import.meta.env.VITE_API_URL;
+const { t } = i18n.global;
+const { handleLogout } = useLogout();
 const authStore = useAuthStore();
-const activeCompanyId = authStore.user.company_id;
-const isLoading = ref(true);
-const isConfirmModalVisible = ref(false);
-const router = useRouter();
 const toast = useToast();
+const activeCompanyId = authStore.user.company_id;
 
-const formData = ref({
+// Interfaces
+interface Team {
+    id: number, 
+    team_name: string
+}
+
+// Store reactive values.
+const formData = ref<{ organizationName: string }>({
     organizationName: '',
 });
+const isLoading = ref<boolean>(true);
+const isConfirmModalVisible = ref<boolean>(false);
+const teams = ref<Team[]>([]);
+const newTeam = ref<string>(''); // New team variable 
+const editingIndex = ref<number | null>(null); // Index of team being edited
+const organizationName = ref<string>(''); // Organization name variable
 
-// Reactive state
-const teams = ref([]);
-// New team variable 
-const newTeam = ref('');
-// Index of team being edited
-const editingIndex = ref(null);
-// Organization name variable
-const organizationName = ref('');
-
-const getOrganizationName = async () => {
+// Fetch organization name. 
+const getOrganizationName = async (): Promise <void> => {
     try {
-        const response = await axios.get(`${apiUrl}/organizations/${activeCompanyId}`)
+        const response = await axios.get<{name: string}>(`${apiUrl}/organizations/${activeCompanyId}`)
         organizationName.value = response.data.name;
     } catch (err) {
         console.error('Error fetching organization name:', err);
     }
 }
 
-// Get teams
-// TODO add validation when no team exists
+// Fetch teams. 
 const getTeams = async () => {
     try {
-        const response = await axios.get(`${apiUrl}/organizations/${activeCompanyId}/teams`);
-        // Store the fetched teams in state
-        teams.value = response.data;
+        const response = await axios.get<Team[]>(`${apiUrl}/organizations/${activeCompanyId}/teams`);
+        teams.value = response.data; // Store the fetched teams in state
     } catch (err) {
         console.error('Error fetching teams:', err);
     }
@@ -191,7 +188,7 @@ const addTeam = async () => {
 };
 
 // Delete a team
-const deleteTeam = async (teamId) => {
+const deleteTeam = async(teamId: number): Promise <void>=> {
     try {
 
         // Optimistically remove the team from the array
@@ -260,14 +257,14 @@ const saveSettings = async () => {
     }
 };
 
-const handleMounted = async () => {
+// Helper function on mount. 
+const handleMounted = async (): Promise <void> => {
     isLoading.value = true;
     await getTeams();
     await getOrganizationName();
     isLoading.value = false;
 }
 
-// Fetch teams when the component is mounted
 onMounted(() => {
     handleMounted();
 });
