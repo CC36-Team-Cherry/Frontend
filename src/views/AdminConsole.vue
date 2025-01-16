@@ -7,7 +7,7 @@
         <!-- Team List -->
         <div class="text-2xl font-bold text-center my-5">{{ $t('adminConsole.fields.teamList') }}</div>
 
-                    <!-- Add Team  -->
+            <!-- Add Team  -->
             <div class="flex justify-center space-x-4 m-6">
                 <input v-model="newTeam" type="text" :placeholder="$t('adminConsole.buttons.addPlaceholder')" class="border-2 rounded p-2 w-64" />
                 <button @click="addTeam(newTeam)" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-1 rounded">
@@ -46,13 +46,6 @@
                 </tr>
             </table>
         </div>
-
-        <!-- Minimum Work Hours Per Day -->
-        <!-- <div class="text-xl text-center my-5">{{ $t('adminConsole.fields.adminSettings') }}</div>
-        <div class="grid grid-cols-2">
-            <label class="font-medium text-center">{{ $t('adminConsole.fields.minimumWorkHours') }}</label>
-            <input type="text" class="border rounded p-2" />
-        </div> -->
 
         <!-- Organization Setting -->
         <div class="text-2xl text-center font-bold my-5">{{ $t('adminConsole.fields.organizationSettings') }}</div>
@@ -106,7 +99,7 @@ interface Team {
     team_name: string
 }
 
-// Store reactive values.
+// Reactive values
 const formData = ref<{ organizationName: string }>({
     organizationName: '',
 });
@@ -128,49 +121,51 @@ const getOrganizationName = async (): Promise <void> => {
 }
 
 // Fetch teams. 
-const getTeams = async () => {
+const getTeams = async (): Promise <void> => {
     try {
         const response = await axios.get<Team[]>(`${apiUrl}/organizations/${activeCompanyId}/teams`);
-        teams.value = response.data; // Store the fetched teams in state
+        teams.value = response.data; 
     } catch (err) {
         console.error('Error fetching teams:', err);
     }
 };
 
 // Team editing 
-const startEditing = (index) => {
+const startEditing = (index: number) => {
     editingIndex.value = index;
 };
 
 // Stop editing the team (disable the input field and save changes)
-const stopEditing = async () => {
+const stopEditing = async (): Promise <void> => {
+
+    // Validate editingIndex.value is a valid number o null. 
+    if (editingIndex.value === null || editingIndex.value < 0) {
+        return;
+    }
+
     const team = teams.value[editingIndex.value];
     const updatedTeamName = team.team_name; // The updated team name
 
     try {
-        // Send PATCH request to update the team name in the backend
+        // Send patch request to update the team name in the backend.
         const response = await axios.patch(`${apiUrl}/teams/${team.id}`, {
-            updatedTeamName // The new team name
+            updatedTeamName // The new team name sent to be updated in the backend. 
         });
 
         if (response.status === 200) {
-            // Update the team name in the teams array (local state)
-            teams.value[editingIndex.value].team_name = updatedTeamName;
-
-            // Stop editing after successful update
-            editingIndex.value = null;
+            teams.value[editingIndex.value].team_name = updatedTeamName; // Update the team name in the local reactive value. 
+            editingIndex.value = null; // Stop editing after successful update
             toast.success(t('adminConsole.toast.teamUpdate'));
         } else {
             toast.warning(t('adminConsole.toast.teamFail'));
         }
     } catch (err) {
-        console.error('Error updating team name:', err);
-        //toast.error('An error occurred while updating the team name');
+        console.error('Error updating team name:', err); //toast.error('An error occurred while updating the team name');
     }
 };
 
 // Add new team
-const addTeam = async () => {
+const addTeam = async (): Promise <void> => {
     try {
         const newTeamName = newTeam.value;
         const response = await axios.post(`${apiUrl}/organizations/${activeCompanyId}/teams`, {
@@ -182,7 +177,6 @@ const addTeam = async () => {
         }
         toast.success(t('adminConsole.toast.newTeam'));
     } catch (err) {
-        //console.error(err);
         toast.error(t('adminConsole.toast.newTeamFail'));
     }
 };
@@ -206,7 +200,6 @@ const deleteTeam = async(teamId: number): Promise <void>=> {
         }
 
     } catch (err) {
-        //console.error(err);
         toast.error(t('adminConsole.toast.teamDeleteError'));
     }
 }
