@@ -110,7 +110,7 @@
     </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { ref, computed, onMounted } from 'vue';
 import axios from 'axios';
 import { useAuthStore } from '@/stores/authStore';
@@ -118,25 +118,31 @@ import LoopingRhombusesSpinner from '@/components/Loading.vue';
 import { useRouter } from 'vue-router';
 import { useToast } from "vue-toastification";
 import { useI18n } from 'vue-i18n';
+import type { ApprovalRequest } from '@/stores/authStore';
 
 const apiUrl = import.meta.env.VITE_API_URL;
 axios.defaults.withCredentials = true;
 const router = useRouter();
 const authStore = useAuthStore();
-const activeAccountId = authStore.user.id;
-const isLoading = ref(true);
 const toast = useToast();
 const {t} = useI18n();
+const activeAccountId = authStore.user?.id;
 
 // Sample data for the approval requests
-const requests = authStore.approvals
+const requests: { received: ApprovalRequest[], sent: ApprovalRequest[]} = authStore.approvals
 
 // Reactive state to store current tab
-const activeTab = ref('sent');
+const activeTab = ref<string>('sent');
+const isLoading = ref<boolean>(true);
 
-// Compute (like use effects) the list of requets based on active tab
+// Helper function to switch tabs.
+const switchTab = (tab: string) => {
+    activeTab.value = tab;
+};
+
+// Compute (like use effects) the list of requests based on active tab.
 const filteredRequests = computed(() => {
-    // Ensure requests and the current tab have valid data
+    // Ensure requests and the current tab have valid data.
     if (requests && requests[activeTab.value]) {
         return requests[activeTab.value]
             .filter(request => {
@@ -151,13 +157,13 @@ const filteredRequests = computed(() => {
                 // Then, sort by updated_at (newest first)
                 const dateA = new Date(a.updated_at);
                 const dateB = new Date(b.updated_at);
-                return dateB - dateA;
+                return dateB - dateA; 
             });
     }
     return []; // Return an empty array if data is not available
 });
 
-const getDayWithSuffix = (day) => {
+const getDayWithSuffix = (day: number) => {
     if (day >= 11 && day <= 13) return day + 'th';
     switch (day % 10) {
         case 1: return day + 'st';
@@ -167,7 +173,7 @@ const getDayWithSuffix = (day) => {
     }
 }
 
-function formatMonthYearMonthRequest(input) {
+function formatMonthYearMonthRequest(input: string) {
   const [month, year] = input.split('-');
   const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
   const monthName = monthNames[parseInt(month) - 1];  // Subtract 1 because array is 0-indexed
@@ -175,20 +181,14 @@ function formatMonthYearMonthRequest(input) {
   return `${monthName}, ${year}`;
 }
 
-// helper function to switch tabs
-const switchTab = (tab) => {
-    activeTab.value = tab;
-};
-
-
-const getApprovals = async () => {
+const getApprovals = async (): Promise <void> => {
 
     try {
         isLoading.value = true;
         const response = await axios.get(`${apiUrl}/accounts/${activeAccountId}/approvals`);
 
-        requests.sent = response.data.approvalsSentData.sort((a, b) => new Date(b.updated_at) - new Date(a.updated_at));
-        requests.received = response.data.approvalsReceivedData.sort((a, b) => new Date(b.updated_at) - new Date(a.updated_at));
+        requests.sent = response.data.approvalsSentData.sort((a: {updated_at: Date}, b: {updated_at: Date }) => new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime());
+        requests.received = response.data.approvalsReceivedData.sort((a: {updated_at: Date}, b: {updated_at: Date}) => new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime());
         isLoading.value = false;
         authStore.setApprovals(response.data.approvalsSentData, response.data.approvalsReceivedData);
 
@@ -198,14 +198,14 @@ const getApprovals = async () => {
 }
 
 // Button click to change status to approved or denied
-const statusClick = async (approvalsId, statusChange, requestType) => {
+const statusClick = async (approvalsId: number, statusChange: string, requestType: string): Promise <void> => {
     try {
 
         // Get the requests for the current active tab
         const tabRequests = requests[activeTab.value]; // Get the current active tab's requests
 
         // Find the index of the request that matches the ID and type
-        const requestIndex = tabRequests.findIndex(request =>
+        const requestIndex = tabRequests.findIndex((request: { id: number; attendanceType: string; }) =>
             request.id === approvalsId && request.attendanceType === requestType
         );
 
@@ -240,7 +240,7 @@ const statusClick = async (approvalsId, statusChange, requestType) => {
 }
 
 // Button click to update able to edit message 
-const remindClick = (request) => {
+const remindClick = (request: { status: string; newMessage: string; memo: string; isEditing: boolean; }) => {
     if (request.status === "Approved" || request.status === "Denied") {
         toast.warning(t('approval.closed'));
         return;
@@ -250,8 +250,8 @@ const remindClick = (request) => {
     request.isEditing = true;
 }
 
-// Save remind with edited message and update last change
-const saveRemind = async (request) => {
+// Save remind with edited message and update last change.
+const saveRemind = async (request: { newMessage: string; attendanceType: string; id: number; memo: string; updated_at: string; isEditing: boolean; }): Promise <void> => {
     const newMessage = request.newMessage;
 
     try {
@@ -265,21 +265,21 @@ const saveRemind = async (request) => {
             request.isEditing = false;
         }
         toast.success(t('approval.remindSuccess'));
-        requests[activeTab.value].sort((a, b) => new Date(b.updated_at) - new Date(a.updated_at));
+        requests[activeTab.value].sort((a: { updated_at: Date }, b: { updated_at: Date }) => new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime());
 
     } catch (err) {
         console.error('Error setting sending remind:', err)
     }
 }
 
-// Function to cancel editing without saving
-const cancelEditing = (request) => {
+// Function to cancel editing without saving.
+const cancelEditing = (request: { isEditing: boolean; newMessage: string; content: string; }) => {
     request.isEditing = false;
     request.newMessage = request.content;
 }
 
 // Button click to see attendance, reroute OR modal to see that person's calendar view
-const seeAttendanceClick = async (requestId) => {
+const seeAttendanceClick = async (requestId: number): Promise <void> => {
     try {
         router.push({ name: 'supervisorCalendar', params: { userId: requestId }})
     } catch (err) {
@@ -287,12 +287,12 @@ const seeAttendanceClick = async (requestId) => {
     }
 }
 
-const deleteClick = async (approvalsId, requestType) => {
+const deleteClick = async (approvalsId: number, requestType: string): Promise <void> => {
     try {
-        // Optimistic rendering
-        const tabRequests = requests[activeTab.value]; // Get the requests for the active tab
+        // Optimistic rendering.
+        const tabRequests = requests[activeTab.value]; // Get the requests for the active tab.
 
-        requests[activeTab.value] = tabRequests.filter(request => !(request.id === approvalsId && request.attendanceType === requestType))
+        requests[activeTab.value] = tabRequests.filter((request: { id: number, attendanceType: string}) => !(request.id === approvalsId && request.attendanceType === requestType))
 
         await axios.delete(`${apiUrl}/approvals/${requestType}/${approvalsId}`);
 
