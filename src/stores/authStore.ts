@@ -33,7 +33,7 @@ interface Organization {
   details?: string;
 }
 
-interface ApprovalRequest {
+export interface ApprovalRequest {
   id: number;
   status: string;
   supervisorName: string;
