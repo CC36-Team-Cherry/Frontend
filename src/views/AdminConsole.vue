@@ -110,17 +110,22 @@ const newTeam = ref<string>(''); // New team variable
 const editingIndex = ref<number | null>(null); // Index of team being edited
 const organizationName = ref<string>(''); // Organization name variable
 
+// Helper functions.
+const openConfirmModal = () => {
+  isConfirmModalVisible.value = true;
+}
+
 // Fetch organization name. 
 const getOrganizationName = async (): Promise <void> => {
     try {
-        const response = await axios.get<{name: string}>(`${apiUrl}/organizations/${activeCompanyId}`)
+        const response = await axios.get(`${apiUrl}/organizations/${activeCompanyId}`)
         organizationName.value = response.data.name;
     } catch (err) {
         console.error('Error fetching organization name:', err);
     }
 }
 
-// Fetch teams. 
+// Fetch all teams for that organization. 
 const getTeams = async (): Promise <void> => {
     try {
         const response = await axios.get<Team[]>(`${apiUrl}/organizations/${activeCompanyId}/teams`);
@@ -138,13 +143,13 @@ const startEditing = (index: number) => {
 // Stop editing the team (disable the input field and save changes)
 const stopEditing = async (): Promise <void> => {
 
-    // Validate editingIndex.value is a valid number o null. 
+    // Validate editingIndex.value is a valid number or null, as index cannot be null. 
     if (editingIndex.value === null || editingIndex.value < 0) {
         return;
     }
 
     const team = teams.value[editingIndex.value];
-    const updatedTeamName = team.team_name; // The updated team name
+    const updatedTeamName = team.team_name; // Store the updated team name to send to the backend.
 
     try {
         // Send patch request to update the team name in the backend.
@@ -153,8 +158,8 @@ const stopEditing = async (): Promise <void> => {
         });
 
         if (response.status === 200) {
-            teams.value[editingIndex.value].team_name = updatedTeamName; // Update the team name in the local reactive value. 
-            editingIndex.value = null; // Stop editing after successful update
+            teams.value[editingIndex.value].team_name = updatedTeamName; // Update the team name in the local reactive value on successful patch. 
+            editingIndex.value = null; // Reset editingIndex after successful update.
             toast.success(t('adminConsole.toast.teamUpdate'));
         } else {
             toast.warning(t('adminConsole.toast.teamFail'));
@@ -164,51 +169,52 @@ const stopEditing = async (): Promise <void> => {
     }
 };
 
-// Add new team
+// Add a new team. 
 const addTeam = async (): Promise <void> => {
     try {
-        const newTeamName = newTeam.value;
+        const newTeamName = newTeam.value; // Name of new team to be sent to the backend. 
         const response = await axios.post(`${apiUrl}/organizations/${activeCompanyId}/teams`, {
             newTeamName
         });
+
         if (response.data) {
-            teams.value.push(response.data);
+            teams.value.push(response.data); // Add team to reactive variable to update team. 
             newTeam.value = '';
         }
         toast.success(t('adminConsole.toast.newTeam'));
     } catch (err) {
+        console.error('Failed to add team: ', err);
         toast.error(t('adminConsole.toast.newTeamFail'));
     }
 };
 
-// Delete a team
+// Delete a team.
 const deleteTeam = async(teamId: number): Promise <void>=> {
     try {
-
-        // Optimistically remove the team from the array
-        const originalTeams = [...teams.value];
+        // Optimistically remove the team from the array.
+        const originalTeams = [...teams.value]; 
         teams.value = teams.value.filter(team => team.id !== teamId);
 
         const response = await axios.delete(`${apiUrl}/teams/${teamId}`)
 
         if (response.status !== 200) {
-            // If the deletion fails, revert the change
-            teams.value = originalTeams;
+            teams.value = originalTeams; // If the deletion fails, revert the change.
             toast.warning(t('adminConsole.toast.teamDeleteFail'));
         } else {
             toast.info(t('adminConsole.toast.teamDelete'));
         }
 
     } catch (err) {
+        console.error("Error deleting team: ", err);
         toast.error(t('adminConsole.toast.teamDeleteError'));
     }
 }
 
-//delete organization
-const deleteOrg = async () => {
+// Delete organization.
+const deleteOrg = async (): Promise <void> => {
     try {
-        if (authStore.user.company_id) {
-            await axios.delete(`${apiUrl}/organizations/${authStore.user.company_id}`);
+        if (authStore.user?.company_id) { // Using optional chaining (?) to prevent accessing property if null. 
+            await axios.delete(`${apiUrl}/organizations/${authStore.user?.company_id}`);
             isConfirmModalVisible.value = false;
             handleLogout();
             toast.info(t('adminConsole.toast.orgDelete'));
@@ -220,33 +226,27 @@ const deleteOrg = async () => {
     }
 }
 
-const openConfirmModal = () => {
-  isConfirmModalVisible.value = true;
-}
-
-// Save settings on click for admin settings outside of team list
-const saveSettings = async () => {
+// Save settings on click for admin settings outside of team list.
+const saveSettings = async (): Promise <void> => {
     try {
-
-        const adminConsoleData = toRaw(formData.value);
+        const adminConsoleData = toRaw(formData.value); // Store admin data to edit. 
         organizationName.value = formData.value.organizationName;
 
         const response = await axios.patch(`${apiUrl}/organizations/${activeCompanyId}`, {
             adminConsoleData
-        },
-            {
-                withCredentials: true,
-            })
+        });
 
         if (response.status === 200) {
-            authStore.user.company.name = organizationName.value;
-            toast.success(t('adminConsole.toast.orgUpdate'))
+            if (authStore.user) { // Type guard for potential authStore.user being null.
+                authStore.user.company.name = organizationName.value;
+                toast.success(t('adminConsole.toast.orgUpdate'))
+            }
         }
 
         formData.value.organizationName = '';
 
     } catch (err) {
-        console.error(err);
+        console.error("Error saving settings: ", err);
     }
 };
 
