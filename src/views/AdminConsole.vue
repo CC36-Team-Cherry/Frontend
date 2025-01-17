@@ -51,7 +51,7 @@
         <div class="text-2xl text-center font-bold my-5">{{ $t('adminConsole.fields.organizationSettings') }}</div>
         <div class="flex flex-row justify-center items-center gap-8">
             <!-- <label class="font-medium text-left">{{ $t('adminConsole.fields.organizationName') }}</label> -->
-            <input type="text" v-model="formData.organizationName" class="border rounded p-2 w-1/6" :placeholder=authStore.user.company.name data-test="organization-name" />
+            <input type="text" v-model="formData.organizationName" class="border rounded p-2 w-1/6" :placeholder=authStore.user?.company.name data-test="organization-name" />
                     <!-- Save and Delete buttons -->
             <button @click="saveSettings" class="my-1 w-40 py-2 px-3 rounded bg-blue-500 hover:bg-blue-600 transition text-white">
                 {{ $t('adminConsole.buttons.saveName') }}
@@ -91,7 +91,7 @@ const { t } = i18n.global;
 const { handleLogout } = useLogout();
 const authStore = useAuthStore();
 const toast = useToast();
-const activeCompanyId = authStore.user.company_id;
+const activeCompanyId = authStore.user?.company_id;
 
 // Interfaces
 interface Team {
@@ -170,9 +170,8 @@ const stopEditing = async (): Promise <void> => {
 };
 
 // Add a new team. 
-const addTeam = async (): Promise <void> => {
+const addTeam = async (newTeamName: string): Promise <void> => {
     try {
-        const newTeamName = newTeam.value; // Name of new team to be sent to the backend. 
         const response = await axios.post(`${apiUrl}/organizations/${activeCompanyId}/teams`, {
             newTeamName
         });
